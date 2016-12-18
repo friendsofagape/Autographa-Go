@@ -9,28 +9,20 @@
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
 
-        <!--<activity-->
-            <!--android:name=".ui.activities.HomeActivity"-->
-            <!--android:launchMode="singleTask"-->
-            <!--android:screenOrientation="portrait"-->
-            <!--android:theme="@style/AppTheme.NoActionBar.TransparentStatusBar"-->
-            <!--android:windowSoftInputMode="adjustNothing">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.VIEW" />-->
+        <activity android:name=".activities.HomeActivity"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
 
-                <!--<category android:name="android.intent.category.APP_MUSIC" />-->
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
 
-                <!--<data-->
-                    <!--android:mimeType="audio/*"-->
-                    <!--android:pathPattern=".*mp3"-->
-                    <!--android:scheme="content" />-->
-                <!--<data-->
-                    <!--android:mimeType="audio/*"-->
-                    <!--android:pathPattern=".*mp3"-->
-                    <!--android:scheme="file" />-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
+                <data android:scheme="file"
+                    android:mimeType="*/*"
+                    android:pathPattern=".*\\.usfm" />
+
+            </intent-filter>
+        </activity>
 
     </application>
 
