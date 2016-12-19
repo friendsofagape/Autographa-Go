@@ -9,10 +9,13 @@ import com.bridgeconn.autographago.models.PoetryModel;
 import com.bridgeconn.autographago.models.VerseModel;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+
+import io.realm.RealmList;
 
 /**
  * Created by Admin on 16-12-2016.
@@ -21,23 +24,47 @@ import java.util.List;
 public class USFMParser {
 
     private BookModel bookModel;
-    private List<ChapterModel> chapterModels;
-    private List<VerseModel> verseModels;
+    private RealmList<ChapterModel> chapterModels;
+    private RealmList<VerseModel> verseModels;
     private VerseModel verseModel;
     private PoetryModel poetryModel;
-    private List<PoetryModel> poetryModels;
+    private RealmList<PoetryModel> poetryModels;
 
     public USFMParser() {
         bookModel = new BookModel();
-        chapterModels = new ArrayList<>();
-        verseModels = new ArrayList<>();
+        chapterModels = new RealmList<>();
+        verseModels = new RealmList<>();
         verseModel = new VerseModel();
 
         poetryModel = new PoetryModel();
-        poetryModels = new ArrayList<>();
+        poetryModels = new RealmList<>();
     }
 
     public void parseUSFMFile(Context context, String fileName) {
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(new File(fileName)));
+            String mLine;
+            while ((mLine = reader.readLine()) != null) {
+                processLine(mLine);
+            }
+            addVersesToChapter();
+            addChaptersToBook();
+
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "Exception in reading file. " + e.toString());
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "Exception in closing BufferedReader. " + e.toString());
+                }
+            }
+        }
+    }
+
+    public void parseUSFMFileFromAssets(Context context, String fileName) {
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(context.getAssets().open(fileName)));
@@ -75,7 +102,7 @@ public class USFMParser {
                 verseModel.setParagraphStart(true);
             } else if (marker.equals(Constants.MARKER_POETRY)) {
                 int indentLevel = 1;
-            } else if (marker.matches(Constants.MARKER_POETRY)) {
+            } else if (marker.matches(Constants.MARKER_POETRY_WITH_INDENT)) {
                 String number = marker.substring(2);
                 int indentLevel =  Integer.parseInt(number);
             }
@@ -86,7 +113,7 @@ public class USFMParser {
         StringBuilder stringBuilder = new StringBuilder("");
         bookModel.setBookAbbreviation(splitString[1]);
         for (int i=2; i<splitString.length; i++) {
-            stringBuilder.append(splitString[i]);
+            stringBuilder.append(splitString[i] + " ");
         }
         bookModel.setBookName(stringBuilder.toString());
     }
@@ -102,7 +129,7 @@ public class USFMParser {
         StringBuilder stringBuilder = new StringBuilder("");
         verseModel.setVerseNumber(Long.parseLong(splitString[1]));
         for (int i=2; i<splitString.length; i++) {
-            stringBuilder.append(splitString[i]);
+            stringBuilder.append(splitString[i] + " ");
         }
         verseModel.setVerseText(stringBuilder.toString());
         verseModels.add(verseModel);
@@ -115,7 +142,7 @@ public class USFMParser {
             return;
         }
         chapterModels.get(chapterModels.size()-1).setVerseModels(verseModels);
-        verseModels = new ArrayList<>();
+        verseModels = new RealmList<>();
     }
 
     private void addChaptersToBook() {

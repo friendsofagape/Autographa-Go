@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 
 /**
@@ -18,7 +19,7 @@ public class BookModel extends RealmObject implements Parcelable, Comparable<Boo
 
     private String bookAbbreviation;
     private String bookName;
-    private List<ChapterModel> chapterModels = new ArrayList<>();
+    private RealmList<ChapterModel> chapterModels = new RealmList<>();
     // TODO this chapter number type may not work, use Integer type instea
 
     public BookModel(BookModel model) {
@@ -46,11 +47,11 @@ public class BookModel extends RealmObject implements Parcelable, Comparable<Boo
         this.bookName = bookName;
     }
 
-    public List<ChapterModel> getChapterModels() {
+    public RealmList<ChapterModel> getChapterModels() {
         return chapterModels;
     }
 
-    public void setChapterModels(List<ChapterModel> chapterModels) {
+    public void setChapterModels(RealmList<ChapterModel> chapterModels) {
         this.chapterModels = chapterModels;
     }
 
@@ -89,7 +90,7 @@ public class BookModel extends RealmObject implements Parcelable, Comparable<Boo
     protected BookModel(Parcel in) {
         this.bookAbbreviation = in.readString();
         this.bookName = in.readString();
-        this.chapterModels = new ArrayList<>();
+        this.chapterModels = new RealmList<>();
         in.readList(this.chapterModels, ChapterModel.class.getClassLoader());
     }
 

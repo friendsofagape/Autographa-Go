@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -22,7 +23,8 @@ public class VerseModel extends RealmObject implements Parcelable, Comparable<Ve
     private String verseText;
     private boolean paragraphStart;
 //    private boolean lineBreak;
-    private List<PoetryModel> poetryModels = new ArrayList<>();
+    private RealmList<PoetryModel> poetryModels = new RealmList<>();
+//    private List<PoetryModel> poetryModels = new ArrayList<>();
 
     //Local Fields
 //    @Ignore
@@ -80,11 +82,11 @@ public class VerseModel extends RealmObject implements Parcelable, Comparable<Ve
 //        this.lineBreak = lineBreak;
 //    }
 
-    public List<PoetryModel> getPoetryModels() {
+    public RealmList<PoetryModel> getPoetryModels() {
         return poetryModels;
     }
 
-    public void setPoetryModels(List<PoetryModel> poetryModels) {
+    public void setPoetryModels(RealmList<PoetryModel> poetryModels) {
         this.poetryModels = poetryModels;
     }
 
@@ -127,9 +129,9 @@ public class VerseModel extends RealmObject implements Parcelable, Comparable<Ve
         this.verseText = in.readString();
         this.paragraphStart = in.readByte() != 0;
 //        this.lineBreak = in.readByte() != 0;
-        this.poetryModels = new ArrayList<>();
+        this.poetryModels = new RealmList<>();
         in.readList(this.poetryModels, PoetryModel.class.getClassLoader());
-    }
+}
 
     public static final Creator<VerseModel> CREATOR = new Creator<VerseModel>() {
         @Override

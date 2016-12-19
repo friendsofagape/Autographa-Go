@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 
 /**
@@ -17,7 +18,7 @@ import io.realm.RealmObject;
 public class ChapterModel extends RealmObject implements Parcelable {
 
     private long chapterNumber;
-    private List<VerseModel> verseModels = new ArrayList<>();
+    private RealmList<VerseModel> verseModels = new RealmList<>();
 
     public ChapterModel(ChapterModel model) {
         chapterNumber = model.getChapterNumber();
@@ -35,11 +36,11 @@ public class ChapterModel extends RealmObject implements Parcelable {
         this.chapterNumber = chapterNumber;
     }
 
-    public List<VerseModel> getVerseModels() {
+    public RealmList<VerseModel> getVerseModels() {
         return verseModels;
     }
 
-    public void setVerseModels(List<VerseModel> verseModels) {
+    public void setVerseModels(RealmList<VerseModel> verseModels) {
         this.verseModels = verseModels;
     }
 
@@ -69,7 +70,7 @@ public class ChapterModel extends RealmObject implements Parcelable {
 
     protected ChapterModel(Parcel in) {
         this.chapterNumber = in.readLong();
-        this.verseModels = new ArrayList<>();
+        this.verseModels = new RealmList<>();
         in.readList(this.verseModels, VerseModel.class.getClassLoader());
     }
 

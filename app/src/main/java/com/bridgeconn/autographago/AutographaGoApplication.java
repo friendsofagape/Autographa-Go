@@ -14,7 +14,5 @@ public class AutographaGoApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        USFMParser usfmParser = new USFMParser();
-        usfmParser.parseUSFMFile(this, "65-3JN.usfm");
     }
 }
