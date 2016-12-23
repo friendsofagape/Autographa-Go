@@ -42,6 +42,12 @@ public class USFMParser {
         verseComponentsModelList = new ArrayList<>();
     }
 
+    /**
+     * Parse method that reads the file content line by line
+     * @param context context of the application
+     * @param fileName name of the usfm file to be parsed
+     * @param fromAssets true if the file is stored in bundled assets or false for device storage
+     */
     public void parseUSFMFile(Context context, String fileName, boolean fromAssets) {
         BufferedReader reader = null;
         try {
@@ -72,6 +78,10 @@ public class USFMParser {
         }
     }
 
+    /**
+     * Parse the line with corresponding marker at the first position
+     * @param line each line in the file
+     */
     private void processLine(String line) {
 
         String[] splitString = line.split("\\s+");
@@ -123,6 +133,10 @@ public class USFMParser {
         }
     }
 
+    /**
+     * This adds the book name and book abbreviation to the model
+     * @param splitString the line containing book marker
+     */
     private void addBook(String [] splitString) {
         StringBuilder stringBuilder = new StringBuilder("");
         bookModel.setBookId(splitString[1]);
@@ -132,6 +146,10 @@ public class USFMParser {
         bookModel.setBookName(stringBuilder.toString());
     }
 
+    /**
+     * This adds the chapter number and id (bookName_chapterNumber) to the model
+     * @param chapterNumber the number of the chapter parsed from the line
+     */
     private void addChapter(String chapterNumber) {
         addComponentsToChapter();
         ChapterModel chapterModel = new ChapterModel();
@@ -140,12 +158,20 @@ public class USFMParser {
         chapterModelList.add(chapterModel);
     }
 
+    /**
+     * This adds the chunk \\s5 marker of the line to the component model and add it to the list of component models
+     */
     private void addChunk() {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         verseComponentsModel.setType(Constants.MarkerTypes.CHUNK);
         verseComponentsModelList.add(verseComponentsModel);
     }
 
+    /**
+     * This adds the section marker of the line to the component model and add it to the list of component models
+     * @param type the section marker type
+     * @param splitString the line for section heading text
+     */
     private void addSection(String type, String [] splitString) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         verseComponentsModel.setType(type);
@@ -157,6 +183,10 @@ public class USFMParser {
         verseComponentsModelList.add(verseComponentsModel);
     }
 
+    /**
+     * This adds the new paragraph marker of the line to the component model and add it to the list of component models
+     * @param splitString the string for any text that is in the line
+     */
     private void addParagraph(String [] splitString) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         verseComponentsModel.setType(Constants.MarkerTypes.PARAGRAPH);
@@ -168,6 +198,11 @@ public class USFMParser {
         verseComponentsModelList.add(verseComponentsModel);
     }
 
+    /**
+     * This adds the verse marker of the line to the component model and add it to the list of component models.
+     * This also adds this verse's number to all previous models that do not have a verse number
+     * @param splitString the line for text of the verse
+     */
     private void addVerse(String [] splitString) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         verseComponentsModel.setType(Constants.MarkerTypes.VERSE);
@@ -187,6 +222,10 @@ public class USFMParser {
         verseComponentsModelList.add(verseComponentsModel);
     }
 
+    /**
+     * When a new chapter marker comes, this adds all verse components to the last chapter,
+     * and then reinitialize the verse components list
+     */
     private void addComponentsToChapter() {
         if (chapterModelList.size() > 0) {
             if (verseComponentsModelList.size() > 0) {
@@ -196,10 +235,16 @@ public class USFMParser {
         }
     }
 
+    /**
+     * At the end of the book, this adds all the chapters to the book model
+     */
     private void addChaptersToBook() {
         bookModel.setChapterModels(chapterModelList);
     }
 
+    /**
+     * At the end, add the book to the CONTAINER
+     */
     private void addBookToContainer() {
         bookModelList.add(bookModel);
         versionModel.setBookModels(bookModelList);
@@ -209,6 +254,9 @@ public class USFMParser {
         Constants.CONTAINER.getLanguageModelList().add(languageModel);
     }
 
+    /**
+     * TODO here need to check for line level markers like \q and inline \p and others for formatting.
+     */
     private void seeWhatIsToBeDone() {
 //        ???
     }
