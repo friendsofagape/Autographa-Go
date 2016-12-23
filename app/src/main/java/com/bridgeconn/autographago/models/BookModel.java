@@ -10,6 +10,7 @@ import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Admin on 16-12-2016.
@@ -17,13 +18,14 @@ import io.realm.RealmObject;
 
 public class BookModel extends RealmObject implements Parcelable, Comparable<BookModel> {
 
-    private String bookAbbreviation;
+    @PrimaryKey
+    private String bookId;
     private String bookName;
-    private RealmList<ChapterModel> chapterModels = new RealmList<>();
-    // TODO this chapter number type may not work, use Integer type instea
+    private List<ChapterModel> chapterModels = new ArrayList<>();
+    // TODO this chapter number type may not work, use Integer type instead
 
     public BookModel(BookModel model) {
-        bookAbbreviation = model.getBookAbbreviation();
+        bookId = model.getBookId();
         bookName = model.getBookName();
         chapterModels = model.getChapterModels();
     }
@@ -31,12 +33,12 @@ public class BookModel extends RealmObject implements Parcelable, Comparable<Boo
     public BookModel() {
     }
 
-    public String getBookAbbreviation() {
-        return bookAbbreviation;
+    public String getBookId() {
+        return bookId;
     }
 
-    public void setBookAbbreviation(String bookAbbreviation) {
-        this.bookAbbreviation = bookAbbreviation;
+    public void setBookId(String bookId) {
+        this.bookId = bookId;
     }
 
     public String getBookName() {
@@ -47,31 +49,31 @@ public class BookModel extends RealmObject implements Parcelable, Comparable<Boo
         this.bookName = bookName;
     }
 
-    public RealmList<ChapterModel> getChapterModels() {
+    public List<ChapterModel> getChapterModels() {
         return chapterModels;
     }
 
-    public void setChapterModels(RealmList<ChapterModel> chapterModels) {
+    public void setChapterModels(List<ChapterModel> chapterModels) {
         this.chapterModels = chapterModels;
     }
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof BookModel && ((BookModel) o).getBookAbbreviation() == this.bookAbbreviation;
+        return o instanceof BookModel && ((BookModel) o).getBookId() == this.bookId;
     }
 
     @Override
     public int compareTo(@NonNull BookModel another) {
-        return (this.getBookAbbreviation().equals(another.getBookAbbreviation())) ? 1: -1;
+        return (this.getBookId().equals(another.getBookId())) ? 1: -1;
     }
 
     public static class BookAbbreviationComparator implements Comparator<BookModel> {
 
         @Override
         public int compare(BookModel lhs, BookModel rhs) {
-            return lhs.getBookAbbreviation() == null ?
-                    -1 : rhs.getBookAbbreviation() == null ?
-                    -1 : lhs.getBookAbbreviation().toLowerCase().compareTo(rhs.getBookAbbreviation().toLowerCase());
+            return lhs.getBookId() == null ?
+                    -1 : rhs.getBookId() == null ?
+                    -1 : lhs.getBookId().toLowerCase().compareTo(rhs.getBookId().toLowerCase());
         }
     }
 
@@ -82,13 +84,13 @@ public class BookModel extends RealmObject implements Parcelable, Comparable<Boo
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.bookAbbreviation);
+        dest.writeString(this.bookId);
         dest.writeString(this.bookName);
         dest.writeList(this.chapterModels);
     }
 
     protected BookModel(Parcel in) {
-        this.bookAbbreviation = in.readString();
+        this.bookId = in.readString();
         this.bookName = in.readString();
         this.chapterModels = new RealmList<>();
         in.readList(this.chapterModels, ChapterModel.class.getClassLoader());
@@ -108,6 +110,6 @@ public class BookModel extends RealmObject implements Parcelable, Comparable<Boo
 
     @Override
     public int hashCode() {
-        return getBookAbbreviation().hashCode();
+        return getBookId().hashCode();
     }
 }

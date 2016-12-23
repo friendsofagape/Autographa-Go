@@ -4,18 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.BookModel;
-import com.bridgeconn.autographago.models.ChapterModel;
-import com.bridgeconn.autographago.models.PoetryModel;
-import com.bridgeconn.autographago.models.VerseModel;
-import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.USFMParser;
 import com.bridgeconn.autographago.utils.UnzipUtil;
 
@@ -36,24 +30,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.activity_home);
 
+//        Constants.MARKERTYPE.s1.ordinal();
+
         Intent intent = getIntent();
         if(Intent.ACTION_VIEW.equals(intent.getAction())){
             String filePath = intent.getData().getPath();
 
             USFMParser usfmParser = new USFMParser();
             Toast.makeText(getApplicationContext(), "path= " + filePath, Toast.LENGTH_SHORT).show();
-            usfmParser.parseUSFMFile(this, filePath);
+            usfmParser.parseUSFMFile(this, filePath, false);
         }
 
         unzipButton = (Button) findViewById(R.id.bt_unzip);
         unzipButton.setOnClickListener(this);
 
         USFMParser usfmParser = new USFMParser();
-        usfmParser.parseUSFMFileFromAssets(this, "65-3JN.usfm");
+        usfmParser.parseUSFMFile(this, "65-3JN.usfm", true);
 
         bookView = (TextView) findViewById(R.id.tv_book);
 
-        addContentToView();
+//        addContentToView();
     }
 
     @Override
@@ -67,34 +63,37 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void addContentToView() {
-        for (int i=0; i<Constants.CONTAINER.getBookModels().size(); i++) {
-            BookModel bookModel = Constants.CONTAINER.getBookModels().get(i);
-
-            bookView.append("\n");
-            bookView.append(bookModel.getBookAbbreviation() + "\n");
-            bookView.append(bookModel.getBookName() + "\n");
-
-            for (int j=0; j<bookModel.getChapterModels().size(); j++) {
-                ChapterModel chapterModel = bookModel.getChapterModels().get(j);
-
-                bookView.append(chapterModel.getChapterNumber() + "" + "\n");
-
-                for (int k=0; k<chapterModel.getVerseModels().size(); k++) {
-                    VerseModel verseModel = chapterModel.getVerseModels().get(k);
-
-                    bookView.append(verseModel.getVerseNumber() + " ");
-                    bookView.append(verseModel.getVerseText() + "\n");
-
-                    for (int l=0; l<verseModel.getPoetryModels().size(); l++) {
-                        PoetryModel poetryModel = verseModel.getPoetryModels().get(l);
-
-                        bookView.append(poetryModel.getPoetryIndentLevel() + " ");
-                        bookView.append(poetryModel.getPoetry());
-                    }
-                }
-            }
-        }
-    }
+//    private void addContentToView() {
+//        for (int i=0; i<Constants.CONTAINER.size(); i++) {
+//            BookModel bookModel = Constants.CONTAINER.get(i);
+//
+//            bookView.append("\n");
+//            bookView.append(bookModel.getBookId() + "\n");
+//            bookView.append(bookModel.getBookName() + "\n");
+//
+//            for (int j=0; j<bookModel.getChapterModels().size(); j++) {
+//                ChapterModel chapterModel = bookModel.getChapterModels().get(j);
+//
+//                bookView.append(chapterModel.getChapterNumber() + "" + "\n");
+//
+//                for (int k=0; k<chapterModel.getVerseModels().size(); k++) {
+//                    VerseModel verseModel = chapterModel.getVerseModels().get(k);
+//
+//                    if (verseModel.isParagraphStart()) {
+//                        bookView.append("\n");
+//                    }
+//                    bookView.append(verseModel.getVerseNumber() + " ");
+//                    bookView.append(verseModel.getVerseText());
+//
+//                    for (int l=0; l<verseModel.getPoetryModels().size(); l++) {
+//                        PoetryModel poetryModel = verseModel.getPoetryModels().get(l);
+//
+//                        bookView.append(poetryModel.getPoetryIndentLevel() + " ");
+//                        bookView.append(poetryModel.getPoetry());
+//                    }
+//                }
+//            }
+//        }
+//    }
 
 }

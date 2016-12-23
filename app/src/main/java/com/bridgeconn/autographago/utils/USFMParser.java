@@ -5,17 +5,17 @@ import android.util.Log;
 
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
-import com.bridgeconn.autographago.models.PoetryModel;
-import com.bridgeconn.autographago.models.VerseModel;
+import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.VerseComponentsModel;
+import com.bridgeconn.autographago.models.VersionModel;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import io.realm.RealmList;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Admin on 16-12-2016.
@@ -23,57 +23,41 @@ import io.realm.RealmList;
 
 public class USFMParser {
 
+    private LanguageModel languageModel;
+    private List<VersionModel> versionModelList;
+    private VersionModel versionModel;
+    private List<BookModel> bookModelList;
+
     private BookModel bookModel;
-    private RealmList<ChapterModel> chapterModels;
-    private RealmList<VerseModel> verseModels;
-    private VerseModel verseModel;
-    private PoetryModel poetryModel;
-    private RealmList<PoetryModel> poetryModels;
+    private List<ChapterModel> chapterModelList;
+    private List<VerseComponentsModel> verseComponentsModelList;
 
     public USFMParser() {
+        languageModel = new LanguageModel();
+        versionModelList = new ArrayList<>();
+        versionModel = new VersionModel();
+        bookModelList = new ArrayList<>();
         bookModel = new BookModel();
-        chapterModels = new RealmList<>();
-        verseModels = new RealmList<>();
-        verseModel = new VerseModel();
-
-        poetryModel = new PoetryModel();
-        poetryModels = new RealmList<>();
+        chapterModelList = new ArrayList<>();
+        verseComponentsModelList = new ArrayList<>();
     }
 
-    public void parseUSFMFile(Context context, String fileName) {
+    public void parseUSFMFile(Context context, String fileName, boolean fromAssets) {
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new FileReader(new File(fileName)));
+            if (fromAssets) {
+                reader = new BufferedReader(new InputStreamReader(context.getAssets().open(fileName)));
+            } else {
+                reader = new BufferedReader(new FileReader(new File(fileName)));
+            }
             String mLine;
             while ((mLine = reader.readLine()) != null) {
                 processLine(mLine);
             }
-            addVersesToChapter();
+            addComponentsToChapter();
             addChaptersToBook();
 
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "Exception in reading file. " + e.toString());
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    Log.e(Constants.TAG, "Exception in closing BufferedReader. " + e.toString());
-                }
-            }
-        }
-    }
-
-    public void parseUSFMFileFromAssets(Context context, String fileName) {
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(context.getAssets().open(fileName)));
-            String mLine;
-            while ((mLine = reader.readLine()) != null) {
-                processLine(mLine);
-            }
-            addVersesToChapter();
-            addChaptersToBook();
+            addBookToContainer();
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "Exception in reading file. " + e.toString());
@@ -89,29 +73,59 @@ public class USFMParser {
     }
 
     private void processLine(String line) {
+
         String[] splitString = line.split("\\s+");
-        if (splitString.length > 0) {
-            String marker = splitString[0];
-            if (marker.equals(Constants.MARKER_BOOK_NAME)) {
+        switch (splitString[0]) {
+            case Constants.MARKER_BOOK_NAME: {
                 addBook(splitString);
-            } else if (marker.equals(Constants.MARKER_CHAPTER_NUMBER)) {
+                break;
+            }
+            case Constants.MARKER_CHAPTER_NUMBER: {
                 addChapter(splitString[1]);
-            } else if (marker.equals(Constants.MARKER_VERSE_NUMBER)) {
+                break;
+            }
+            case Constants.MARKER_NEW_PARAGRAPH: {
+                addParagraph(splitString);
+                break;
+            }
+            case Constants.MARKER_VERSE_NUMBER: {
                 addVerse(splitString);
-            } else if (marker.equals(Constants.MARKER_NEW_PARAGRAPH)) {
-                verseModel.setParagraphStart(true);
-            } else if (marker.equals(Constants.MARKER_POETRY)) {
-                int indentLevel = 1;
-            } else if (marker.matches(Constants.MARKER_POETRY_WITH_INDENT)) {
-                String number = marker.substring(2);
-                int indentLevel =  Integer.parseInt(number);
+                break;
+            }
+            case Constants.MARKER_SECTION_HEADING: {
+                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, splitString);
+                break;
+            }
+            case Constants.MARKER_SECTION_HEADING_ONE: {
+                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, splitString);
+                break;
+            }
+            case Constants.MARKER_SECTION_HEADING_TWO: {
+                addSection(Constants.MarkerTypes.SECTION_HEADING_TWO, splitString);
+                break;
+            }
+            case Constants.MARKER_SECTION_HEADING_THREE: {
+                addSection(Constants.MarkerTypes.SECTION_HEADING_THREE, splitString);
+                break;
+            }
+            case Constants.MARKER_SECTION_HEADING_FOUR: {
+                addSection(Constants.MarkerTypes.SECTION_HEADING_FOUR, splitString);
+                break;
+            }
+            case Constants.MARKER_CHUNK: {
+                addChunk();
+                break;
+            }
+            default: {
+                seeWhatIsToBeDone();
+                // TODO call this also for in between marker like in verse
             }
         }
     }
 
     private void addBook(String [] splitString) {
         StringBuilder stringBuilder = new StringBuilder("");
-        bookModel.setBookAbbreviation(splitString[1]);
+        bookModel.setBookId(splitString[1]);
         for (int i=2; i<splitString.length; i++) {
             stringBuilder.append(splitString[i] + " ");
         }
@@ -119,39 +133,84 @@ public class USFMParser {
     }
 
     private void addChapter(String chapterNumber) {
-        addVersesToChapter();
+        addComponentsToChapter();
         ChapterModel chapterModel = new ChapterModel();
-        chapterModel.setChapterNumber(Long.parseLong(chapterNumber));
-        chapterModels.add(chapterModel);
+        chapterModel.setChapterNumber(Integer.parseInt(chapterNumber));
+        chapterModel.setChapterId(bookModel.getBookId() + "_" + chapterNumber);
+        chapterModelList.add(chapterModel);
+    }
+
+    private void addChunk() {
+        VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
+        verseComponentsModel.setType(Constants.MarkerTypes.CHUNK);
+        verseComponentsModelList.add(verseComponentsModel);
+    }
+
+    private void addSection(String type, String [] splitString) {
+        VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
+        verseComponentsModel.setType(type);
+        StringBuilder stringBuilder = new StringBuilder("");
+        for (int i=1; i<splitString.length; i++) {
+            stringBuilder.append(splitString[i] + " ");
+        }
+        verseComponentsModel.setText(stringBuilder.toString());
+        verseComponentsModelList.add(verseComponentsModel);
+    }
+
+    private void addParagraph(String [] splitString) {
+        VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
+        verseComponentsModel.setType(Constants.MarkerTypes.PARAGRAPH);
+        StringBuilder stringBuilder = new StringBuilder("");
+        for (int i=1; i<splitString.length; i++) {
+            stringBuilder.append(splitString[i] + " ");
+        }
+        verseComponentsModel.setText(stringBuilder.toString());
+        verseComponentsModelList.add(verseComponentsModel);
     }
 
     private void addVerse(String [] splitString) {
+        VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
+        verseComponentsModel.setType(Constants.MarkerTypes.VERSE);
+        verseComponentsModel.setVerseNumber(Integer.parseInt(splitString[1]));
         StringBuilder stringBuilder = new StringBuilder("");
-        verseModel.setVerseNumber(Long.parseLong(splitString[1]));
         for (int i=2; i<splitString.length; i++) {
             stringBuilder.append(splitString[i] + " ");
         }
-        verseModel.setVerseText(stringBuilder.toString());
-        verseModels.add(verseModel);
-
-        verseModel = new VerseModel();
+        verseComponentsModel.setText(stringBuilder.toString());
+        for (int i=verseComponentsModelList.size()-1; i>=0; i--) {
+            if (verseComponentsModelList.get(i).getVerseNumber() <= 0) {
+                verseComponentsModelList.get(i).setVerseNumber(Integer.parseInt(splitString[1]));
+            } else {
+                break;
+            }
+        }
+        verseComponentsModelList.add(verseComponentsModel);
     }
 
-    private void addVersesToChapter() {
-        if (chapterModels.size() == 0) {
-            return;
+    private void addComponentsToChapter() {
+        if (chapterModelList.size() > 0) {
+            if (verseComponentsModelList.size() > 0) {
+                chapterModelList.get(chapterModelList.size() - 1).setVerseComponentsModels(verseComponentsModelList);
+                verseComponentsModelList = new ArrayList<>();
+            }
         }
-        chapterModels.get(chapterModels.size()-1).setVerseModels(verseModels);
-        verseModels = new RealmList<>();
     }
 
     private void addChaptersToBook() {
-        bookModel.setChapterModels(chapterModels);
-        addBookToContainer();
+        bookModel.setChapterModels(chapterModelList);
     }
 
     private void addBookToContainer() {
-        Constants.CONTAINER.getBookModels().add(bookModel);
+        bookModelList.add(bookModel);
+        versionModel.setBookModels(bookModelList);
+        versionModelList.add(versionModel);
+        languageModel.setVersionModels(versionModelList);
+
+        Constants.CONTAINER.getLanguageModelList().add(languageModel);
+    }
+
+    private void seeWhatIsToBeDone() {
+//        ???
     }
 
 }
