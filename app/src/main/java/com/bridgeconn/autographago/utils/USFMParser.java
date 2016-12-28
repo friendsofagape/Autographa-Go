@@ -14,8 +14,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.Iterator;
+
+import io.realm.RealmList;
 
 /**
  * Created by Admin on 16-12-2016.
@@ -24,22 +26,22 @@ import java.util.List;
 public class USFMParser {
 
     private LanguageModel languageModel;
-    private List<VersionModel> versionModelList;
+    private RealmList<VersionModel> versionModelList;
     private VersionModel versionModel;
-    private List<BookModel> bookModelList;
+    private RealmList<BookModel> bookModelList;
 
     private BookModel bookModel;
-    private List<ChapterModel> chapterModelList;
-    private List<VerseComponentsModel> verseComponentsModelList;
+    private RealmList<ChapterModel> chapterModelList;
+    private RealmList<VerseComponentsModel> verseComponentsModelList;
 
     public USFMParser() {
         languageModel = new LanguageModel();
-        versionModelList = new ArrayList<>();
+        versionModelList = new RealmList<>();
         versionModel = new VersionModel();
-        bookModelList = new ArrayList<>();
+        bookModelList = new RealmList<>();
         bookModel = new BookModel();
-        chapterModelList = new ArrayList<>();
-        verseComponentsModelList = new ArrayList<>();
+        chapterModelList = new RealmList<>();
+        verseComponentsModelList = new RealmList<>();
     }
 
     /**
@@ -103,23 +105,23 @@ public class USFMParser {
                 break;
             }
             case Constants.MARKER_SECTION_HEADING: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, splitString);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, Constants.ParagraphMarker.S1, splitString);
                 break;
             }
             case Constants.MARKER_SECTION_HEADING_ONE: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, splitString);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, Constants.ParagraphMarker.S1, splitString);
                 break;
             }
             case Constants.MARKER_SECTION_HEADING_TWO: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_TWO, splitString);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_TWO, Constants.ParagraphMarker.S2, splitString);
                 break;
             }
             case Constants.MARKER_SECTION_HEADING_THREE: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_THREE, splitString);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_THREE, Constants.ParagraphMarker.S3, splitString);
                 break;
             }
             case Constants.MARKER_SECTION_HEADING_FOUR: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_FOUR, splitString);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_FOUR, Constants.ParagraphMarker.S4, splitString);
                 break;
             }
             case Constants.MARKER_CHUNK: {
@@ -127,8 +129,13 @@ public class USFMParser {
                 break;
             }
             default: {
-                seeWhatIsToBeDone();
-                // TODO call this also for in between marker like in verse
+                if (splitString.length == 1) {
+                    // add this to the next coming verse
+                    addFormattingToNextVerse(line);
+                } else {
+                    // add this to the last verse
+                    addFormattingToLastVerse(line);
+                }
             }
         }
     }
@@ -164,6 +171,8 @@ public class USFMParser {
     private void addChunk() {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         verseComponentsModel.setType(Constants.MarkerTypes.CHUNK);
+        verseComponentsModel.setAdded(true);
+        verseComponentsModel.setMarker(Constants.ParagraphMarker.S5);
         verseComponentsModelList.add(verseComponentsModel);
     }
 
@@ -172,7 +181,7 @@ public class USFMParser {
      * @param type the section marker type
      * @param splitString the line for section heading text
      */
-    private void addSection(String type, String [] splitString) {
+    private void addSection(String type, Constants.ParagraphMarker marker, String [] splitString) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         verseComponentsModel.setType(type);
         StringBuilder stringBuilder = new StringBuilder("");
@@ -180,6 +189,8 @@ public class USFMParser {
             stringBuilder.append(splitString[i] + " ");
         }
         verseComponentsModel.setText(stringBuilder.toString());
+        verseComponentsModel.setAdded(true);
+        verseComponentsModel.setMarker(marker);
         verseComponentsModelList.add(verseComponentsModel);
     }
 
@@ -195,6 +206,8 @@ public class USFMParser {
             stringBuilder.append(splitString[i] + " ");
         }
         verseComponentsModel.setText(stringBuilder.toString());
+        verseComponentsModel.setAdded(true);
+        verseComponentsModel.setMarker(Constants.ParagraphMarker.P);
         verseComponentsModelList.add(verseComponentsModel);
     }
 
@@ -205,20 +218,37 @@ public class USFMParser {
      */
     private void addVerse(String [] splitString) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
+        StringBuilder stringBuilder = new StringBuilder("");
+
+        // check for all components that need not be added to list and mut be appended to the next verse, and remove from the list
+        for (Iterator<VerseComponentsModel> iterator = verseComponentsModelList.iterator(); iterator.hasNext(); ) {
+            VerseComponentsModel verseComponentsModel1 = iterator.next();
+            if (!verseComponentsModel1.isAdded()) {
+                stringBuilder.append(verseComponentsModel1.getText());
+                iterator.remove();
+            }
+        }
+
         verseComponentsModel.setType(Constants.MarkerTypes.VERSE);
         verseComponentsModel.setVerseNumber(Integer.parseInt(splitString[1]));
-        StringBuilder stringBuilder = new StringBuilder("");
+
         for (int i=2; i<splitString.length; i++) {
+            // whenever a new marker comes in between a line, append a new line marker before that
+//            if (splitString[i].startsWith("\\")) {
+//                stringBuilder.append("\n");
+//            }
             stringBuilder.append(splitString[i] + " ");
         }
         verseComponentsModel.setText(stringBuilder.toString());
+
         for (int i=verseComponentsModelList.size()-1; i>=0; i--) {
-            if (verseComponentsModelList.get(i).getVerseNumber() <= 0) {
-                verseComponentsModelList.get(i).setVerseNumber(Integer.parseInt(splitString[1]));
-            } else {
+            if (verseComponentsModelList.get(i).getVerseNumber() > 0 ) {
                 break;
             }
+            verseComponentsModelList.get(i).setVerseNumber(Integer.parseInt(splitString[1]));
         }
+        verseComponentsModel.setAdded(true);
+        verseComponentsModel.setMarker(Constants.ParagraphMarker.V);
         verseComponentsModelList.add(verseComponentsModel);
     }
 
@@ -229,8 +259,9 @@ public class USFMParser {
     private void addComponentsToChapter() {
         if (chapterModelList.size() > 0) {
             if (verseComponentsModelList.size() > 0) {
+                Collections.sort(verseComponentsModelList);
                 chapterModelList.get(chapterModelList.size() - 1).setVerseComponentsModels(verseComponentsModelList);
-                verseComponentsModelList = new ArrayList<>();
+                verseComponentsModelList = new RealmList<>();
             }
         }
     }
@@ -255,10 +286,31 @@ public class USFMParser {
     }
 
     /**
-     * TODO here need to check for line level markers like \q and inline \p and others for formatting.
+     * Check for line level markers like \q and inline \p and others for formatting and add them to the last verse's text.
+     * @param line the text to be appended to the verse's text
      */
-    private void seeWhatIsToBeDone() {
-//        ???
+    private void addFormattingToLastVerse(String line) {
+        if (verseComponentsModelList.size() > 0) {
+            StringBuilder stringBuilder = new StringBuilder("");
+            stringBuilder.append(verseComponentsModelList.get(verseComponentsModelList.size() - 1).getText());
+            stringBuilder.append("\n");
+            stringBuilder.append(line);
+            verseComponentsModelList.get(verseComponentsModelList.size() - 1).setText(stringBuilder.toString());
+        }
+    }
+
+    /**
+     * Check for line level markers that do not contain any text after the marker, create new component for each line,
+     * and whenever new verse marker comes, append these verses before the text of the verse and then remove these from the list.
+     * @param line the marker text
+     */
+    private void addFormattingToNextVerse(String line) {
+        VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
+        verseComponentsModel.setText(line + " ");
+        verseComponentsModel.setAdded(false);
+        verseComponentsModel.setType(Constants.MarkerTypes.PARAGRAPH);
+        verseComponentsModel.setMarker(Constants.ParagraphMarker.S5); // TODO // FIXME: 28-12-2016
+        verseComponentsModelList.add(verseComponentsModel);
     }
 
 }

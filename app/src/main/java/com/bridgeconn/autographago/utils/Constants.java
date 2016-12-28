@@ -25,14 +25,9 @@ public class Constants {
 
     public static final String MARKER_CHUNK = "\\s5";
 
-    public static final String MARKER_SECTION_HEADING_WITH_NUMBER = "\\\\s*";
-
-    public static final String MARKER_POETRY = "\\q";
-    public static final String MARKER_POETRY_WITH_INDENT = "\\\\q*";
-
     public static final AllLanguagesModel CONTAINER = new AllLanguagesModel();
 
-    public enum ParagraphMarkers {
+    public enum ParagraphMarker implements Comparable<ParagraphMarker> {
         V, P, S5, S4, S3, S2, S1;
     }
 

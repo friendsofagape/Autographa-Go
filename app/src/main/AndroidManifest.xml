@@ -14,17 +14,18 @@
 
         <activity android:name=".activities.HomeActivity"
             android:theme="@style/AppTheme">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-                <action android:name="android.intent.action.VIEW"/>
+                <!--<action android:name="android.intent.action.VIEW"/>-->
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <!--<category android:name="android.intent.category.DEFAULT"/>-->
+                <!--<category android:name="android.intent.category.BROWSABLE"/>-->
 
-                <data android:scheme="file"
-                    android:mimeType="*/*"
-                    android:pathPattern=".*\\.usfm" />
+                <!--<data android:scheme="file"-->
+                    <!--android:mimeType="*/*"-->
+                    <!--android:pathPattern=".*\\.usfm" />-->
 
             </intent-filter>
         </activity>

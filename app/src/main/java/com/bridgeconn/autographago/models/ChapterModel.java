@@ -1,8 +1,6 @@
 package com.bridgeconn.autographago.models;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -15,7 +13,7 @@ public class ChapterModel extends RealmObject {
     private int chapterNumber;
     @PrimaryKey
     private String chapterId;
-    private List<VerseComponentsModel> verseComponentsModels = new ArrayList<>();
+    private RealmList<VerseComponentsModel> verseComponentsModels = new RealmList<>();
 
     public ChapterModel(ChapterModel model) {
         chapterNumber = model.getChapterNumber();
@@ -42,11 +40,11 @@ public class ChapterModel extends RealmObject {
         this.chapterId = chapterId;
     }
 
-    public List<VerseComponentsModel> getVerseComponentsModels() {
+    public RealmList<VerseComponentsModel> getVerseComponentsModels() {
         return verseComponentsModels;
     }
 
-    public void setVerseComponentsModels(List<VerseComponentsModel> verseComponentsModels) {
+    public void setVerseComponentsModels(RealmList<VerseComponentsModel> verseComponentsModels) {
         this.verseComponentsModels = verseComponentsModels;
     }
 }

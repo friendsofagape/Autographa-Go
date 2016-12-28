@@ -16,12 +16,12 @@ import io.realm.annotations.PrimaryKey;
  * Created by Admin on 16-12-2016.
  */
 
-public class BookModel extends RealmObject implements Parcelable, Comparable<BookModel> {
+public class BookModel extends RealmObject{// implements Parcelable, Comparable<BookModel> {
 
     @PrimaryKey
     private String bookId;
     private String bookName;
-    private List<ChapterModel> chapterModels = new ArrayList<>();
+    private RealmList<ChapterModel> chapterModels = new RealmList<>();
     // TODO this chapter number type may not work, use Integer type instead
 
     public BookModel(BookModel model) {
@@ -49,14 +49,15 @@ public class BookModel extends RealmObject implements Parcelable, Comparable<Boo
         this.bookName = bookName;
     }
 
-    public List<ChapterModel> getChapterModels() {
+    public RealmList<ChapterModel> getChapterModels() {
         return chapterModels;
     }
 
-    public void setChapterModels(List<ChapterModel> chapterModels) {
+    public void setChapterModels(RealmList<ChapterModel> chapterModels) {
         this.chapterModels = chapterModels;
     }
 
+    /*
     @Override
     public boolean equals(Object o) {
         return o instanceof BookModel && ((BookModel) o).getBookId() == this.bookId;
@@ -112,4 +113,5 @@ public class BookModel extends RealmObject implements Parcelable, Comparable<Boo
     public int hashCode() {
         return getBookId().hashCode();
     }
+    */
 }

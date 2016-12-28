@@ -1,5 +1,6 @@
 package com.bridgeconn.autographago.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class AllLanguagesModel {
 
-    private List<LanguageModel> languageModelList;
+    private List<LanguageModel> languageModelList = new ArrayList<>();
 
     public AllLanguagesModel(AllLanguagesModel model) {
         languageModelList = model.getLanguageModelList();

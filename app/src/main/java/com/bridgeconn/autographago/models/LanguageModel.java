@@ -1,7 +1,6 @@
 package com.bridgeconn.autographago.models;
 
-import java.util.List;
-
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -14,7 +13,7 @@ public class LanguageModel extends RealmObject {
     @PrimaryKey
     private String languageCode;
     private String languageName;
-    private List<VersionModel> versionModels;
+    private RealmList<VersionModel> versionModels = new RealmList<>();
 
     public LanguageModel(LanguageModel model) {
         languageCode = model.getLanguageCode();
@@ -41,11 +40,11 @@ public class LanguageModel extends RealmObject {
         this.languageName = languageName;
     }
 
-    public List<VersionModel> getVersionModels() {
+    public RealmList<VersionModel> getVersionModels() {
         return versionModels;
     }
 
-    public void setVersionModels(List<VersionModel> versionModels) {
+    public void setVersionModels(RealmList<VersionModel> versionModels) {
         this.versionModels = versionModels;
     }
 }

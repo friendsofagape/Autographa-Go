@@ -1,8 +1,6 @@
 package com.bridgeconn.autographago.models;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import io.realm.RealmList;
 import io.realm.RealmObject;
 
 /**
@@ -13,7 +11,7 @@ public class VersionModel extends RealmObject {
 
     private String versionName;
     private String versionCode;
-    private List<BookModel> bookModels = new ArrayList<>();
+    private RealmList<BookModel> bookModels = new RealmList<>();
 
     public VersionModel(VersionModel model) {
         versionName = model.getVersionName();
@@ -40,11 +38,11 @@ public class VersionModel extends RealmObject {
         this.versionCode = versionCode;
     }
 
-    public List<BookModel> getBookModels() {
+    public RealmList<BookModel> getBookModels() {
         return bookModels;
     }
 
-    public void setBookModels(List<BookModel> bookModels) {
+    public void setBookModels(RealmList<BookModel> bookModels) {
         this.bookModels = bookModels;
     }
 }
