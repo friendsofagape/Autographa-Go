@@ -12,7 +12,7 @@
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activities.HomeActivity"
+        <activity android:name=".ui.activities.HomeActivity"
             android:theme="@style/AppTheme">
 
             <intent-filter>
@@ -24,10 +24,18 @@
                 <!--<category android:name="android.intent.category.BROWSABLE"/>-->
 
                 <!--<data android:scheme="file"-->
-                    <!--android:mimeType="*/*"-->
-                    <!--android:pathPattern=".*\\.usfm" />-->
+                <!--android:mimeType="*/*"-->
+                <!--android:pathPattern=".*\\.usfm" />-->
 
             </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.activities.BookActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <activity android:name=".ui.activities.SelectChapterAndVerseActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
         </activity>
 
     </application>
