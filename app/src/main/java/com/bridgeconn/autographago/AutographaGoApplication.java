@@ -2,11 +2,8 @@ package com.bridgeconn.autographago;
 
 import android.app.Application;
 
-import com.bridgeconn.autographago.utils.USFMParser;
-
-/**
- * Created by Admin on 16-12-2016.
- */
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 public class AutographaGoApplication extends Application {
 
@@ -14,5 +11,7 @@ public class AutographaGoApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        RealmConfiguration config = new RealmConfiguration.Builder(this).build();
+        Realm.setDefaultConfiguration(config);
     }
 }

@@ -8,20 +8,16 @@ import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VersionModel;
+import com.bridgeconn.autographago.ormutils.AutographaRepository;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.Iterator;
 
 import io.realm.RealmList;
-
-/**
- * Created by Admin on 16-12-2016.
- */
 
 public class USFMParser {
 
@@ -85,7 +81,7 @@ public class USFMParser {
      * @param line each line in the file
      */
     private void processLine(String line) {
-
+        line = line.trim();
         String[] splitString = line.split("\\s+");
         switch (splitString[0]) {
             case Constants.MARKER_BOOK_NAME: {
@@ -126,6 +122,9 @@ public class USFMParser {
             }
             case Constants.MARKER_CHUNK: {
                 addChunk();
+                break;
+            }
+            case "": {
                 break;
             }
             default: {
@@ -222,9 +221,9 @@ public class USFMParser {
 
         // check for all components that need not be added to list and mut be appended to the next verse, and remove from the list
         for (Iterator<VerseComponentsModel> iterator = verseComponentsModelList.iterator(); iterator.hasNext(); ) {
-            VerseComponentsModel verseComponentsModel1 = iterator.next();
-            if (!verseComponentsModel1.isAdded()) {
-                stringBuilder.append(verseComponentsModel1.getText());
+            VerseComponentsModel model = iterator.next();
+            if (!model.isAdded()) {
+                stringBuilder.append(model.getText());
                 iterator.remove();
             }
         }
@@ -259,9 +258,17 @@ public class USFMParser {
     private void addComponentsToChapter() {
         if (chapterModelList.size() > 0) {
             if (verseComponentsModelList.size() > 0) {
-                Collections.sort(verseComponentsModelList);
-                chapterModelList.get(chapterModelList.size() - 1).setVerseComponentsModels(verseComponentsModelList);
-                verseComponentsModelList = new RealmList<>();
+                for (VerseComponentsModel model : verseComponentsModelList) {
+                    if (model.getVerseNumber() > 0) {
+                        chapterModelList.get(chapterModelList.size() - 1).getVerseComponentsModels().add(model);
+                    }
+                }
+                for (Iterator<VerseComponentsModel> iterator = verseComponentsModelList.iterator(); iterator.hasNext(); ) {
+                    VerseComponentsModel model = iterator.next();
+                    if (model.getVerseNumber() > 0) {
+                        iterator.remove();
+                    }
+                }
             }
         }
     }
@@ -282,7 +289,7 @@ public class USFMParser {
         versionModelList.add(versionModel);
         languageModel.setVersionModels(versionModelList);
 
-        Constants.CONTAINER.getLanguageModelList().add(languageModel);
+        new AutographaRepository<BookModel>().add(bookModel);
     }
 
     /**
@@ -308,8 +315,6 @@ public class USFMParser {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         verseComponentsModel.setText(line + " ");
         verseComponentsModel.setAdded(false);
-        verseComponentsModel.setType(Constants.MarkerTypes.PARAGRAPH);
-        verseComponentsModel.setMarker(Constants.ParagraphMarker.S5); // TODO // FIXME: 28-12-2016
         verseComponentsModelList.add(verseComponentsModel);
     }
 

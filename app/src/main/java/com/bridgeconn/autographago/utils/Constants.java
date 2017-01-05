@@ -1,10 +1,6 @@
 package com.bridgeconn.autographago.utils;
 
-import com.bridgeconn.autographago.models.AllLanguagesModel;
-
-/**
- * Created by Admin on 16-12-2016.
- */
+import com.bridgeconn.autographago.models.AllBooksModel;
 
 public class Constants {
 
@@ -25,7 +21,7 @@ public class Constants {
 
     public static final String MARKER_CHUNK = "\\s5";
 
-    public static final AllLanguagesModel CONTAINER = new AllLanguagesModel();
+    public static final AllBooksModel CONTAINER = new AllBooksModel();
 
     public enum ParagraphMarker implements Comparable<ParagraphMarker> {
         V, P, S5, S4, S3, S2, S1;
@@ -41,4 +37,12 @@ public class Constants {
         String VERSE = "v";
     }
 
+    public interface Keys {
+        String POSITION = "position";
+        String TAB_NAME = "tabName";
+        String BOOK_ID = "bookId";
+        String SCREEN_MODE = "screenMode";
+        String CHAPTER_NO = "chapter_number";
+        String VERSE_NO = "verse_number";
+    }
 }
