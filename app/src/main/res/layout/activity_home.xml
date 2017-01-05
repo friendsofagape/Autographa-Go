@@ -1,28 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.percent.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_grid_item"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/layout_book"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:id="@+id/navigation_items"
+        app:layout_widthPercent="20%"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <!--<Button-->
-            <!--android:id="@+id/bt_unzip"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="24dp"-->
-            <!--android:visibility="gone"-->
-            <!--android:text="@string/unzip_file"/>-->
+        <ImageView
+            android:id="@+id/item1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/menu_item_margin"
+            android:tint="@color/white"
+            android:src="@drawable/ic_note_white" />
 
-        <!--<TextView-->
-            <!--android:id="@+id/tv_language"-->
-            <!--android:text="Language"-->
-            <!--android:gravity="center"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content" />-->
+        <ImageView
+            android:id="@+id/item2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/menu_item_margin"
+            android:tint="@color/white"
+            android:src="@drawable/ic_menu_white" />
 
-</ScrollView>
+        <ImageView
+            android:id="@+id/item3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/menu_item_margin"
+            android:tint="@color/white"
+            android:src="@drawable/ic_search_white" />
+
+        <ImageView
+            android:id="@+id/item4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/menu_item_margin"
+            android:tint="@color/white"
+            android:src="@drawable/ic_settings_white" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/books"
+        app:layout_widthPercent="80%"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/navigation_items"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_books"
+            android:name="com.bridgeconn.autographago.activities.HomeActivity"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_book" />
+
+    </LinearLayout>
+
+</android.support.percent.PercentRelativeLayout>
