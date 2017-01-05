@@ -38,6 +38,10 @@
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
 
+        <activity android:name=".ui.activities.SearchActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+
     </application>
 
 </manifest>

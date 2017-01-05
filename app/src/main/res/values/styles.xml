@@ -13,4 +13,12 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="EditTextLight">
+        <item name="colorControlNormal">@color/black_40</item>
+        <item name="colorControlActivated">@color/black_40</item>
+        <item name="colorControlHighlight">@color/black_40</item>
+    </style>
+
 </resources>

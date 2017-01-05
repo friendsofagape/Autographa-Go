@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Autographa Go</string>
     <string name="unzip_file">Unzip file</string>
+
+    <string name="search_hint">Search</string>
 </resources>

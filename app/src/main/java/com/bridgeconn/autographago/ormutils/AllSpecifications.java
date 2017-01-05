@@ -62,4 +62,34 @@ public class AllSpecifications {
         }
     }
 
+    public static class SearchInBookName implements Specification<BookModel> {
+        private String text;
+
+        public SearchInBookName(String text) {
+            this.text = text;
+        }
+
+        @Override
+        public RealmResults<BookModel> generateResults(Realm realm) {
+            RealmQuery<BookModel> query = realm.where(BookModel.class);
+            query = query.contains("bookId", text);
+            return query.findAll();
+        }
+    }
+
+    public static class SearchInVerseComponentsText implements Specification<VerseComponentsModel> {
+        private String text;
+
+        public SearchInVerseComponentsText(String text) {
+            this.text = text;
+        }
+
+        @Override
+        public RealmResults<VerseComponentsModel> generateResults(Realm realm) {
+            RealmQuery<VerseComponentsModel> query = realm.where(VerseComponentsModel.class);
+            query = query.contains("text", text);
+            return query.findAll();
+        }
+    }
+
 }
