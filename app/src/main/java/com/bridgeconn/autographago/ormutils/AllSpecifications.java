@@ -72,7 +72,7 @@ public class AllSpecifications {
         @Override
         public RealmResults<BookModel> generateResults(Realm realm) {
             RealmQuery<BookModel> query = realm.where(BookModel.class);
-            query = query.contains("bookId", text);
+            query = query.contains("bookName", text);
             return query.findAll();
         }
     }
@@ -88,7 +88,7 @@ public class AllSpecifications {
         public RealmResults<VerseComponentsModel> generateResults(Realm realm) {
             RealmQuery<VerseComponentsModel> query = realm.where(VerseComponentsModel.class);
             query = query.contains("text", text);
-            return query.findAll();
+            return query.findAll().distinct("verseNumber");
         }
     }
 

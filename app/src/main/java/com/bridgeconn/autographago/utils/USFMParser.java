@@ -217,6 +217,9 @@ public class USFMParser {
      */
     private void addVerse(String [] splitString) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
+        if (chapterModelList.size() > 0) { // dont really need this check, but still
+            verseComponentsModel.setChapterId(bookModel.getBookId() + "_" + chapterModelList.get(chapterModelList.size() - 1).getChapterNumber());
+        }
         StringBuilder stringBuilder = new StringBuilder("");
 
         // check for all components that need not be added to list and mut be appended to the next verse, and remove from the list
@@ -245,6 +248,9 @@ public class USFMParser {
                 break;
             }
             verseComponentsModelList.get(i).setVerseNumber(Integer.parseInt(splitString[1]));
+            if (chapterModelList.size() > 0) { // dont really need this check, but still
+                verseComponentsModelList.get(i).setChapterId(bookModel.getBookId() + "_" + chapterModelList.get(chapterModelList.size() - 1).getChapterNumber());
+            }
         }
         verseComponentsModel.setAdded(true);
         verseComponentsModel.setMarker(Constants.ParagraphMarker.V);

@@ -4,6 +4,7 @@ import com.bridgeconn.autographago.utils.Constants;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
+import io.realm.annotations.Index;
 
 /**
  * Created by Admin on 23-12-2016.
@@ -11,7 +12,9 @@ import io.realm.annotations.Ignore;
 
 public class VerseComponentsModel extends RealmObject implements Comparable<VerseComponentsModel> {
 
+    private String chapterId;
     private String type;
+    @Index
     private int verseNumber;
     private String text;
     @Ignore
@@ -22,6 +25,7 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
     private boolean selected;
 
     public VerseComponentsModel(VerseComponentsModel model) {
+        chapterId = model.getChapterId();
         type = model.getType();
         verseNumber = model.getVerseNumber();
         text = model.getText();
@@ -31,6 +35,14 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
     }
 
     public VerseComponentsModel() {
+    }
+
+    public String getChapterId() {
+        return chapterId;
+    }
+
+    public void setChapterId(String chapterId) {
+        this.chapterId = chapterId;
     }
 
     public String getType() {
