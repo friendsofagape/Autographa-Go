@@ -3,4 +3,6 @@
     <string name="unzip_file">Unzip file</string>
 
     <string name="search_hint">Search</string>
+    <string name="highlights">Highlights</string>
+    <string name="bookmarks">Bookmarks</string>
 </resources>

@@ -3,10 +3,6 @@ package com.bridgeconn.autographago.models;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Admin on 05-01-2017.
- */
-
 public class AllBooksModel {
 
     private List<BookModel> bookModelList = new ArrayList<>();

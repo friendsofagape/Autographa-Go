@@ -1,6 +1,7 @@
 package com.bridgeconn.autographago.ormutils;
 
 import com.bridgeconn.autographago.models.BookModel;
+import com.bridgeconn.autographago.models.BookmarkModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.models.SearchHistoryModel;
@@ -95,7 +96,7 @@ public class AllSpecifications {
         }
     }
 
-    public static class AllSearchHistoryModels implements Specification<SearchHistoryModel> {
+    public static class AllSearchHistories implements Specification<SearchHistoryModel> {
         @Override
         public RealmResults<SearchHistoryModel> generateResults(Realm realm) {
             return realm.where(SearchHistoryModel.class).findAll();
@@ -114,6 +115,13 @@ public class AllSpecifications {
             RealmQuery<SearchHistoryModel> query = realm.where(SearchHistoryModel.class);
             query = query.equalTo("searchText", text, Case.INSENSITIVE);
             return query.findAllSorted("searchCount", Sort.DESCENDING);
+        }
+    }
+
+    public static class AllBookmarks implements Specification<BookmarkModel> {
+        @Override
+        public RealmResults<BookmarkModel> generateResults(Realm realm) {
+            return realm.where(BookmarkModel.class).findAll();
         }
     }
 

@@ -3,10 +3,6 @@ package com.bridgeconn.autographago.models;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Admin on 20-12-2016.
- */
-
 public class AllLanguagesModel {
 
     private List<LanguageModel> languageModelList = new ArrayList<>();

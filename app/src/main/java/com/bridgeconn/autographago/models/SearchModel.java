@@ -1,9 +1,5 @@
 package com.bridgeconn.autographago.models;
 
-/**
- * Created by Admin on 06-01-2017.
- */
-
 public class SearchModel {
 
     private String bookId;

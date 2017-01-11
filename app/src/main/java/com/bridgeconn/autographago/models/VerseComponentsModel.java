@@ -6,10 +6,6 @@ import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.Index;
 
-/**
- * Created by Admin on 23-12-2016.
- */
-
 public class VerseComponentsModel extends RealmObject implements Comparable<VerseComponentsModel> {
 
     private String chapterId;

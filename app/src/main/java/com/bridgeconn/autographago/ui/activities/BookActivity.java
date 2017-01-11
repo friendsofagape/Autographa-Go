@@ -8,11 +8,14 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
+import com.bridgeconn.autographago.models.BookmarkModel;
 import com.bridgeconn.autographago.models.ChapterModel;
+import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.ChapterAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 
@@ -22,11 +25,14 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
     //    private Button unzipButton;
     private RecyclerView mRecyclerView;
+    private LinearLayoutManager mLayoutManager;
     private ChapterAdapter mAdapter;
     private ArrayList<ChapterModel> mChapterModels = new ArrayList<>();
 
     private BookModel mBookModel;
     private TextView mToolBarTitle;
+    private ImageView mIvBookMark;
+    private String mBookId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +52,15 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = getIntent();
         int verseNumber = intent.getIntExtra(Constants.Keys.VERSE_NO, 0);
         int chapterNumber = intent.getIntExtra(Constants.Keys.CHAPTER_NO, 0);
-        String bookId = intent.getStringExtra(Constants.Keys.BOOK_ID);
+        mBookId = intent.getStringExtra(Constants.Keys.BOOK_ID);
 
         mToolBarTitle = (TextView) findViewById(R.id.toolbar_title);
+        mIvBookMark = (ImageView) findViewById(R.id.iv_bookmark);
+        mIvBookMark.setOnClickListener(this);
 
         for (int k=0; k<Constants.CONTAINER.getBookModelList().size(); k++) {
             BookModel bookModel = Constants.CONTAINER.getBookModelList().get(k);
-            if (bookModel.getBookId().equals(bookId)) {
+            if (bookModel.getBookId().equals(mBookId)) {
                 mBookModel = bookModel;
                 break;
             }
@@ -70,7 +78,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         mRecyclerView = (RecyclerView) findViewById(R.id.list_chapters);
 
         mRecyclerView.setHasFixedSize(false);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new ChapterAdapter(this, mChapterModels);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -93,6 +102,15 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.iv_bookmark: {
+                BookmarkModel model = new BookmarkModel();
+                int position = mLayoutManager.findFirstVisibleItemPosition();
+                model.setChapterId(mBookId + "_" + (position + 1));
+                new AutographaRepository<BookmarkModel>().add(model);
+                break;
+            }
+        }
 //        if(Intent.ACTION_VIEW.equals(intent.getAction())){
 //            String filePath = intent.getData().getPath();
 //

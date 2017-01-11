@@ -17,10 +17,6 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-/**
- * Created by Admin on 19-12-2016.
- */
-
 public class UnzipUtil {
 
     private static Handler myHandler;

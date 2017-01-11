@@ -47,10 +47,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-        mNotesView = (ImageView) findViewById(R.id.item1);
-        mMenuView = (ImageView) findViewById(R.id.item2);
-        mSearchView = (ImageView) findViewById(R.id.item3);
-        mSettingsView = (ImageView) findViewById(R.id.item4);
+        mNotesView = (ImageView) findViewById(R.id.iv_notes);
+        mMenuView = (ImageView) findViewById(R.id.iv_menu);
+        mSearchView = (ImageView) findViewById(R.id.iv_search);
+        mSettingsView = (ImageView) findViewById(R.id.iv_settings);
         mRecyclerView = (RecyclerView) findViewById(R.id.list_books);
 
         mRecyclerView.setHasFixedSize(false);
@@ -79,18 +79,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.item1: {
+            case R.id.iv_notes: {
                 break;
             }
-            case R.id.item2: {
+            case R.id.iv_menu: {
+                Intent menuIntent = new Intent(this, MenuActivity.class);
+                startActivity(menuIntent);
                 break;
             }
-            case R.id.item3: {
+            case R.id.iv_search: {
                 Intent searchIntent = new Intent(this, SearchActivity.class);
                 startActivity(searchIntent);
                 break;
             }
-            case R.id.item4: {
+            case R.id.iv_settings: {
                 break;
             }
         }

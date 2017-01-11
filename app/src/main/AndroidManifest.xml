@@ -42,6 +42,9 @@
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
 
+        <activity android:name=".ui.activities.MenuActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
     </application>
 
 </manifest>

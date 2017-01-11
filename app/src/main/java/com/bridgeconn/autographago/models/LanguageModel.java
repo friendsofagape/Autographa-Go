@@ -4,10 +4,6 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-/**
- * Created by Admin on 20-12-2016.
- */
-
 public class LanguageModel extends RealmObject {
 
     @PrimaryKey

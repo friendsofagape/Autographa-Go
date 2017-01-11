@@ -3,10 +3,6 @@ package com.bridgeconn.autographago.models;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
-/**
- * Created by Admin on 20-12-2016.
- */
-
 public class VersionModel extends RealmObject {
 
     private String versionName;
