@@ -21,13 +21,13 @@ import java.util.ArrayList;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private ImageView notesView;
-    private ImageView menuView;
-    private ImageView searchView;
-    private ImageView settingsView;
-    private RecyclerView booksRecyclerView;
-    private BookAdapter bookAdapter;
-    private ArrayList<BookModel> bookModelArrayList = new ArrayList<>();
+    private ImageView mNotesView;
+    private ImageView mMenuView;
+    private ImageView mSearchView;
+    private ImageView mSettingsView;
+    private RecyclerView mRecyclerView;
+    private BookAdapter mAdapter;
+    private ArrayList<BookModel> mBookModelArrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,21 +47,21 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-        notesView = (ImageView) findViewById(R.id.item1);
-        menuView = (ImageView) findViewById(R.id.item2);
-        searchView = (ImageView) findViewById(R.id.item3);
-        settingsView = (ImageView) findViewById(R.id.item4);
-        booksRecyclerView = (RecyclerView) findViewById(R.id.list_books);
+        mNotesView = (ImageView) findViewById(R.id.item1);
+        mMenuView = (ImageView) findViewById(R.id.item2);
+        mSearchView = (ImageView) findViewById(R.id.item3);
+        mSettingsView = (ImageView) findViewById(R.id.item4);
+        mRecyclerView = (RecyclerView) findViewById(R.id.list_books);
 
-        booksRecyclerView.setHasFixedSize(false);
-        booksRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        bookAdapter = new BookAdapter(this, bookModelArrayList);
-        booksRecyclerView.setAdapter(bookAdapter);
+        mRecyclerView.setHasFixedSize(false);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new BookAdapter(this, mBookModelArrayList);
+        mRecyclerView.setAdapter(mAdapter);
 
-        notesView.setOnClickListener(this);
-        menuView.setOnClickListener(this);
-        searchView.setOnClickListener(this);
-        settingsView.setOnClickListener(this);
+        mNotesView.setOnClickListener(this);
+        mMenuView.setOnClickListener(this);
+        mSearchView.setOnClickListener(this);
+        mSettingsView.setOnClickListener(this);
 
         getAllBooks();
     }
@@ -71,9 +71,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         new AutographaRepository<BookModel>().addToContainer();
 
         for (BookModel bookModel : Constants.CONTAINER.getBookModelList()) {
-            bookModelArrayList.add(bookModel);
+            mBookModelArrayList.add(bookModel);
         }
-        bookAdapter.notifyDataSetChanged();
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override

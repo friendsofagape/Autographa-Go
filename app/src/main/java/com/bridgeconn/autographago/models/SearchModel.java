@@ -16,11 +16,11 @@ public class SearchModel {
     }
 
     public SearchModel(SearchModel searchModel) {
-        this.bookId = searchModel.getBookId();
-        this.bookName = searchModel.getBookName();
-        this.chapterNumber = searchModel.getChapterNumber();
-        this.verseNumber = searchModel.getVerseNumber();
-        this.text = searchModel.getText();
+        bookId = searchModel.getBookId();
+        bookName = searchModel.getBookName();
+        chapterNumber = searchModel.getChapterNumber();
+        verseNumber = searchModel.getVerseNumber();
+        text = searchModel.getText();
     }
 
     public String getBookId() {

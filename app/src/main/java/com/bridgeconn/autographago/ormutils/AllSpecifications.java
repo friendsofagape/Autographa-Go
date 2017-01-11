@@ -3,12 +3,15 @@ package com.bridgeconn.autographago.ormutils;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.SearchHistoryModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VersionModel;
 
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class AllSpecifications {
 
@@ -72,7 +75,7 @@ public class AllSpecifications {
         @Override
         public RealmResults<BookModel> generateResults(Realm realm) {
             RealmQuery<BookModel> query = realm.where(BookModel.class);
-            query = query.contains("bookName", text);
+            query = query.contains("bookName", text, Case.INSENSITIVE);
             return query.findAll();
         }
     }
@@ -87,8 +90,30 @@ public class AllSpecifications {
         @Override
         public RealmResults<VerseComponentsModel> generateResults(Realm realm) {
             RealmQuery<VerseComponentsModel> query = realm.where(VerseComponentsModel.class);
-            query = query.contains("text", text);
+            query = query.contains("text", text, Case.INSENSITIVE);
             return query.findAll().distinct("verseNumber");
+        }
+    }
+
+    public static class AllSearchHistoryModels implements Specification<SearchHistoryModel> {
+        @Override
+        public RealmResults<SearchHistoryModel> generateResults(Realm realm) {
+            return realm.where(SearchHistoryModel.class).findAll();
+        }
+    }
+
+    public static class SearchHistoryModelByText implements Specification<SearchHistoryModel> {
+        private String text;
+
+        public SearchHistoryModelByText(String text) {
+            this.text = text;
+        }
+
+        @Override
+        public RealmResults<SearchHistoryModel> generateResults(Realm realm) {
+            RealmQuery<SearchHistoryModel> query = realm.where(SearchHistoryModel.class);
+            query = query.equalTo("searchText", text, Case.INSENSITIVE);
+            return query.findAllSorted("searchCount", Sort.DESCENDING);
         }
     }
 

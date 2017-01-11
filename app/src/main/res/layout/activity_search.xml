@@ -26,8 +26,9 @@
                 android:orientation="horizontal"
                 android:padding="@dimen/default_content_padding">
 
-                <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/et_search"
+                <android.support.v7.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/auto_complete_search"
+                    android:padding="8dp"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -36,7 +37,9 @@
                     android:imeOptions="actionSearch"
                     android:inputType="text"
                     android:maxLines="1"
-                    android:theme="@style/EditTextLight" />
+                    android:theme="@style/EditTextLight"
+                    />
+                <!--android:popupBackground="@color/white"-->
 
                 <ImageView
                     android:id="@+id/iv_close"

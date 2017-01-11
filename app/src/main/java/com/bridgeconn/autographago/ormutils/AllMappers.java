@@ -3,6 +3,7 @@ package com.bridgeconn.autographago.ormutils;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.SearchHistoryModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VersionModel;
 
@@ -40,6 +41,13 @@ public class AllMappers {
         @Override
         public VerseComponentsModel map(VerseComponentsModel verseComponentsModel) {
             return new VerseComponentsModel(verseComponentsModel);
+        }
+    }
+
+    public static class SearchHistoryMapper implements Mapper<SearchHistoryModel, SearchHistoryModel> {
+        @Override
+        public SearchHistoryModel map(SearchHistoryModel searchHistoryModel) {
+            return new SearchHistoryModel(searchHistoryModel);
         }
     }
 

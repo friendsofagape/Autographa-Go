@@ -3,29 +3,19 @@ package com.bridgeconn.autographago.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
-import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.FileChannel;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-/**
- * Created by Admin on 19-12-2016.
- */
 
 public class UtilFunctions {
 
@@ -75,4 +65,25 @@ public class UtilFunctions {
         imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
     }
 
+    public static String getBookNameFromMapping(Context context, String bookId) {
+        String json = null;
+        try {
+            InputStream is = context.getAssets().open("mappings.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            JSONObject idObject = jsonObject.getJSONObject("id_name_map");
+            return idObject.getString(bookId);
+        } catch (JSONException je) {
+            return null;
+        }
+    }
 }

@@ -9,13 +9,14 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
+import com.bridgeconn.autographago.models.SearchHistoryModel;
 import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
@@ -30,11 +31,12 @@ import java.util.List;
 
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private EditText mEtSearch;
+    //    private EditText mEtSearch;
+    private AutoCompleteTextView mAutoCompleteTextView;
     private ImageView mIvClose;
-    private ArrayList<SearchModel> searchResultModels = new ArrayList<>();
-    private RecyclerView recyclerView;
-    private SearchAdapter searchAdapter;
+    private ArrayList<SearchModel> mSearchResultModels = new ArrayList<>();
+    private RecyclerView mRecyclerView;
+    private SearchAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,21 +52,37 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mEtSearch = (EditText) findViewById(R.id.et_search);
+        mAutoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.auto_complete_search);
+//        mEtSearch = (EditText) findViewById(R.id.et_search);
+
         mIvClose = (ImageView) findViewById(R.id.iv_close);
 
         mIvClose.setOnClickListener(this);
-        mEtSearch.setOnClickListener(this);
+        mAutoCompleteTextView.setOnClickListener(this);
 
-        mEtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mAutoCompleteTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    String text = mEtSearch.getText().toString();
+                    String text = mAutoCompleteTextView.getText().toString();
                     if (!text.equals("")) {
-                        UtilFunctions.hideKeyboard(SearchActivity.this, mEtSearch);
+                        UtilFunctions.hideKeyboard(SearchActivity.this, mAutoCompleteTextView);
+
+                        ArrayList<SearchHistoryModel> resultList = new AutographaRepository<SearchHistoryModel>().query(new AllSpecifications.SearchHistoryModelByText(text), new AllMappers.SearchHistoryMapper());
+
+                        SearchHistoryModel model = new SearchHistoryModel();
+                        model.setLastSearchTime(System.currentTimeMillis());
+                        model.setSearchText(text);
+
+                        if (resultList.size() > 0) {
+                            model.setSearchCount(resultList.get(0).getSearchCount() + 1);
+                            new AutographaRepository<SearchHistoryModel>().update(model);
+                        } else {
+                            model.setSearchCount(1);
+                            new AutographaRepository<SearchHistoryModel>().add(model);
+                        }
                         // clear any previous results
-                        doSearch(mEtSearch.getText().toString());
+                        doSearch(text);
                         // show search results
                         return true;
                     }
@@ -73,25 +91,20 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
 
-        recyclerView = (RecyclerView) findViewById(R.id.list_results);
+        mRecyclerView = (RecyclerView) findViewById(R.id.list_results);
 
-        recyclerView.setHasFixedSize(false);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        searchAdapter = new SearchAdapter(this, searchResultModels);
-        recyclerView.setAdapter(searchAdapter);
+        mRecyclerView.setHasFixedSize(false);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new SearchAdapter(this, mSearchResultModels);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     private void doSearch(String searchText) {
 
-        searchResultModels.clear();
+        mSearchResultModels.clear();
 
         searchInBookName(searchText);
         searchInVerseText(searchText);
-
-        showView();
-    }
-
-    private void showView() {
     }
 
     private void searchInBookName(String searchText) {
@@ -108,7 +121,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         searchModel.setChapterNumber(1);
                         searchModel.setVerseNumber(1);
                         searchModel.setText(getVerseText(model.getChapterModels().get(0)));
-                        searchResultModels.add(searchModel);
+                        mSearchResultModels.add(searchModel);
                         break;
                     }
                 }
@@ -153,28 +166,28 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 searchModel.setVerseNumber(verseComponentsModel.getVerseNumber());
                 searchModel.setText(verseComponentsModel.getText());
-                searchResultModels.add(searchModel);
+                mSearchResultModels.add(searchModel);
             }
-            searchAdapter.notifyDataSetChanged();
+            mAdapter.notifyDataSetChanged();
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        UtilFunctions.hideKeyboard(this, mEtSearch);
+        UtilFunctions.hideKeyboard(this, mAutoCompleteTextView);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        UtilFunctions.hideKeyboard(this, mEtSearch);
+        UtilFunctions.hideKeyboard(this, mAutoCompleteTextView);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                UtilFunctions.hideKeyboard(this, mEtSearch);
+                UtilFunctions.hideKeyboard(this, mAutoCompleteTextView);
                 finish();
                 return true;
             }
@@ -187,14 +200,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_close: {
-                mEtSearch.setText("");
-                mEtSearch.requestFocus();
-                mEtSearch.setCursorVisible(true);
-                UtilFunctions.showKeyboard(SearchActivity.this, mEtSearch);
+                mAutoCompleteTextView.setText("");
+                mAutoCompleteTextView.requestFocus();
+                mAutoCompleteTextView.setCursorVisible(true);
+                UtilFunctions.showKeyboard(SearchActivity.this, mAutoCompleteTextView);
                 break;
             }
-            case R.id.et_search: {
-                mEtSearch.setCursorVisible(true);
+            case R.id.auto_complete_search: {
+                mAutoCompleteTextView.setCursorVisible(true);
                 break;
             }
         }

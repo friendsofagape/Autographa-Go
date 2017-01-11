@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
@@ -22,13 +21,12 @@ import java.util.ArrayList;
 public class BookActivity extends AppCompatActivity implements View.OnClickListener {
 
     //    private Button unzipButton;
-    private LinearLayout linearLayoutBook;
-    private RecyclerView recyclerView;
-    private ChapterAdapter chapterAdapter;
-    private ArrayList<ChapterModel> chapterModels = new ArrayList<>();
+    private RecyclerView mRecyclerView;
+    private ChapterAdapter mAdapter;
+    private ArrayList<ChapterModel> mChapterModels = new ArrayList<>();
 
     private BookModel mBookModel;
-    private TextView toolBarTitle;
+    private TextView mToolBarTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +48,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         int chapterNumber = intent.getIntExtra(Constants.Keys.CHAPTER_NO, 0);
         String bookId = intent.getStringExtra(Constants.Keys.BOOK_ID);
 
-        toolBarTitle = (TextView) findViewById(R.id.toolbar_title);
+        mToolBarTitle = (TextView) findViewById(R.id.toolbar_title);
 
         for (int k=0; k<Constants.CONTAINER.getBookModelList().size(); k++) {
             BookModel bookModel = Constants.CONTAINER.getBookModelList().get(k);
@@ -62,24 +60,23 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
         if (mBookModel != null) {
             getSupportActionBar().setTitle("");
-            toolBarTitle.setText(mBookModel.getBookName());
+            mToolBarTitle.setText(mBookModel.getBookName());
 
             for (ChapterModel model : mBookModel.getChapterModels()) {
-                chapterModels.add(model);
+                mChapterModels.add(model);
             }
         }
 
-        linearLayoutBook = (LinearLayout) findViewById(R.id.layout_book);
-        recyclerView = (RecyclerView) findViewById(R.id.list_chapters);
+        mRecyclerView = (RecyclerView) findViewById(R.id.list_chapters);
 
-        recyclerView.setHasFixedSize(false);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        chapterAdapter = new ChapterAdapter(this, chapterModels);
-        recyclerView.setAdapter(chapterAdapter);
+        mRecyclerView.setHasFixedSize(false);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new ChapterAdapter(this, mChapterModels);
+        mRecyclerView.setAdapter(mAdapter);
 
 //        if (chapterNumber > 1) {
-//            recyclerView.smoothScrollToPosition(chapterNumber - 1);
-//            recyclerView.smoothScrollBy(0, 10);
+//            mRecyclerView.smoothScrollToPosition(chapterNumber - 1);
+//            mRecyclerView.smoothScrollBy(0, 10);
 //        }
     }
 

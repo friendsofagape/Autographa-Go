@@ -56,7 +56,7 @@ public class USFMParser {
             }
             String mLine;
             while ((mLine = reader.readLine()) != null) {
-                processLine(mLine);
+                processLine(context, mLine);
             }
             addComponentsToChapter();
             addChaptersToBook();
@@ -80,12 +80,12 @@ public class USFMParser {
      * Parse the line with corresponding marker at the first position
      * @param line each line in the file
      */
-    private void processLine(String line) {
+    private void processLine(Context context, String line) {
         line = line.trim();
         String[] splitString = line.split("\\s+");
         switch (splitString[0]) {
             case Constants.MARKER_BOOK_NAME: {
-                addBook(splitString);
+                addBook(context, splitString);
                 break;
             }
             case Constants.MARKER_CHAPTER_NUMBER: {
@@ -143,13 +143,9 @@ public class USFMParser {
      * This adds the book name and book abbreviation to the model
      * @param splitString the line containing book marker
      */
-    private void addBook(String [] splitString) {
-        StringBuilder stringBuilder = new StringBuilder("");
+    private void addBook(Context context, String [] splitString) {
         bookModel.setBookId(splitString[1]);
-        for (int i=2; i<splitString.length; i++) {
-            stringBuilder.append(splitString[i] + " ");
-        }
-        bookModel.setBookName(stringBuilder.toString());
+        bookModel.setBookName(UtilFunctions.getBookNameFromMapping(context, splitString[1]));
     }
 
     /**

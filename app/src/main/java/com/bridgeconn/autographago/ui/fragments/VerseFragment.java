@@ -18,34 +18,34 @@ import com.bridgeconn.autographago.utils.Constants;
 public class VerseFragment extends Fragment implements View.OnClickListener, SelectChapterAndVerseActivity.OnItemClickListener {
 
     private RecyclerView mRecyclerView;
-    private NumberAdapter numberAdapter;
-    private int numberOfBlocks;
-    private BookModel bookModel;
-    private ChapterModel chapterModel;
-    private int chapterNumber;
-    private String bookId;
+    private NumberAdapter mAdapter;
+    private int mNumberOfBlocks;
+    private BookModel mBookModel;
+    private ChapterModel mChapterModel;
+    private int mChapterNumber;
+    private String mBookId;
 
     @Override
     public void onItemClick(int number) {
-        chapterNumber = number;
+        mChapterNumber = number;
 
-        numberOfBlocks = getNumberOfVerses(bookModel);
+        mNumberOfBlocks = getNumberOfVerses(mBookModel);
 
-        numberAdapter.changeVerseCount(numberOfBlocks);
-        numberAdapter.changeChapterNumber(chapterNumber);
-        numberAdapter.notifyDataSetChanged();
+        mAdapter.changeVerseCount(mNumberOfBlocks);
+        mAdapter.changeChapterNumber(mChapterNumber);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        bookId = getArguments().getString(Constants.Keys.BOOK_ID);
-        chapterNumber = getArguments().getInt(Constants.Keys.CHAPTER_NO);
+        mBookId = getArguments().getString(Constants.Keys.BOOK_ID);
+        mChapterNumber = getArguments().getInt(Constants.Keys.CHAPTER_NO);
 
-        bookModel = getBookModel(bookId);
+        mBookModel = getBookModel(mBookId);
 
-        numberOfBlocks = getNumberOfVerses(bookModel);
+        mNumberOfBlocks = getNumberOfVerses(mBookModel);
     }
 
     private BookModel getBookModel(String bookId) {
@@ -58,7 +58,7 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
     }
 
     private int getNumberOfVerses(BookModel bookModel) {
-        ChapterModel chapterModel = bookModel.getChapterModels().get(chapterNumber - 1);
+        ChapterModel chapterModel = bookModel.getChapterModels().get(mChapterNumber - 1);
         return chapterModel.getVerseComponentsModels().get(chapterModel.getVerseComponentsModels().size() - 1).getVerseNumber();
     }
 
@@ -77,8 +77,8 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
         });
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
-        numberAdapter = new NumberAdapter(this, null, numberOfBlocks, chapterNumber, bookId);
-        mRecyclerView.setAdapter(numberAdapter);
+        mAdapter = new NumberAdapter(this, null, mNumberOfBlocks, mChapterNumber, mBookId);
+        mRecyclerView.setAdapter(mAdapter);
 
         return view;
     }
