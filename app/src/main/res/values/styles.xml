@@ -21,4 +21,10 @@
         <item name="colorControlHighlight">@color/black_40</item>
     </style>
 
+    <style name="DialogThemeLight" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:textColorPrimary">@color/black_40</item>
+        <item name="android:textColor">@color/black_40</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
 </resources>

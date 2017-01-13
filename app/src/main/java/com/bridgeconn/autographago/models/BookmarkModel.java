@@ -5,6 +5,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class BookmarkModel extends RealmObject {
 
+    // TODO rather than a new model, use this with chapter or verse (ask if bookmark is chapter / verse)
     @PrimaryKey
     private String chapterId;
 

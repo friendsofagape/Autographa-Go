@@ -74,4 +74,77 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/bottom_bar"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dummy_item_height">
+
+        <LinearLayout
+            android:id="@+id/bottom_options_bar"
+            android:orientation="horizontal"
+        android:weightSum="3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!--android:visibility="gone"-->
+
+            <TextView
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:textSize="16dp"
+                android:id="@+id/tv_highlight"
+                android:text="HIGHLIGHT"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <View
+                android:background="@color/white"
+                android:layout_width="1dp"
+                android:layout_height="32dp"/>
+
+            <TextView
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:textSize="16dp"
+                android:id="@+id/tv_notes"
+                android:text="NOTES"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <View
+                android:background="@color/white"
+                android:layout_width="1dp"
+                android:layout_height="32dp"/>
+
+            <TextView
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:textSize="16dp"
+                android:id="@+id/tv_share"
+                android:text="SHARE"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <!--<LinearLayout-->
+            <!--android:id="@+id/select_color"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent" >-->
+
+        <!--</LinearLayout>-->
+
+    </LinearLayout>
+
 </android.support.design.widget.CoordinatorLayout>

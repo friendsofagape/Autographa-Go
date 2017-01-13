@@ -9,7 +9,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
@@ -18,6 +20,7 @@ import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.ChapterAdapter;
 import com.bridgeconn.autographago.utils.Constants;
+import com.bridgeconn.autographago.utils.SharedPrefs;
 
 import java.util.ArrayList;
 
@@ -33,6 +36,9 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mToolBarTitle;
     private ImageView mIvBookMark;
     private String mBookId;
+
+    private LinearLayout mBottomLayout;
+    private LinearLayout mBottomBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +62,13 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
         mToolBarTitle = (TextView) findViewById(R.id.toolbar_title);
         mIvBookMark = (ImageView) findViewById(R.id.iv_bookmark);
+        mBottomLayout = (LinearLayout) findViewById(R.id.bottom_options_bar);
+        mBottomBar = (LinearLayout) findViewById(R.id.bottom_bar);
+
         mIvBookMark.setOnClickListener(this);
+        findViewById(R.id.tv_highlight).setOnClickListener(this);
+        findViewById(R.id.tv_notes).setOnClickListener(this);
+        findViewById(R.id.tv_share).setOnClickListener(this);
 
         for (int k=0; k<Constants.CONTAINER.getBookModelList().size(); k++) {
             BookModel bookModel = Constants.CONTAINER.getBookModelList().get(k);
@@ -110,6 +122,19 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 new AutographaRepository<BookmarkModel>().add(model);
                 break;
             }
+            case R.id.tv_highlight: {
+                selectColor();
+                hideBottomBar();
+                break;
+            }
+            case R.id.tv_notes: {
+
+                break;
+            }
+            case R.id.tv_share: {
+
+                break;
+            }
         }
 //        if(Intent.ACTION_VIEW.equals(intent.getAction())){
 //            String filePath = intent.getData().getPath();
@@ -131,4 +156,21 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 //        }
     }
 
+    public void showBottomBar() {
+        // TODO when bar visible add dummy item to end of chapters to show last text
+//        mBottomLayout.setVisibility(View.VISIBLE);
+        mBottomBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideBottomBar() {
+        // TODO when bar hide, remove dummy item from end of chapter
+//        mBottomLayout.setVisibility(View.GONE);
+        mBottomBar.setVisibility(View.GONE);
+    }
+
+    private void selectColor() {
+        String defaultColor = "#FFFF00";
+        SharedPrefs.putString(Constants.PrefKeys.DEFAULT_HIGHLIGHT_COLOR, defaultColor);
+        Toast.makeText(this, "Show color picker", Toast.LENGTH_SHORT).show();
+    }
 }

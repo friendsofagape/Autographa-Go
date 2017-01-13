@@ -45,4 +45,9 @@ public class Constants {
         String CHAPTER_NO = "chapter_number";
         String VERSE_NO = "verse_number";
     }
+
+    public interface PrefKeys {
+        String DEFAULT_HIGHLIGHT_COLOR = "default_highlight_color";
+
+    }
 }

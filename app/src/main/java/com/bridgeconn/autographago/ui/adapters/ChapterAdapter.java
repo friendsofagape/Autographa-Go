@@ -1,6 +1,6 @@
 package com.bridgeconn.autographago.ui.adapters;
 
-import android.content.Context;
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -13,11 +13,11 @@ import java.util.ArrayList;
 
 public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private Context mContext;
+    private Activity mContext;
     private LayoutInflater mLayoutInflater;
     private ArrayList<ChapterModel> mChapterModels;
 
-    public ChapterAdapter(Context context, ArrayList<ChapterModel> chapterModels) {
+    public ChapterAdapter(Activity context, ArrayList<ChapterModel> chapterModels) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         mChapterModels = chapterModels;
