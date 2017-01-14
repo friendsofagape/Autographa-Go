@@ -5,4 +5,5 @@
     <string name="search_hint">Search</string>
     <string name="highlights">Highlights</string>
     <string name="bookmarks">Bookmarks</string>
+    <string name="select_all">SELECT ALL</string>
 </resources>

@@ -4,5 +4,11 @@
     android:id="@+id/layout_chapter"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    />
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_chapter"
+        android:textIsSelectable="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

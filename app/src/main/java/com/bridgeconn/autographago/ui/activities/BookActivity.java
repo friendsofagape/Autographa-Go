@@ -173,4 +173,9 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         SharedPrefs.putString(Constants.PrefKeys.DEFAULT_HIGHLIGHT_COLOR, defaultColor);
         Toast.makeText(this, "Show color picker", Toast.LENGTH_SHORT).show();
     }
+
+    // TODO clear this - how do we store highlights in db, or map notes in db
+    // TODO for this, wither each verse component will be new line
+    // TODO as user can select any text
+    // TODO or we store position of text along with each component, and there can be multiple positionings for one component
 }
