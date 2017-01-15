@@ -13,12 +13,14 @@ public class ChapterModel extends RealmObject {
     private RealmList<VerseComponentsModel> verseComponentsModels = new RealmList<>();
     @Ignore
     private boolean selected;
+    private RealmList<RealmString> selectedPositions = new RealmList<>();
 
     public ChapterModel(ChapterModel model) {
         chapterNumber = model.getChapterNumber();
         chapterId = model.getChapterId();
         verseComponentsModels = model.getVerseComponentsModels();
         selected = model.isSelected();
+        selectedPositions = model.getSelectedPositions();
     }
 
     public ChapterModel() {
@@ -54,5 +56,13 @@ public class ChapterModel extends RealmObject {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public RealmList<RealmString> getSelectedPositions() {
+        return selectedPositions;
+    }
+
+    public void setSelectedPositions(RealmList<RealmString> selectedPositions) {
+        this.selectedPositions = selectedPositions;
     }
 }

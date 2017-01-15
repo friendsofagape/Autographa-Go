@@ -1,6 +1,7 @@
 package com.bridgeconn.autographago.ui.viewholders;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -11,6 +12,7 @@ import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.SuperscriptSpan;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +27,8 @@ import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
 
-public class ChapterViewHolder extends RecyclerView.ViewHolder {
+public class ChapterViewHolder extends RecyclerView.ViewHolder implements
+        View.OnLongClickListener, View.OnClickListener, View.OnTouchListener {
 
     private TextView mTvChapter;
     private Activity mContext;
@@ -42,21 +45,19 @@ public class ChapterViewHolder extends RecyclerView.ViewHolder {
     public void onBind(int position) {
         ChapterModel chapterModel = mChapterModels.get(position);
         addAllContent(chapterModel);
-    }
 
-    /**
-     * call removeAllViews() on linear layout before adding any new views
-     * @param chapterModel
-     */
-    private void addAllContent(ChapterModel chapterModel) {
-        mTvChapter.setText("");
+//        mTvChapter.setOnFocusChangeListener(this);
 
-        mTvChapter.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return false;
-            }
-        });
+//        mTvChapter.setOnLongClickListener(this);
+//        mTvChapter.setOnClickListener(this);
+        mTvChapter.setOnTouchListener(this);
+
+//        mTvChapter.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                return false;
+//            }
+//        });
 
         mTvChapter.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
             @Override
@@ -66,13 +67,34 @@ public class ChapterViewHolder extends RecyclerView.ViewHolder {
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                menu.removeItem(android.R.id.copy);
-                menu.removeItem(android.R.id.shareText);
+                menu.clear();
+//                menu.add(R.string.select_all);
+                menu.add(R.string.highlight_text);
+                menu.add(R.string.share_text);
                 return true;
             }
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch (item.getTitle().toString()) {
+                    case "SELECT ALL": {
+//                        mTvChapter.setSelectAllOnFocus(true);
+//                        mTvChapter.requestFocus();
+                        break;
+                    }
+                    case "HIGHLIGHT": {
+                        findMinMax();
+                        break;
+                    }
+                    case "SHARE": {
+                        String shareBody = findText();
+                        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                        sharingIntent.setType("text/plain");
+                        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                        mContext.startActivity(Intent.createChooser(sharingIntent, mContext.getResources().getString(R.string.share_using)));
+                        break;
+                    }
+                }
                 return false;
             }
 
@@ -80,6 +102,14 @@ public class ChapterViewHolder extends RecyclerView.ViewHolder {
             public void onDestroyActionMode(ActionMode mode) {
             }
         });
+    }
+
+    /**
+     * call removeAllViews() on linear layout before adding any new views
+     * @param chapterModel
+     */
+    private void addAllContent(ChapterModel chapterModel) {
+        mTvChapter.setText("");
 
         for (int i=0; i<chapterModel.getVerseComponentsModels().size(); i++) {
 
@@ -176,9 +206,20 @@ public class ChapterViewHolder extends RecyclerView.ViewHolder {
 
             mTvChapter.append(spannableStringBuilder);
         }
+
+//        String textString = mTvChapter.getText().toString();
+//        Spannable spanText = Spannable.Factory.getInstance().newSpannable(textString);
+//        for (int i=0; i<chapterModel.getSelectedPositions().size(); i++) {
+//            String [] positions = chapterModel.getSelectedPositions().get(i).getValue().split(",");
+//            int start = Integer.parseInt(positions[0]);
+//            int end = Integer.parseInt(positions[1]);
+//
+//            spanText.setSpan(new BackgroundColorSpan(0xFFFFFF00), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        }
+//        mTvChapter.setText(spanText);
     }
 
-    public void highLightText() {
+    private void findMinMax() {
         int min = 0;
         int max = mTvChapter.getText().length();
         if (mTvChapter.isFocused()) {
@@ -190,8 +231,53 @@ public class ChapterViewHolder extends RecyclerView.ViewHolder {
         }
 
         String textString = mTvChapter.getText().toString();
-        Spannable spanText = Spannable.Factory.getInstance().newSpannable(textString);
+        Spannable spanText = Spannable.Factory.getInstance().newSpannable(mTvChapter.getText());
         spanText.setSpan(new BackgroundColorSpan(0xFFFFFF00), min, max, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         mTvChapter.setText(spanText);
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+//        if (mTvChapter.hasSelection()) {
+//            ((BookActivity) mContext).showBottomBar();
+//        }
+        return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+//        if (!mTvChapter.hasSelection()) {
+//            ((BookActivity) mContext).hideBottomBar();
+//        }
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if (MotionEvent.ACTION_UP == event.getAction()) {
+            Log.i("abcd", "action up");
+//            if (mTvChapter.hasSelection()) {
+//                ((BookActivity) mContext).showBottomBar();
+//            } else {
+//                ((BookActivity) mContext).hideBottomBar();
+//            }
+        } else {
+            Log.i("abcd", "actin = " + event.getAction());
+        }
+        return false;
+    }
+
+    private String findText() {
+        int min = 0;
+        int max = mTvChapter.getText().length();
+        if (mTvChapter.isFocused()) {
+            final int selStart = mTvChapter.getSelectionStart();
+            final int selEnd = mTvChapter.getSelectionEnd();
+
+            min = Math.max(0, Math.min(selStart, selEnd));
+            max = Math.max(0, Math.max(selStart, selEnd));
+        }
+
+        String textString = mTvChapter.getText().toString();
+        return textString.substring(min, max);
     }
 }

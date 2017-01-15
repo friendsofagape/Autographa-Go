@@ -20,7 +20,6 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
     private Constants.ParagraphMarker marker;
     @Ignore
     private boolean selected;
-    private RealmList<RealmString> selectedPositions = new RealmList<>();
 
     public VerseComponentsModel(VerseComponentsModel model) {
         chapterId = model.getChapterId();
@@ -30,7 +29,6 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
         added = model.isAdded();
         marker = model.getMarker();
         selected = model.isSelected();
-        selectedPositions = model.getSelectedPositions();
     }
 
     public VerseComponentsModel() {
@@ -90,14 +88,6 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
 
     public void setSelected(boolean selected) {
         this.selected = selected;
-    }
-
-    public RealmList<RealmString> getSelectedPositions() {
-        return selectedPositions;
-    }
-
-    public void setSelectedPositions(RealmList<RealmString> selectedPositions) {
-        this.selectedPositions = selectedPositions;
     }
 
     @Override
