@@ -80,6 +80,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_notes: {
+                Intent notesIntent = new Intent(this, NotesActivity.class);
+                startActivity(notesIntent);
                 break;
             }
             case R.id.iv_menu: {

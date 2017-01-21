@@ -45,6 +45,9 @@
         <activity android:name=".ui.activities.MenuActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity android:name=".ui.activities.NotesActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
     </application>
 
 </manifest>
