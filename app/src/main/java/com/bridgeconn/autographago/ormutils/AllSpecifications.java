@@ -133,4 +133,19 @@ public class AllSpecifications {
         }
     }
 
+    public static class NotesById implements Specification<NotesModel> {
+        private long id;
+
+        public NotesById(long id) {
+            this.id = id;
+        }
+
+        @Override
+        public RealmResults<NotesModel> generateResults(Realm realm) {
+            RealmQuery<NotesModel> query = realm.where(NotesModel.class);
+            query = query.equalTo("timestamp", id);
+            return query.findAll();
+        }
+    }
+
 }

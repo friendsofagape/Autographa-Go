@@ -1,16 +1,30 @@
 package com.bridgeconn.autographago.ui.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.bridgeconn.autographago.R;
+import com.bridgeconn.autographago.models.NotesModel;
+import com.bridgeconn.autographago.ormutils.AllMappers;
+import com.bridgeconn.autographago.ormutils.AllSpecifications;
+import com.bridgeconn.autographago.ormutils.AutographaRepository;
+import com.bridgeconn.autographago.ui.adapters.NotesAdapter;
 
-public class NotesActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
 
-    private TextView mSave;
+public class NotesActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private ImageView mIvNewNote;
+    private RecyclerView mRecyclerView;
+    private NotesAdapter mAdapter;
+    private ArrayList<NotesModel> mNotesModels = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +40,37 @@ public class NotesActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setTitle("Notes");
 
-        mSave = (TextView) findViewById(R.id.iv_save);
+        getNotesFromDB();
+
+        mIvNewNote = (ImageView) findViewById(R.id.iv_new_note);
+        mRecyclerView = (RecyclerView) findViewById(R.id.list_notes);
+        mRecyclerView.setHasFixedSize(false);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        mAdapter = new NotesAdapter(this, mNotesModels);
+        mRecyclerView.setAdapter(mAdapter);
+
+        mIvNewNote.setOnClickListener(this);
+    }
+
+    private void getNotesFromDB() {
+        mNotesModels = new AutographaRepository<NotesModel>().query(new AllSpecifications.AllNotes(), new AllMappers.NotesMapper());
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.iv_new_note: {
+                Intent intent = new Intent(this, EditNoteActivity.class);
+                startActivity(intent);
+                break;
+            }
+        }
+    }
+
+    public void refreshList(int position) {
+        mNotesModels.remove(position);
+        mAdapter.notifyItemRemoved(position);
     }
 }
