@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
@@ -29,14 +28,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <ImageView
-                    android:id="@+id/iv_new_note"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
+                <TextView
+                    android:id="@+id/iv_save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_note_add_white"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:text="Done"
+                    android:textSize="@dimen/button_text"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white"
+                    android:padding="@dimen/default_content_padding" />
 
             </RelativeLayout>
 
@@ -49,14 +51,33 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_margin="@dimen/activity_horizontal_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/list_notes"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/item_note" />
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/et_title"
+                android:maxLines="1"
+                android:textSize="@dimen/heading_1"
+                android:textIsSelectable="false"
+                android:layout_width="match_parent"
+                android:imeOptions="actionDone"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
+                android:ellipsize="end"
+                android:layout_marginLeft="6dp"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/editor"
+            android:textSize="@dimen/body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
 
     </LinearLayout>
 

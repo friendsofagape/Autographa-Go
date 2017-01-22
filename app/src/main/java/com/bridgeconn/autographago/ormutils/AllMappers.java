@@ -4,6 +4,7 @@ import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.BookmarkModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.NotesModel;
 import com.bridgeconn.autographago.models.SearchHistoryModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VersionModel;
@@ -56,6 +57,13 @@ public class AllMappers {
         @Override
         public BookmarkModel map(BookmarkModel bookmarkModel) {
             return new BookmarkModel(bookmarkModel);
+        }
+    }
+
+    public static class NotesMapper implements Mapper<NotesModel, NotesModel> {
+        @Override
+        public NotesModel map(NotesModel notesModel) {
+            return new NotesModel(notesModel);
         }
     }
 

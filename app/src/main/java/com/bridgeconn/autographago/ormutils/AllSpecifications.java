@@ -4,6 +4,7 @@ import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.BookmarkModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.NotesModel;
 import com.bridgeconn.autographago.models.SearchHistoryModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VersionModel;
@@ -122,6 +123,13 @@ public class AllSpecifications {
         @Override
         public RealmResults<BookmarkModel> generateResults(Realm realm) {
             return realm.where(BookmarkModel.class).findAll();
+        }
+    }
+
+    public static class AllNotes implements Specification<NotesModel> {
+        @Override
+        public RealmResults<NotesModel> generateResults(Realm realm) {
+            return realm.where(NotesModel.class).findAll();
         }
     }
 
