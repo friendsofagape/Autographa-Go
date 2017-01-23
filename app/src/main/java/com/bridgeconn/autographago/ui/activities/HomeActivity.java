@@ -95,6 +95,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case R.id.iv_settings: {
+                Intent settingIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingIntent);
                 break;
             }
         }
