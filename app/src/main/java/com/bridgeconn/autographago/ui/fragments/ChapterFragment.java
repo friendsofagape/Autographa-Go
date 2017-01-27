@@ -11,12 +11,13 @@ import android.view.ViewGroup;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
+import com.bridgeconn.autographago.ui.activities.SelectChapterAndVerseActivity;
 import com.bridgeconn.autographago.ui.adapters.NumberAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
 
-public class ChapterFragment extends Fragment {
+public class ChapterFragment extends Fragment implements SelectChapterAndVerseActivity.OnItemClickListener {
 
     private RecyclerView mRecyclerView;
     private NumberAdapter mAdapter;
@@ -24,12 +25,27 @@ public class ChapterFragment extends Fragment {
     private BookModel mBookModel;
     private ArrayList<ChapterModel> mChapterModels = new ArrayList<>();
     private String mBookId;
+    private boolean mOpenBook;
+
+    @Override
+    public void onItemClick(int number, String bookId) {
+        mBookId = Constants.CONTAINER.getBookModelList().get(number).getBookId();
+        mBookModel = getBookModel(mBookId);
+        if (mBookModel != null) {
+            mChapterModels.clear();
+            for (ChapterModel chapterModel : mBookModel.getChapterModels()) {
+                mChapterModels.add(chapterModel);
+            }
+        }
+        mAdapter.notifyDataSetChanged();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mBookId = getArguments().getString(Constants.Keys.BOOK_ID);
+        mOpenBook = getArguments().getBoolean(Constants.Keys.OPEN_BOOK);
 
         mBookModel = getBookModel(mBookId);
         if (mBookModel != null) {
@@ -64,7 +80,7 @@ public class ChapterFragment extends Fragment {
         });
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
-        mAdapter = new NumberAdapter(this, mChapterModels, 0, 0, mBookId);
+        mAdapter = new NumberAdapter(this, mChapterModels, null, 0, 0, mBookId, mOpenBook);
         mRecyclerView.setAdapter(mAdapter);
 
         return view;

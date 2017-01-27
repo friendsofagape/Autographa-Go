@@ -17,13 +17,15 @@ public class ChapterNumberViewHolder extends RecyclerView.ViewHolder implements 
     private TextView mTvChapterNumber;
     private Fragment mFragment;
     private ArrayList<ChapterModel> mChapterModels;
+    private String mBookId;
 
-    public ChapterNumberViewHolder(View itemView, Fragment fragment, ArrayList<ChapterModel> chapterModels) {
+    public ChapterNumberViewHolder(View itemView, Fragment fragment, ArrayList<ChapterModel> chapterModels, String bookId) {
         super(itemView);
         mTvChapterNumber = (TextView) itemView.findViewById(R.id.tv_number);
 
         mFragment = fragment;
         mChapterModels = chapterModels;
+        mBookId = bookId;
     }
 
     public void onBind(final int position) {
@@ -45,7 +47,7 @@ public class ChapterNumberViewHolder extends RecyclerView.ViewHolder implements 
                 int position = (int) v.getTag();
                 if (mFragment.getActivity() instanceof SelectChapterAndVerseActivity) {
                     ((ChapterFragment)mFragment).setSelected(position);
-                    ((SelectChapterAndVerseActivity) mFragment.getActivity()).openPage(1, position+1);
+                    ((SelectChapterAndVerseActivity) mFragment.getActivity()).openVersePage(position+1, mBookId);
                 }
                 break;
             }

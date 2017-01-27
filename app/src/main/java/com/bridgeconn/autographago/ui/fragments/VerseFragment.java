@@ -21,12 +21,12 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
     private NumberAdapter mAdapter;
     private int mNumberOfBlocks;
     private BookModel mBookModel;
-    private ChapterModel mChapterModel;
     private int mChapterNumber;
     private String mBookId;
+    private boolean mOpenBook;
 
     @Override
-    public void onItemClick(int number) {
+    public void onItemClick(int number, String bookId) {
         mChapterNumber = number;
 
         mNumberOfBlocks = getNumberOfVerses(mBookModel);
@@ -42,6 +42,7 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
 
         mBookId = getArguments().getString(Constants.Keys.BOOK_ID);
         mChapterNumber = getArguments().getInt(Constants.Keys.CHAPTER_NO);
+        mOpenBook = getArguments().getBoolean(Constants.Keys.OPEN_BOOK);
 
         mBookModel = getBookModel(mBookId);
 
@@ -77,7 +78,7 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
         });
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
-        mAdapter = new NumberAdapter(this, null, mNumberOfBlocks, mChapterNumber, mBookId);
+        mAdapter = new NumberAdapter(this, null, null, mNumberOfBlocks, mChapterNumber, mBookId, mOpenBook);
         mRecyclerView.setAdapter(mAdapter);
 
         return view;

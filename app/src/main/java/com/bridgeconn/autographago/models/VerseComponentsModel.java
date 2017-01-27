@@ -20,6 +20,7 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
     private Constants.ParagraphMarker marker;
     @Ignore
     private boolean selected;
+    private boolean highlighted;
 
     public VerseComponentsModel(VerseComponentsModel model) {
         chapterId = model.getChapterId();
@@ -29,6 +30,7 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
         added = model.isAdded();
         marker = model.getMarker();
         selected = model.isSelected();
+        highlighted = model.isHighlighted();
     }
 
     public VerseComponentsModel() {
@@ -88,6 +90,14 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public boolean isHighlighted() {
+        return highlighted;
+    }
+
+    public void setHighlighted(boolean highlighted) {
+        this.highlighted = highlighted;
     }
 
     @Override

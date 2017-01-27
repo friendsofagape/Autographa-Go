@@ -1,5 +1,6 @@
 package com.bridgeconn.autographago.ui.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.ui.customviews.TabLayoutHelper;
+import com.bridgeconn.autographago.ui.fragments.BookFragment;
 import com.bridgeconn.autographago.ui.fragments.ChapterFragment;
 import com.bridgeconn.autographago.ui.fragments.VerseFragment;
 import com.bridgeconn.autographago.utils.Constants;
@@ -26,9 +28,10 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
     private TabLayoutHelper mTabLayoutHelper;
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
+    private boolean mOpenBook = true;
 
     public interface OnItemClickListener {
-        void onItemClick(int position);
+        void onItemClick(int position, String bookId);
     }
 
     @Override
@@ -39,7 +42,7 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
-        toolbar.setTitleTextColor(getResources().getColor(R.color.white, null));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         toolbar.setContentInsetStartWithNavigation(0);
         setSupportActionBar(toolbar);
 
@@ -47,8 +50,14 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
-        Tabs.add("CHAPTER");
-        Tabs.add("VERSE");
+        Intent intent = getIntent();
+        if (intent.getBooleanExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, false)) {
+            Tabs.add(Constants.TAB_BOOK);
+            mOpenBook = false;
+        }
+
+        Tabs.add(Constants.TAB_CHAPTER);
+        Tabs.add(Constants.TAB_VERSE);
 
         String bookId = getIntent().getStringExtra(Constants.Keys.BOOK_ID);
 
@@ -62,7 +71,7 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle(bookName);
             }
 
-            mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), Tabs, bookId);
+            mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), Tabs, bookId, mOpenBook);
             mViewPager.setAdapter(mAdapter);
 
             mTabLayoutHelper = new TabLayoutHelper(mTabLayout, mViewPager);
@@ -117,6 +126,7 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
         }
     }
 
+    static BookFragment bookFragment;
     static ChapterFragment chapterFragment;
     static VerseFragment verseFragment;
 
@@ -124,17 +134,24 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
 
         private ArrayList<String> TabsList;
         private String mBookId;
+        private boolean mOpenBook;
 
-        public ViewPagerAdapter(FragmentManager fragmentManager, ArrayList<String> tabs, String bookId) {
+        public ViewPagerAdapter(FragmentManager fragmentManager, ArrayList<String> tabs, String bookId, boolean openBook) {
             super(fragmentManager);
             TabsList = tabs;
             mBookId = bookId;
+            mOpenBook = openBook;
         }
 
         @Override
         public Fragment getItem(int position) {
             Bundle bundle = new Bundle();
-            if (position == 0) {
+            bundle.putBoolean(Constants.Keys.OPEN_BOOK, mOpenBook);
+            if (getPageTitle(position).equals(Constants.TAB_BOOK)) {
+                bookFragment = new BookFragment();
+                bookFragment.setArguments(bundle);
+                return bookFragment;
+            } else if (getPageTitle(position).equals(Constants.TAB_CHAPTER)) {
                 chapterFragment = new ChapterFragment();
                 bundle.putString(Constants.Keys.BOOK_ID, mBookId);
                 chapterFragment.setArguments(bundle);
@@ -160,9 +177,18 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
 
     }
 
-    public void openPage(int position, int blockNumber) {
-        mTabLayout.getTabAt(position).select();
-        verseFragment.onItemClick(blockNumber);
+    public void openVersePage(int chapterNumber, String bookId) {
+        mTabLayout.getTabAt(mTabLayout.getSelectedTabPosition() + 1).select();
+        verseFragment.onItemClick(chapterNumber, bookId);
+    }
+
+    public void openChapterPage(int bookPosition, String bookId) {
+        mTabLayout.getTabAt(mTabLayout.getSelectedTabPosition() + 1).select();
+        chapterFragment.onItemClick(bookPosition, bookId);
+    }
+
+    public void reattachFragment() {
+        mAdapter.notifyDataSetChanged();
     }
 
 }

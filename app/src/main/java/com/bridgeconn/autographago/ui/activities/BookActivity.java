@@ -17,12 +17,15 @@ import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.BookmarkModel;
 import com.bridgeconn.autographago.models.ChapterModel;
+import com.bridgeconn.autographago.models.SearchModel;
+import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.ChapterAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class BookActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -37,7 +40,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mIvBookMark;
     private String mBookId;
 
-    private LinearLayout mBottomLayout;
     private LinearLayout mBottomBar;
 
     @Override
@@ -62,7 +64,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
         mToolBarTitle = (TextView) findViewById(R.id.toolbar_title);
         mIvBookMark = (ImageView) findViewById(R.id.iv_bookmark);
-        mBottomLayout = (LinearLayout) findViewById(R.id.bottom_options_bar);
         mBottomBar = (LinearLayout) findViewById(R.id.bottom_bar);
 
         mIvBookMark.setOnClickListener(this);
@@ -112,6 +113,93 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void findSelectedAndHighlight() {
+        for (int i=0;  i<mChapterModels.size(); i++) {
+            for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
+                if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {
+                    mChapterModels.get(i).getVerseComponentsModels().get(j).setSelected(false);
+                    mChapterModels.get(i).getVerseComponentsModels().get(j).setHighlighted(true);
+                }
+            }
+        }
+        mAdapter.notifyDataSetChanged();
+    }
+
+    private void findSelectedAndAddNote() {
+        HashSet<SearchModel> searchModelSet = new HashSet<>();
+        ArrayList<SearchModel> models = new ArrayList<>();
+        for (int i=0;  i<mChapterModels.size(); i++) {
+            for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
+                if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {
+                    mChapterModels.get(i).getVerseComponentsModels().get(j).setSelected(false);
+                    SearchModel searchModel = new SearchModel();
+                    searchModel.setBookId(mBookId);
+                    searchModel.setBookName(mBookModel.getBookName());
+                    searchModel.setChapterNumber(mChapterModels.get(i).getChapterNumber());
+                    searchModel.setVerseNumber(mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber());
+                    models.add(searchModel);
+                    searchModelSet.add(searchModel);
+                }
+            }
+        }
+        mAdapter.notifyDataSetChanged();
+
+        Intent intent = new Intent(this, EditNoteActivity.class);
+        intent.putParcelableArrayListExtra(Constants.Keys.VERSE_MODELS, models);
+        intent.putExtra(Constants.Keys.VERSE_SET, searchModelSet);
+        startActivity(intent);
+    }
+
+    private void findSelectedAndShare() {
+        StringBuilder shareBody = new StringBuilder("Reading ");
+        for (int i=0;  i<mChapterModels.size(); i++) {
+            for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
+                if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {
+                    mChapterModels.get(i).getVerseComponentsModels().get(j).setSelected(false);
+                    VerseComponentsModel verseComponentsModel = mChapterModels.get(i).getVerseComponentsModels().get(j);
+                    if (verseComponentsModel.getText() != null){
+                        if (!verseComponentsModel.getText().trim().equals("")) {
+                            String[] splitString = verseComponentsModel.getText().split("\\s+");
+                            for (int n = 0; n < splitString.length; n++) {
+                                switch (splitString[n]) {
+                                    case "\\p": {
+                                        shareBody.append("\n");
+                                        break;
+                                    }
+                                    case "\\q": {
+                                        shareBody.append("\n    ");
+                                        break;
+                                    }
+                                    default: {
+                                        if (splitString[n].startsWith("\\q")) {
+                                            String str = splitString[n];
+                                            int number = Integer.parseInt(str.replaceAll("[^0-9]", ""));
+                                            shareBody.append("\n");
+                                            for (int o = 0; o < number; o++) {
+                                                shareBody.append("    ");
+                                            }
+                                        } else if (splitString[n].startsWith("\\")) {
+                                            break;
+                                        } else {
+                                            shareBody.append(splitString[n] + " ");
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody.toString());
+        startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share_using)));
+
+        mAdapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -123,16 +211,18 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case R.id.tv_highlight: {
-                selectColor();
+                findSelectedAndHighlight();
                 hideBottomBar();
                 break;
             }
             case R.id.tv_notes: {
-
+                findSelectedAndAddNote();
+                hideBottomBar();
                 break;
             }
             case R.id.tv_share: {
-
+                findSelectedAndShare();
+                hideBottomBar();
                 break;
             }
         }
@@ -158,13 +248,11 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
     public void showBottomBar() {
         // TODO when bar visible add dummy item to end of chapters to show last text
-//        mBottomLayout.setVisibility(View.VISIBLE);
         mBottomBar.setVisibility(View.VISIBLE);
     }
 
     public void hideBottomBar() {
         // TODO when bar hide, remove dummy item from end of chapter
-//        mBottomLayout.setVisibility(View.GONE);
         mBottomBar.setVisibility(View.GONE);
     }
 

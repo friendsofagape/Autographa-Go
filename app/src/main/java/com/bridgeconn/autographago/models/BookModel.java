@@ -2,6 +2,7 @@ package com.bridgeconn.autographago.models;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 public class BookModel extends RealmObject {
@@ -10,11 +11,14 @@ public class BookModel extends RealmObject {
     private String bookId;
     private String bookName;
     private RealmList<ChapterModel> chapterModels = new RealmList<>();
+    @Ignore
+    private boolean selected;
 
     public BookModel(BookModel model) {
         bookId = model.getBookId();
         bookName = model.getBookName();
         chapterModels = model.getChapterModels();
+        selected = model.isSelected();
     }
 
     public BookModel() {
@@ -42,5 +46,13 @@ public class BookModel extends RealmObject {
 
     public void setChapterModels(RealmList<ChapterModel> chapterModels) {
         this.chapterModels = chapterModels;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

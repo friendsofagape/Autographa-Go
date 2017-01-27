@@ -12,33 +12,35 @@ import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.SuperscriptSpan;
-import android.util.Log;
+import android.text.style.UnderlineSpan;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
+import com.bridgeconn.autographago.ui.activities.BookActivity;
 import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
 
-public class VerseViewHolder extends RecyclerView.ViewHolder {
+public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private TextView mTvChapter;
     private Activity mContext;
     private ChapterModel mChapterModel;
+//    private ArrayList<VerseComponentsModel> mVerseComponentsModels;
 
-    public VerseViewHolder(View itemView, Activity context, ChapterModel chapterModel) {
+    public VerseViewHolder(View itemView, Activity context, ChapterModel chapterModel) {//}, ArrayList<VerseComponentsModel> verseComponentsModels) {
         super(itemView);
         mTvChapter = (TextView) itemView.findViewById(R.id.tv_chapter);
 
         mContext = context;
         mChapterModel = chapterModel;
+//        mVerseComponentsModels = verseComponentsModels;
     }
 
     public void onBind(int verseNumber) {
@@ -54,17 +56,8 @@ public class VerseViewHolder extends RecyclerView.ViewHolder {
         }
         addAllContent(verseComponentsModels);
 
-//        mTvChapter.setOnFocusChangeListener(this);
-
-//        mTvChapter.setOnLongClickListener(this);
-//        mTvChapter.setOnClickListener(this);
-
-//        mTvChapter.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                return false;
-//            }
-//        });
+        mTvChapter.setTag(verseNumber);
+        mTvChapter.setOnClickListener(this);
 
         mTvChapter.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
             @Override
@@ -109,6 +102,49 @@ public class VerseViewHolder extends RecyclerView.ViewHolder {
             public void onDestroyActionMode(ActionMode mode) {
             }
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.tv_chapter: {
+                int verseNumber = (int) v.getTag();
+                Spannable spannable = new SpannableString(mTvChapter.getText());
+                UnderlineSpan [] spans = spannable.getSpans(0, spannable.length(), UnderlineSpan.class);
+                if (spans.length > 0) {
+                    for (UnderlineSpan span : spans) {
+                        spannable.removeSpan(span);
+                        for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
+                            if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber() == verseNumber) {
+                                mChapterModel.getVerseComponentsModels().get(i).setSelected(false);
+                            } else if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber() > verseNumber) {
+                                break;
+                            } else {
+                                continue;
+                            }
+                        }
+//                        mVerseComponentsModels.get(position - 1).setSelected(false);
+                    }
+                } else {
+                    for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
+                        if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber() == verseNumber) {
+                            mChapterModel.getVerseComponentsModels().get(i).setSelected(true);
+                            if (mContext instanceof BookActivity) {
+                                ((BookActivity) mContext).showBottomBar();
+                            }
+                        } else if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber() > verseNumber) {
+                            break;
+                        } else {
+                            continue;
+                        }
+                    }
+//                    mVerseComponentsModels.get(position - 1).setSelected(true);
+                    spannable.setSpan(new UnderlineSpan(), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+                mTvChapter.setText(spannable);
+                break;
+            }
+        }
     }
 
     /**
@@ -210,20 +246,11 @@ public class VerseViewHolder extends RecyclerView.ViewHolder {
 
             int px = (int)(size * mContext.getResources().getDisplayMetrics().scaledDensity);
             spannableStringBuilder.setSpan(new AbsoluteSizeSpan(px), 0, spannableStringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
+            if (verseComponentsModel.isHighlighted()) {
+                spannableStringBuilder.setSpan(new BackgroundColorSpan(0xFFFFFF00), 0, spannableStringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
             mTvChapter.append(spannableStringBuilder);
         }
-
-//        String textString = mTvChapter.getText().toString();
-//        Spannable spanText = Spannable.Factory.getInstance().newSpannable(textString);
-//        for (int i=0; i<chapterModel.getSelectedPositions().size(); i++) {
-//            String [] positions = chapterModel.getSelectedPositions().get(i).getValue().split(",");
-//            int start = Integer.parseInt(positions[0]);
-//            int end = Integer.parseInt(positions[1]);
-//
-//            spanText.setSpan(new BackgroundColorSpan(0xFFFFFF00), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-//        }
-//        mTvChapter.setText(spanText);
     }
 
     private void findMinMax() {
@@ -257,4 +284,6 @@ public class VerseViewHolder extends RecyclerView.ViewHolder {
         String textString = mTvChapter.getText().toString();
         return textString.substring(min, max);
     }
+
+
 }

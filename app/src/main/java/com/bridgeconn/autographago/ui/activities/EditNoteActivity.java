@@ -1,6 +1,7 @@
 package com.bridgeconn.autographago.ui.activities;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -13,22 +14,33 @@ import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.view.ActionMode;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.NotesModel;
+import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
+import com.bridgeconn.autographago.utils.Constants;
+import com.bridgeconn.autographago.utils.UtilFunctions;
+
+import java.util.HashSet;
 
 public class EditNoteActivity extends AppCompatActivity implements View.OnClickListener {
 
     private EditText mEditor;
     private EditText mEtTitle;
     private TextView mSave;
+    private LinearLayout mButtonLayout;
+    private ImageView mAddVerse;
+    private HashSet<SearchModel> verseList = new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +61,30 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         mEtTitle = (EditText) findViewById(R.id.et_title);
         mEditor = (EditText) findViewById(R.id.editor);
         mSave = (TextView) findViewById(R.id.iv_save);
+        mButtonLayout = (LinearLayout) findViewById(R.id.button_layout);
+        mAddVerse = (ImageView) findViewById(R.id.iv_add_verse);
+
+        Intent intent = getIntent();
+        HashSet<SearchModel> modelHashSet = (HashSet<SearchModel>) intent.getSerializableExtra(Constants.Keys.VERSE_SET);
+        if (modelHashSet != null) {
+            for (SearchModel model : modelHashSet) {
+                verseList.add(model);
+                final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
+                TextView button = (TextView) view.findViewById(R.id.button);
+                button.setText(model.getBookName() + " " + model.getChapterNumber() + ":" + model.getVerseNumber());
+                ImageView remove = (ImageView) view.findViewById(R.id.iv_remove);
+                remove.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mButtonLayout.removeView(view);
+                    }
+                });
+                mButtonLayout.addView(view);
+            }
+        }
 
         mSave.setOnClickListener(this);
+        mAddVerse.setOnClickListener(this);
 
         mEditor.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
             @Override
@@ -179,6 +213,47 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                     break;
                 }
                 saveToDB();
+                break;
+            }
+            case R.id.iv_add_verse: {
+                // TODO show verse number chooser
+                if (Constants.CONTAINER.getBookModelList().size() > 0) {
+                    Intent intent = new Intent(this, SelectChapterAndVerseActivity.class);
+                    intent.putExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, true);
+                    intent.putExtra(Constants.Keys.BOOK_ID, Constants.CONTAINER.getBookModelList().get(0).getBookId());
+                    startActivityForResult(intent, Constants.RequestCodes.EDIT_NOTES);
+                }
+                break;
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case Constants.RequestCodes.EDIT_NOTES: {
+                if (resultCode == RESULT_OK) {
+                    String bookId = data.getStringExtra(Constants.Keys.BOOK_ID);
+                    if (bookId != null) {
+                        // TODO get all this converted to parce and disrectl get model object
+                        // TODO add this to verse list hash set
+                        final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
+                        TextView button = (TextView) view.findViewById(R.id.button);
+                        button.setText(UtilFunctions.getBookNameFromMapping(this, bookId) + " " +
+                                data.getIntExtra(Constants.Keys.CHAPTER_NO, 0) + ":" +
+                                data.getIntExtra(Constants.Keys.VERSE_NO, 0));
+                        ImageView remove = (ImageView) view.findViewById(R.id.iv_remove);
+                        remove.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mButtonLayout.removeView(view);
+                            }
+                        });
+                        mButtonLayout.addView(view);
+                    }
+                }
                 break;
             }
         }

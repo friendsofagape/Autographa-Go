@@ -7,9 +7,6 @@ import android.view.View;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.ChapterModel;
-import com.bridgeconn.autographago.models.VerseComponentsModel;
-import com.bridgeconn.autographago.ormutils.AllSpecifications;
-import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.VerseAdapter;
 
 import java.util.ArrayList;
@@ -28,20 +25,19 @@ public class ChapterViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void onBind(int position) {
-        ChapterModel chapterModel = mChapterModels.get(position);
-        ArrayList<VerseComponentsModel> verseComponentsModels = new ArrayList<>();
-        for (VerseComponentsModel model : chapterModel.getVerseComponentsModels()) {
-            if (verseComponentsModels.size() > 0) {
-                if (model.getVerseNumber() == verseComponentsModels.get(verseComponentsModels.size() - 1).getVerseNumber()) {
-                    continue;
-                }
-            }
-            verseComponentsModels.add(model);
-        }
-        VerseAdapter adapter = new VerseAdapter(mContext, chapterModel, verseComponentsModels);
+//        ChapterModel chapterModel = mChapterModels.get(position);
+//        ArrayList<VerseComponentsModel> verseComponentsModels = new ArrayList<>();
+//        for (VerseComponentsModel model : chapterModel.getVerseComponentsModels()) {
+//            if (verseComponentsModels.size() > 0) {
+//                if (model.getVerseNumber() == verseComponentsModels.get(verseComponentsModels.size() - 1).getVerseNumber()) {
+//                    continue;
+//                }
+//            }
+//            verseComponentsModels.add(model);
+//        }
+        VerseAdapter adapter = new VerseAdapter(mContext, mChapterModels.get(position));//, verseComponentsModels);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(adapter);
     }
-
 }

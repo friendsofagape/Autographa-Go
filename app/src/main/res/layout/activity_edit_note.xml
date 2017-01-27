@@ -60,6 +60,7 @@
             <EditText
                 android:id="@+id/et_title"
                 android:maxLines="1"
+                android:hint="Title"
                 android:textSize="@dimen/heading_1"
                 android:textIsSelectable="false"
                 android:layout_width="match_parent"
@@ -70,10 +71,64 @@
                 android:layout_marginLeft="6dp"
                 android:layout_height="wrap_content" />
 
+            <RelativeLayout
+                android:id="@+id/verse_layout"
+                android:layout_below="@id/et_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/iv_add_verse"
+                    android:padding="@dimen/default_content_padding"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_add_circle_white"
+                    android:tint="@color/black_40"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_toLeftOf="@id/iv_add_verse"
+                    android:scrollbars="none"
+                    android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/button_layout"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                    <!--<com.bridgeconn.autographago.ui.customviews.DataFitLayout-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_toLeftOf="@id/iv_add_verse"-->
+                        <!--android:minHeight="24dp"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:id="@+id/dataFitLayout" />-->
+
+                </HorizontalScrollView>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_above="@id/verse_layout"
+                android:background="@color/black_40" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/verse_layout"
+                android:background="@color/black_40" />
+
         </RelativeLayout>
 
         <EditText
             android:id="@+id/editor"
+            android:hint="Note"
             android:textSize="@dimen/body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

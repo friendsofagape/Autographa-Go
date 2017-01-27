@@ -18,18 +18,18 @@ public class VerseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private Activity mContext;
     private LayoutInflater mLayoutInflater;
     private ChapterModel mChapterModel;
-    private ArrayList<VerseComponentsModel> mVerseComponentsModels;
+//    private ArrayList<VerseComponentsModel> mVerseComponentsModels;
 
-    public VerseAdapter(Activity context, ChapterModel chapterModel, ArrayList<VerseComponentsModel> verseComponentsModels) {
+    public VerseAdapter(Activity context, ChapterModel chapterModel) {//}, ArrayList<VerseComponentsModel> verseComponentsModels) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         mChapterModel = chapterModel;
-        mVerseComponentsModels = verseComponentsModels;
+//        mVerseComponentsModels = verseComponentsModels;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new VerseViewHolder(mLayoutInflater.inflate(R.layout.item_verse, parent, false), mContext, mChapterModel);
+        return new VerseViewHolder(mLayoutInflater.inflate(R.layout.item_verse, parent, false), mContext, mChapterModel);//, mVerseComponentsModels);
     }
 
     @Override
@@ -41,7 +41,8 @@ public class VerseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return mVerseComponentsModels.size();
+//        return mVerseComponentsModels.size();
+        return mChapterModel.getVerseComponentsModels().get(mChapterModel.getVerseComponentsModels().size() - 1).getVerseNumber();
     }
 
 }

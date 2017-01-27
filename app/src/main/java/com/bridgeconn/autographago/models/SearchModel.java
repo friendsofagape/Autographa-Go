@@ -1,6 +1,11 @@
 package com.bridgeconn.autographago.models;
 
-public class SearchModel {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
+public class SearchModel implements Parcelable, Serializable{
 
     private String bookId;
     private String bookName;
@@ -57,5 +62,53 @@ public class SearchModel {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.bookId);
+        dest.writeString(this.bookName);
+        dest.writeInt(this.chapterNumber);
+        dest.writeInt(this.verseNumber);
+        dest.writeString(this.text);
+    }
+
+    protected SearchModel(Parcel in) {
+        this.bookId = in.readString();
+        this.bookName = in.readString();
+        this.chapterNumber = in.readInt();
+        this.verseNumber = in.readInt();
+        this.text = in.readString();
+    }
+
+    public static final Creator<SearchModel> CREATOR = new Creator<SearchModel>() {
+        @Override
+        public SearchModel createFromParcel(Parcel source) {
+            return new SearchModel(source);
+        }
+
+        @Override
+        public SearchModel[] newArray(int size) {
+            return new SearchModel[size];
+        }
+    };
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof SearchModel &&
+                this.bookId != null &&
+                this.bookId.equals(((SearchModel) obj).bookId) &&
+                this.chapterNumber == ((SearchModel) obj).chapterNumber &&
+                this.verseNumber == ((SearchModel) obj).verseNumber;
+    }
+
+    @Override
+    public int hashCode() {
+        return (this.getBookId()+ "_" + this.getChapterNumber()+ "_" + this.getVerseNumber()).hashCode();
     }
 }

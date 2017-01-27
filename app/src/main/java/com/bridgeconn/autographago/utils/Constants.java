@@ -27,6 +27,10 @@ public class Constants {
         V, P, S5, S4, S3, S2, S1;
     }
 
+    public static final String TAB_BOOK = "BOOK";
+    public static final String TAB_CHAPTER = "CHAPTER";
+    public static final String TAB_VERSE = "VERSE";
+
     public interface MarkerTypes {
         String SECTION_HEADING_ONE = "s1";
         String SECTION_HEADING_TWO = "s2";
@@ -44,6 +48,14 @@ public class Constants {
         String SCREEN_MODE = "screenMode";
         String CHAPTER_NO = "chapter_number";
         String VERSE_NO = "verse_number";
+        String VERSE_MODELS = "verse_models";
+        String VERSE_SET = "verse_set";
+        String SELECT_VERSE_FOR_NOTE = "select_verse_for_note";
+        String OPEN_BOOK = "open_book";
+    }
+
+    public interface RequestCodes {
+        int EDIT_NOTES = 0;
     }
 
     public interface PrefKeys {

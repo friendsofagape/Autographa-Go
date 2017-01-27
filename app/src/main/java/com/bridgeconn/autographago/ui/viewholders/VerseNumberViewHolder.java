@@ -13,6 +13,8 @@ import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
 
+import static android.app.Activity.RESULT_OK;
+
 public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private TextView mTvVerseNumber;
@@ -20,8 +22,9 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
     private ArrayList<VerseComponentsModel> mVerseComponentsModels;
     private int mChapterNumber;
     private String mBookId;
+    private boolean mOpenBook;
 
-    public VerseNumberViewHolder(View itemView, Fragment fragment, int verseCount, int chapterNumber, String bookId, ArrayList<VerseComponentsModel> verseComponentsModels) {
+    public VerseNumberViewHolder(View itemView, Fragment fragment, int verseCount, int chapterNumber, String bookId, ArrayList<VerseComponentsModel> verseComponentsModels, boolean openBook) {
         super(itemView);
         mTvVerseNumber = (TextView) itemView.findViewById(R.id.tv_number);
 
@@ -29,10 +32,10 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
         mChapterNumber = chapterNumber;
         mBookId = bookId;
         mVerseComponentsModels = verseComponentsModels;
+        mOpenBook = openBook;
     }
 
     public void onBind(final int position) {
-//        ChapterModel chapterModel = mChapterModels.get(position);
         mTvVerseNumber.setText(position + 1 + "");
         mTvVerseNumber.setTag(position);
         mTvVerseNumber.setOnClickListener(this);
@@ -43,11 +46,20 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
         switch (v.getId()) {
             case R.id.tv_number: {
                 int position = (int) v.getTag();
-                Intent intent = new Intent(mFragment.getContext(), BookActivity.class);
-                intent.putExtra(Constants.Keys.BOOK_ID, mBookId);
-                intent.putExtra(Constants.Keys.CHAPTER_NO, mChapterNumber);
-                intent.putExtra(Constants.Keys.VERSE_NO, position + 1);
-                mFragment.startActivity(intent);
+                if (mOpenBook) {
+                    Intent intent = new Intent(mFragment.getContext(), BookActivity.class);
+                    intent.putExtra(Constants.Keys.BOOK_ID, mBookId);
+                    intent.putExtra(Constants.Keys.CHAPTER_NO, mChapterNumber);
+                    intent.putExtra(Constants.Keys.VERSE_NO, position + 1);
+                    mFragment.startActivity(intent);
+                } else {
+                    Intent output = new Intent();
+                    output.putExtra(Constants.Keys.BOOK_ID, mBookId);
+                    output.putExtra(Constants.Keys.CHAPTER_NO, mChapterNumber);
+                    output.putExtra(Constants.Keys.VERSE_NO, position + 1);
+                    mFragment.getActivity().setResult(RESULT_OK, output);
+                    mFragment.getActivity().finish();
+                }
                 break;
             }
         }
