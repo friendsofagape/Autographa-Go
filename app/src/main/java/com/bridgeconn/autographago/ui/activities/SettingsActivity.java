@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.utils.ApiInterface;
+import com.bridgeconn.autographago.utils.Constants;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -67,26 +68,20 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         switch (v.getId()) {
             case R.id.download_bible: {
 
-                downloadFile("Autographa_Repo/master/Bibles/English_ULB/01-GEN.usfm");
-                downloadDirectory("https://github.com/Bridgeconn/Autographa_Repo.git");
+                downloadFile(Constants.APPEND_URL_FILE);
+
                 break;
             }
         }
     }
 
-    static String TAG = "abcd";
-
-    private void downloadDirectory(final String fileURL) {}
-
     private void downloadFile(final String fileURL) {
-
-        String API_BASE_URL = "https://raw.githubusercontent.com/Bridgeconn/"; // "https://api.github.com/";
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
         Retrofit.Builder builder =
                 new Retrofit.Builder()
-                        .baseUrl(API_BASE_URL)
+                        .baseUrl(Constants.API_BASE_URL)
                         .addConverterFactory(
                                 GsonConverterFactory.create()
                         );
@@ -121,9 +116,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        Log.i(TAG, "message = " + response.message());
+                        Log.i(Constants.DUMMY_TAG, "message = " + response.message());
                         if (response.isSuccessful()) {
-                            Log.d(TAG, "server contacted and has file");
+                            Log.d(Constants.DUMMY_TAG, "server contacted and has file");
 
                             try {
                                 File root = Environment.getExternalStorageDirectory();
@@ -131,11 +126,11 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                 Random generator = new Random();
                                 int n = 10000;
                                 n = generator.nextInt(n);
-                                String fname = "File-"+ n; //+".usfm";
+                                String fname = Constants.FILE_PREFIX + n;
 
                                 String sDBName = fname;
                                 if (root.canWrite()) {
-                                    String backupDBPath = "/appname-external-data-cache/" + sDBName; //"{database name}";
+                                    String backupDBPath = Constants.STORAGE_DIRECTORY + sDBName;
                                     File dir = new File(root, backupDBPath.replace(sDBName, ""));
                                     if (dir.mkdir()) {
                                     }
@@ -166,7 +161,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
                                             fileSizeDownloaded += read;
 
-                                            Log.d(TAG, "file download: " + fileSizeDownloaded + " of " + fileSize);
+                                            Log.d(Constants.DUMMY_TAG, "file download: " + fileSizeDownloaded + " of " + fileSize);
                                         }
                                         runOnUiThread(new Runnable() {
                                             @Override
@@ -178,7 +173,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
                                         return ;
                                     } catch (IOException e) {
-                                        Log.e(TAG, e.toString());
+                                        Log.e(Constants.DUMMY_TAG, e.toString());
                                         return ;
                                     } finally {
                                         if (inputStream != null) {
@@ -190,19 +185,19 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                         }
                                     }
                                 } else {
-                                    Log.e(TAG, "sd cannot write");
+                                    Log.e(Constants.DUMMY_TAG, "sd cannot write");
                                 }
                             } catch (IOException e) {
-                                Log.e(TAG, e.toString());
+                                Log.e(Constants.DUMMY_TAG, e.toString());
                                 return;
                             }
                         } else {
-                            Log.d(TAG, "server contact failed");
+                            Log.d(Constants.DUMMY_TAG, "server contact failed");
                         }
                     }
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.e(TAG, "error");
+                        Log.e(Constants.DUMMY_TAG, "error");
                     }
                 });
                 return null;

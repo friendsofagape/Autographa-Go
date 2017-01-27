@@ -9,11 +9,6 @@ import retrofit2.http.Url;
 public interface ApiInterface {
 
     @Streaming
-    @GET("/resource/example.zip")
-    Call<ResponseBody> downloadFileWithFixedUrl();
-
-    @Streaming
     @GET
     Call<ResponseBody> downloadFileWithDynamicUrlSync(@Url String fileUrl);
-
 }

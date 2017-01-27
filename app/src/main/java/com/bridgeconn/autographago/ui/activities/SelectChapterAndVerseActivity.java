@@ -52,12 +52,12 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent.getBooleanExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, false)) {
-            Tabs.add(Constants.TAB_BOOK);
+            Tabs.add(Constants.Tabs.BOOK);
             mOpenBook = false;
         }
 
-        Tabs.add(Constants.TAB_CHAPTER);
-        Tabs.add(Constants.TAB_VERSE);
+        Tabs.add(Constants.Tabs.CHAPTER);
+        Tabs.add(Constants.Tabs.VERSE);
 
         String bookId = getIntent().getStringExtra(Constants.Keys.BOOK_ID);
 
@@ -147,11 +147,11 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             Bundle bundle = new Bundle();
             bundle.putBoolean(Constants.Keys.OPEN_BOOK, mOpenBook);
-            if (getPageTitle(position).equals(Constants.TAB_BOOK)) {
+            if (getPageTitle(position).equals(Constants.Tabs.BOOK)) {
                 bookFragment = new BookFragment();
                 bookFragment.setArguments(bundle);
                 return bookFragment;
-            } else if (getPageTitle(position).equals(Constants.TAB_CHAPTER)) {
+            } else if (getPageTitle(position).equals(Constants.Tabs.CHAPTER)) {
                 chapterFragment = new ChapterFragment();
                 bundle.putString(Constants.Keys.BOOK_ID, mBookId);
                 chapterFragment.setArguments(bundle);

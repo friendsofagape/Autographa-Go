@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
@@ -22,7 +21,6 @@ import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.ChapterAdapter;
 import com.bridgeconn.autographago.utils.Constants;
-import com.bridgeconn.autographago.utils.SharedPrefs;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -151,7 +149,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void findSelectedAndShare() {
-        StringBuilder shareBody = new StringBuilder("Reading ");
+        StringBuilder shareBody = new StringBuilder(getString(R.string.share_body));
         for (int i=0;  i<mChapterModels.size(); i++) {
             for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
                 if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {
@@ -159,26 +157,26 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     VerseComponentsModel verseComponentsModel = mChapterModels.get(i).getVerseComponentsModels().get(j);
                     if (verseComponentsModel.getText() != null){
                         if (!verseComponentsModel.getText().trim().equals("")) {
-                            String[] splitString = verseComponentsModel.getText().split("\\s+");
+                            String[] splitString = verseComponentsModel.getText().split(Constants.Styling.SPLIT_SPACE);
                             for (int n = 0; n < splitString.length; n++) {
                                 switch (splitString[n]) {
-                                    case "\\p": {
-                                        shareBody.append("\n");
+                                    case Constants.Markers.MARKER_NEW_PARAGRAPH: {
+                                        shareBody.append(Constants.Styling.NEW_LINE);
                                         break;
                                     }
-                                    case "\\q": {
-                                        shareBody.append("\n    ");
+                                    case Constants.Styling.MARKER_Q: {
+                                        shareBody.append(Constants.Styling.NEW_LINE_WITH_TAB_SPACE);
                                         break;
                                     }
                                     default: {
-                                        if (splitString[n].startsWith("\\q")) {
+                                        if (splitString[n].startsWith(Constants.Styling.MARKER_Q)) {
                                             String str = splitString[n];
-                                            int number = Integer.parseInt(str.replaceAll("[^0-9]", ""));
-                                            shareBody.append("\n");
+                                            int number = Integer.parseInt(str.replaceAll(Constants.Styling.REGEX_NUMBERS, ""));
+                                            shareBody.append(Constants.Styling.NEW_LINE);
                                             for (int o = 0; o < number; o++) {
-                                                shareBody.append("    ");
+                                                shareBody.append(Constants.Styling.TAB_SPACE);
                                             }
-                                        } else if (splitString[n].startsWith("\\")) {
+                                        } else if (splitString[n].startsWith(Constants.Styling.REGEX_ESCAPE)) {
                                             break;
                                         } else {
                                             shareBody.append(splitString[n] + " ");
@@ -193,7 +191,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-        sharingIntent.setType("text/plain");
+        sharingIntent.setType(Constants.SHARE_TEXT_TYPE);
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody.toString());
         startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share_using)));
 
@@ -254,12 +252,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     public void hideBottomBar() {
         // TODO when bar hide, remove dummy item from end of chapter
         mBottomBar.setVisibility(View.GONE);
-    }
-
-    private void selectColor() {
-        String defaultColor = "#FFFF00";
-        SharedPrefs.putString(Constants.PrefKeys.DEFAULT_HIGHLIGHT_COLOR, defaultColor);
-        Toast.makeText(this, "Show color picker", Toast.LENGTH_SHORT).show();
     }
 
     // TODO clear this - how do we store highlights in db, or map notes in db

@@ -56,7 +56,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setTitle("Notes");
+        getSupportActionBar().setTitle(getResources().getString(R.string.title_notes));
 
         mEtTitle = (EditText) findViewById(R.id.et_title);
         mEditor = (EditText) findViewById(R.id.editor);
@@ -71,7 +71,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                 verseList.add(model);
                 final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
                 TextView button = (TextView) view.findViewById(R.id.button);
-                button.setText(model.getBookName() + " " + model.getChapterNumber() + ":" + model.getVerseNumber());
+                button.setText(model.getBookName() + " " + model.getChapterNumber() + Constants.Styling.CHAR_COLON + model.getVerseNumber());
                 ImageView remove = (ImageView) view.findViewById(R.id.iv_remove);
                 remove.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -103,19 +103,19 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 switch (item.getTitle().toString()) {
-                    case "BOLD": {
+                    case Constants.TextEditor.BOLD: {
                         Spannable spannable = new SpannableString(mEditor.getText());
                         spannable.setSpan(new StyleSpan(Typeface.BOLD), findMin(), findMax(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         mEditor.setText(spannable);
                         break;
                     }
-                    case "ITALICS": {
+                    case Constants.TextEditor.ITALICS: {
                         Spannable spannable = new SpannableString(mEditor.getText());
                         spannable.setSpan(new StyleSpan(Typeface.ITALIC), findMin(), findMax(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         mEditor.setText(spannable);
                         break;
                     }
-                    case "UNDERLINE": {
+                    case Constants.TextEditor.UNDERLINE: {
                         Spannable spannable = new SpannableString(mEditor.getText());
                         spannable.setSpan(new UnderlineSpan(), findMin(), findMax(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         mEditor.setText(spannable);
@@ -131,11 +131,6 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         });
 
         // TODO new note or edit note
-    }
-
-    private String getLabelText() {
-
-        return "";
     }
 
     private int findMin() {
@@ -242,7 +237,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                         final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
                         TextView button = (TextView) view.findViewById(R.id.button);
                         button.setText(UtilFunctions.getBookNameFromMapping(this, bookId) + " " +
-                                data.getIntExtra(Constants.Keys.CHAPTER_NO, 0) + ":" +
+                                data.getIntExtra(Constants.Keys.CHAPTER_NO, 0) + Constants.Styling.CHAR_COLON +
                                 data.getIntExtra(Constants.Keys.VERSE_NO, 0));
                         ImageView remove = (ImageView) view.findViewById(R.id.iv_remove);
                         remove.setOnClickListener(new View.OnClickListener() {

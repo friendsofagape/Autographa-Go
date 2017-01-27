@@ -25,7 +25,7 @@ public class UtilFunctions {
             File data = Environment.getDataDirectory();
             if (sd.canWrite()) {
                 String currentDBPath = "data/"+"com.bridgeconn.autographago"+"/files/"+ sDBName;
-                String backupDBPath = "/appname-external-data-cache/"+sDBName; //"{database name}";
+                String backupDBPath = Constants.STORAGE_DIRECTORY + sDBName;
                 File dir = new File(sd,backupDBPath.replace(sDBName,""));
                 if(dir.mkdir()) {
 
@@ -40,10 +40,10 @@ public class UtilFunctions {
                     dst.close();
                 }
             } else {
-                Log.e("abcd", "sd cannot write");
+                Log.e(Constants.DUMMY_TAG, "sd cannot write");
             }
         } catch (Exception e) {
-            Log.e("abcd", e.toString());
+            Log.e(Constants.DUMMY_TAG, e.toString());
         }
     }
 

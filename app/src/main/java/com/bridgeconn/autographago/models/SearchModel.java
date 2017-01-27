@@ -109,6 +109,6 @@ public class SearchModel implements Parcelable, Serializable{
 
     @Override
     public int hashCode() {
-        return (this.getBookId()+ "_" + this.getChapterNumber()+ "_" + this.getVerseNumber()).hashCode();
+        return (this.getBookId()+ " " + this.getChapterNumber()+ " " + this.getVerseNumber()).hashCode();
     }
 }

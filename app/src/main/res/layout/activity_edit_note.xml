@@ -100,14 +100,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                    <!--<com.bridgeconn.autographago.ui.customviews.DataFitLayout-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_toLeftOf="@id/iv_add_verse"-->
-                        <!--android:minHeight="24dp"-->
-                        <!--android:layout_centerVertical="true"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:id="@+id/dataFitLayout" />-->
-
                 </HorizontalScrollView>
 
             </RelativeLayout>

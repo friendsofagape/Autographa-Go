@@ -1,7 +1,6 @@
 package com.bridgeconn.autographago.ui.viewholders;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -13,9 +12,6 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.SuperscriptSpan;
 import android.text.style.UnderlineSpan;
-import android.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -58,50 +54,6 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
         mTvChapter.setTag(verseNumber);
         mTvChapter.setOnClickListener(this);
-
-        mTvChapter.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                menu.clear();
-//                menu.add(R.string.select_all);
-                menu.add(R.string.highlight_text);
-                menu.add(R.string.share_text);
-                return true;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                switch (item.getTitle().toString()) {
-                    case "SELECT ALL": {
-//                        mTvChapter.setSelectAllOnFocus(true);
-//                        mTvChapter.requestFocus();
-                        break;
-                    }
-                    case "HIGHLIGHT": {
-                        findMinMax();
-                        break;
-                    }
-                    case "SHARE": {
-                        String shareBody = findText();
-                        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-                        sharingIntent.setType("text/plain");
-                        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-                        mContext.startActivity(Intent.createChooser(sharingIntent, mContext.getResources().getString(R.string.share_using)));
-                        break;
-                    }
-                }
-                return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-            }
-        });
     }
 
     @Override
@@ -123,7 +75,6 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                 continue;
                             }
                         }
-//                        mVerseComponentsModels.get(position - 1).setSelected(false);
                     }
                 } else {
                     for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
@@ -138,7 +89,6 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                             continue;
                         }
                     }
-//                    mVerseComponentsModels.get(position - 1).setSelected(true);
                     spannable.setSpan(new UnderlineSpan(), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
                 mTvChapter.setText(spannable);
@@ -178,11 +128,11 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                     break;
                 }
                 case Constants.MarkerTypes.CHUNK: {
-                    mTvChapter.append("\n");
+                    mTvChapter.append(Constants.Styling.NEW_LINE);
                     break;
                 }
                 case Constants.MarkerTypes.PARAGRAPH: {
-                    mTvChapter.append("\n");
+                    mTvChapter.append(Constants.Styling.NEW_LINE);
                     break;
                 }
                 case Constants.MarkerTypes.VERSE: {
@@ -196,26 +146,26 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
             if (verseComponentsModel.getText() != null) {
                 if (!verseComponentsModel.getText().trim().equals("")) {
-                    String[] splitString = verseComponentsModel.getText().split("\\s+");
+                    String[] splitString = verseComponentsModel.getText().split(Constants.Styling.SPLIT_SPACE);
                     for (int n = 0; n < splitString.length; n++) {
                         switch (splitString[n]) {
-                            case "\\p": {
-                                spannableStringBuilder.append("\n");
+                            case Constants.Markers.MARKER_NEW_PARAGRAPH: {
+                                spannableStringBuilder.append(Constants.Styling.NEW_LINE);
                                 break;
                             }
-                            case "\\q": {
-                                spannableStringBuilder.append("\n    ");
+                            case Constants.Styling.MARKER_Q: {
+                                spannableStringBuilder.append(Constants.Styling.NEW_LINE_WITH_TAB_SPACE);
                                 break;
                             }
                             default: {
-                                if (splitString[n].startsWith("\\q")) {
+                                if (splitString[n].startsWith(Constants.Styling.MARKER_Q)) {
                                     String str = splitString[n];
-                                    int number = Integer.parseInt(str.replaceAll("[^0-9]", ""));
-                                    spannableStringBuilder.append("\n");
+                                    int number = Integer.parseInt(str.replaceAll(Constants.Styling.REGEX_NUMBERS, ""));
+                                    spannableStringBuilder.append(Constants.Styling.NEW_LINE);
                                     for (int o = 0; o < number; o++) {
-                                        spannableStringBuilder.append("    ");
+                                        spannableStringBuilder.append(Constants.Styling.TAB_SPACE);
                                     }
-                                } else if (splitString[n].startsWith("\\")) {
+                                } else if (splitString[n].startsWith(Constants.Styling.REGEX_ESCAPE)) {
                                     break;
                                 } else {
                                     if (appendNumber) {

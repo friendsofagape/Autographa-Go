@@ -82,45 +82,45 @@ public class USFMParser {
      */
     private void processLine(Context context, String line) {
         line = line.trim();
-        String[] splitString = line.split("\\s+");
+        String[] splitString = line.split(Constants.Styling.SPLIT_SPACE);
         switch (splitString[0]) {
-            case Constants.MARKER_BOOK_NAME: {
+            case Constants.Markers.MARKER_BOOK_NAME: {
                 addBook(context, splitString);
                 break;
             }
-            case Constants.MARKER_CHAPTER_NUMBER: {
+            case Constants.Markers.MARKER_CHAPTER_NUMBER: {
                 addChapter(splitString[1]);
                 break;
             }
-            case Constants.MARKER_NEW_PARAGRAPH: {
+            case Constants.Markers.MARKER_NEW_PARAGRAPH: {
                 addParagraph(splitString);
                 break;
             }
-            case Constants.MARKER_VERSE_NUMBER: {
+            case Constants.Markers.MARKER_VERSE_NUMBER: {
                 addVerse(splitString);
                 break;
             }
-            case Constants.MARKER_SECTION_HEADING: {
+            case Constants.Markers.MARKER_SECTION_HEADING: {
                 addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, Constants.ParagraphMarker.S1, splitString);
                 break;
             }
-            case Constants.MARKER_SECTION_HEADING_ONE: {
+            case Constants.Markers.MARKER_SECTION_HEADING_ONE: {
                 addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, Constants.ParagraphMarker.S1, splitString);
                 break;
             }
-            case Constants.MARKER_SECTION_HEADING_TWO: {
+            case Constants.Markers.MARKER_SECTION_HEADING_TWO: {
                 addSection(Constants.MarkerTypes.SECTION_HEADING_TWO, Constants.ParagraphMarker.S2, splitString);
                 break;
             }
-            case Constants.MARKER_SECTION_HEADING_THREE: {
+            case Constants.Markers.MARKER_SECTION_HEADING_THREE: {
                 addSection(Constants.MarkerTypes.SECTION_HEADING_THREE, Constants.ParagraphMarker.S3, splitString);
                 break;
             }
-            case Constants.MARKER_SECTION_HEADING_FOUR: {
+            case Constants.Markers.MARKER_SECTION_HEADING_FOUR: {
                 addSection(Constants.MarkerTypes.SECTION_HEADING_FOUR, Constants.ParagraphMarker.S4, splitString);
                 break;
             }
-            case Constants.MARKER_CHUNK: {
+            case Constants.Markers.MARKER_CHUNK: {
                 addChunk();
                 break;
             }
@@ -302,7 +302,7 @@ public class USFMParser {
         if (verseComponentsModelList.size() > 0) {
             StringBuilder stringBuilder = new StringBuilder("");
             stringBuilder.append(verseComponentsModelList.get(verseComponentsModelList.size() - 1).getText());
-            stringBuilder.append("\n");
+            stringBuilder.append(Constants.Styling.NEW_LINE);
             stringBuilder.append(line);
             verseComponentsModelList.get(verseComponentsModelList.size() - 1).setText(stringBuilder.toString());
         }

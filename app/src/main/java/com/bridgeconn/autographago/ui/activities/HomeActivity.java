@@ -34,7 +34,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        String [] fileNames = {"28-HOS.usfm", "65-3JN.usfm", "36-ZEP.usfm"};
+        String [] fileNames = {Constants.USFMFiles.HOSEA, Constants.USFMFiles._3_JOHN, Constants.USFMFiles.ZEPHANIAH};
 
         for (int i=0; i<fileNames.length; i++) {
             ArrayList<BookModel> bookModels = new AutographaRepository<BookModel>().query(new AllSpecifications.BookModelById(fileNames[i]), new AllMappers.BookMapper());

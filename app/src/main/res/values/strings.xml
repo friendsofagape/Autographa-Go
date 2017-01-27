@@ -26,4 +26,7 @@
     <string name="cancel">CANCEL</string>
     <string name="note_saved">Note saved successfully</string>
 
+    <string name="share_body">Reading </string>
+    <string name="title_notes">Notes</string>
+
 </resources>

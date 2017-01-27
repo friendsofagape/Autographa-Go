@@ -35,7 +35,7 @@ public class SearchItemViewHolder extends RecyclerView.ViewHolder implements Vie
 
     public void onBind(final int position) {
         SearchModel searchModel = mSearchModels.get(position);
-        mTvTitle.setText(searchModel.getBookName() + " " + searchModel.getChapterNumber() + ":" + searchModel.getVerseNumber());
+        mTvTitle.setText(searchModel.getBookName() + " " + searchModel.getChapterNumber() + Constants.Styling.CHAR_COLON + searchModel.getVerseNumber());
         mTvText.setText("");
         addAllContent(searchModel.getText());
         mView.setTag(position);
@@ -44,24 +44,24 @@ public class SearchItemViewHolder extends RecyclerView.ViewHolder implements Vie
     private void addAllContent(String textString) {
         if (textString != null) {
             if (!textString.trim().equals("")) {
-                String[] splitString = textString.split("\\s+");
+                String[] splitString = textString.split(Constants.Styling.SPLIT_SPACE);
                 for (int n = 0; n < splitString.length; n++) {
                     switch (splitString[n]) {
-                        case "\\p": {
+                        case Constants.Markers.MARKER_NEW_PARAGRAPH: {
 //                                textViewVerse.append("\n");
                             break;
                         }
-                        case "\\q": {
-                            mTvText.append("\n    ");
+                        case Constants.Styling.MARKER_Q: {
+                            mTvText.append(Constants.Styling.NEW_LINE_WITH_TAB_SPACE);
                             break;
                         }
                         default: {
-                            if (splitString[n].startsWith("\\q")) {
+                            if (splitString[n].startsWith(Constants.Styling.MARKER_Q)) {
                                 String str = splitString[n];
-                                int number = Integer.parseInt(str.replaceAll("[^0-9]", ""));
-                                mTvText.append("\n");
+                                int number = Integer.parseInt(str.replaceAll(Constants.Styling.REGEX_NUMBERS, ""));
+                                mTvText.append(Constants.Styling.NEW_LINE);
                                 for (int o = 0; o < number; o++) {
-                                    mTvText.append("    ");
+                                    mTvText.append(Constants.Styling.TAB_SPACE);
                                 }
                             } else {
                                 mTvText.append(splitString[n] + " ");
