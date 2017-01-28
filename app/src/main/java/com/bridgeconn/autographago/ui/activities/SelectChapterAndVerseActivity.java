@@ -51,6 +51,9 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         Intent intent = getIntent();
+
+        String bookId = intent.getStringExtra(Constants.Keys.BOOK_ID);
+
         if (intent.getBooleanExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, false)) {
             Tabs.add(Constants.Tabs.BOOK);
             mOpenBook = false;
@@ -58,8 +61,6 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
 
         Tabs.add(Constants.Tabs.CHAPTER);
         Tabs.add(Constants.Tabs.VERSE);
-
-        String bookId = getIntent().getStringExtra(Constants.Keys.BOOK_ID);
 
         mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -189,6 +190,10 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
 
     public void reattachFragment() {
         mAdapter.notifyDataSetChanged();
+    }
+
+    public int getSelectedChapter() {
+        return chapterFragment.getSelectedChapterNumber();
     }
 
 }

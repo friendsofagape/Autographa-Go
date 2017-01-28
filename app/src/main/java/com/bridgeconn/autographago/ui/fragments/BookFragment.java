@@ -52,7 +52,7 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list_books);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mAdapter = new NumberAdapter(this, null, mBookModelArrayList, 0, 0, mBookId, mOpenBook);
+        mAdapter = new NumberAdapter(this, null, mBookModelArrayList, null, 0, mBookId, mOpenBook);
         mRecyclerView.setAdapter(mAdapter);
 
         return view;

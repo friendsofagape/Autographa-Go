@@ -21,7 +21,6 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
 
     private RecyclerView mRecyclerView;
     private NumberAdapter mAdapter;
-    private int mNumberOfBlocks;
     private BookModel mBookModel;
     private ArrayList<ChapterModel> mChapterModels = new ArrayList<>();
     private String mBookId;
@@ -49,9 +48,13 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
 
         mBookModel = getBookModel(mBookId);
         if (mBookModel != null) {
-//            mNumberOfBlocks = mBookModel.getChapterModels().size();
-            for (ChapterModel chapterModel : mBookModel.getChapterModels()) {
-                mChapterModels.add(chapterModel);
+            for (int i=0; i<mBookModel.getChapterModels().size(); i++) {
+                mChapterModels.add(mBookModel.getChapterModels().get(i));
+                if (i == 0) {
+                    mChapterModels.get(i).setSelected(true);
+                } else {
+                    mChapterModels.get(i).setSelected(false);
+                }
             }
         }
     }
@@ -80,7 +83,7 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
         });
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
-        mAdapter = new NumberAdapter(this, mChapterModels, null, 0, 0, mBookId, mOpenBook);
+        mAdapter = new NumberAdapter(this, mChapterModels, null, null, 0, mBookId, mOpenBook);
         mRecyclerView.setAdapter(mAdapter);
 
         return view;
@@ -101,6 +104,15 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
             mChapterModels.get(position).setSelected(true);
         }
         mAdapter.notifyDataSetChanged();
+    }
+
+    public int getSelectedChapterNumber() {
+        for (int i = 0; i< mChapterModels.size(); i++) {
+            if (mChapterModels.get(i).isSelected()) {
+                return i;
+            }
+        }
+        return 0;
     }
 
 }

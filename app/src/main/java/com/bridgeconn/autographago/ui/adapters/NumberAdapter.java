@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
+import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ui.activities.SelectChapterAndVerseActivity;
 import com.bridgeconn.autographago.ui.viewholders.BookNameViewHolder;
 import com.bridgeconn.autographago.ui.viewholders.ChapterNumberViewHolder;
@@ -21,7 +22,7 @@ public class NumberAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private LayoutInflater mLayoutInflater;
     private ArrayList<ChapterModel> mChapterModels;
     private ArrayList<BookModel> mBookModelArrayList;
-    private int mVerseCount;
+    private ArrayList<VerseComponentsModel> mVerseComponentsModels;
     private int mChapterNumber;
     private String mBookId;
     private boolean mOpenBook;
@@ -32,12 +33,12 @@ public class NumberAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         int VERSE = 2;
     }
 
-    public NumberAdapter(Fragment fragment, ArrayList<ChapterModel> chapterModels, ArrayList<BookModel> bookModelArrayList, int verseCount, int chapterNumber, String bookId, boolean openBook) {
+    public NumberAdapter(Fragment fragment, ArrayList<ChapterModel> chapterModels, ArrayList<BookModel> bookModelArrayList, ArrayList<VerseComponentsModel> verseComponentsModels, int chapterNumber, String bookId, boolean openBook) {
         mFragment = fragment;
         mLayoutInflater = LayoutInflater.from(mFragment.getContext());
         mChapterModels = chapterModels;
         mBookModelArrayList = bookModelArrayList;
-        mVerseCount = verseCount;
+        mVerseComponentsModels = verseComponentsModels;
         mChapterNumber = chapterNumber;
         mBookId = bookId;
         mOpenBook = openBook;
@@ -65,7 +66,7 @@ public class NumberAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     R.layout.item_grid_chapter_verse, parent, false), mFragment, mChapterModels, mBookId);
         } else if (viewType == ViewTypes.VERSE) {
             viewHolder = new VerseNumberViewHolder(mLayoutInflater.inflate(
-                    R.layout.item_grid_chapter_verse, parent, false), mFragment, mVerseCount, mChapterNumber, mBookId, null, mOpenBook);
+                    R.layout.item_grid_chapter_verse, parent, false), mFragment, mVerseComponentsModels, mChapterNumber, mBookId, mOpenBook);
         }
         return viewHolder;
     }
@@ -89,11 +90,11 @@ public class NumberAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (mBookModelArrayList != null) {
             return mBookModelArrayList.size();
         }
-        return mVerseCount;
+        return mVerseComponentsModels.size();
     }
 
     public void changeVerseCount(int count) {
-        mVerseCount = count;
+//        mVerseCount = count;
     }
 
     public void changeChapterNumber(int number) {

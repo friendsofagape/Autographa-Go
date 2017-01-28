@@ -91,13 +91,12 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         mRecyclerView.setHasFixedSize(false);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new ChapterAdapter(this, mChapterModels);
+        mAdapter = new ChapterAdapter(this, mChapterModels, verseNumber);
         mRecyclerView.setAdapter(mAdapter);
 
-//        if (chapterNumber > 1) {
-//            mRecyclerView.smoothScrollToPosition(chapterNumber - 1);
-//            mRecyclerView.smoothScrollBy(0, 10);
-//        }
+        if (chapterNumber > 0) {
+            mRecyclerView.smoothScrollToPosition(chapterNumber - 1);
+        }
     }
 
     @Override

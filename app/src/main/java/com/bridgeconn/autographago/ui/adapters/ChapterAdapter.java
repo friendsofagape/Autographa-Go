@@ -16,16 +16,18 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Activity mContext;
     private LayoutInflater mLayoutInflater;
     private ArrayList<ChapterModel> mChapterModels;
+    private int mVerseNumber;
 
-    public ChapterAdapter(Activity context, ArrayList<ChapterModel> chapterModels) {
+    public ChapterAdapter(Activity context, ArrayList<ChapterModel> chapterModels, int verseNumber) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         mChapterModels = chapterModels;
+        mVerseNumber = verseNumber;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ChapterViewHolder(mLayoutInflater.inflate(R.layout.item_chapter, parent, false), mContext, mChapterModels);
+        return new ChapterViewHolder(mLayoutInflater.inflate(R.layout.item_chapter, parent, false), mContext, mChapterModels, mVerseNumber);
     }
 
     @Override

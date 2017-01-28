@@ -16,12 +16,14 @@ public class ChapterViewHolder extends RecyclerView.ViewHolder {
     private RecyclerView mRecyclerView;
     private Activity mContext;
     private ArrayList<ChapterModel> mChapterModels;
+    private int mVerseNumber;
 
-    public ChapterViewHolder(View itemView, Activity context, ArrayList<ChapterModel> chapterModels) {
+    public ChapterViewHolder(View itemView, Activity context, ArrayList<ChapterModel> chapterModels, int verseNumber) {
         super(itemView);
         mRecyclerView = (RecyclerView) itemView.findViewById(R.id.list_chapters);
         mContext = context;
         mChapterModels = chapterModels;
+        mVerseNumber = verseNumber;
     }
 
     public void onBind(int position) {
@@ -39,5 +41,10 @@ public class ChapterViewHolder extends RecyclerView.ViewHolder {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(adapter);
+
+        // TODO fix this, or this will scroll for every new chapter
+//        if (mVerseNumber > 0) {
+//            mRecyclerView.smoothScrollToPosition(mVerseNumber - 1);
+//        }
     }
 }

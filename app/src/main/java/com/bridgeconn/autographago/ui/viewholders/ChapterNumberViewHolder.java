@@ -46,7 +46,7 @@ public class ChapterNumberViewHolder extends RecyclerView.ViewHolder implements 
             case R.id.tv_number: {
                 int position = (int) v.getTag();
                 if (mFragment.getActivity() instanceof SelectChapterAndVerseActivity) {
-                    ((ChapterFragment)mFragment).setSelected(position);
+                    ((ChapterFragment) mFragment).setSelected(position);
                     ((SelectChapterAndVerseActivity) mFragment.getActivity()).openVersePage(position+1, mBookId);
                 }
                 break;

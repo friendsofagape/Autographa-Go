@@ -11,19 +11,23 @@ import android.view.ViewGroup;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
+import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ui.activities.SelectChapterAndVerseActivity;
 import com.bridgeconn.autographago.ui.adapters.NumberAdapter;
 import com.bridgeconn.autographago.utils.Constants;
+
+import java.util.ArrayList;
 
 public class VerseFragment extends Fragment implements View.OnClickListener, SelectChapterAndVerseActivity.OnItemClickListener {
 
     private RecyclerView mRecyclerView;
     private NumberAdapter mAdapter;
-    private int mNumberOfBlocks;
     private BookModel mBookModel;
-    private int mChapterNumber;
     private String mBookId;
     private boolean mOpenBook;
+    private ArrayList<VerseComponentsModel> mVerseComponentsModels = new ArrayList<>();
+    private int mNumberOfBlocks;
+    private int mChapterNumber;
 
     @Override
     public void onItemClick(int number, String bookId) {
@@ -45,8 +49,21 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
         mOpenBook = getArguments().getBoolean(Constants.Keys.OPEN_BOOK);
 
         mBookModel = getBookModel(mBookId);
-
         mNumberOfBlocks = getNumberOfVerses(mBookModel);
+
+        ChapterModel chapterModel = mBookModel.getChapterModels().get(mChapterNumber - 1);
+        mVerseComponentsModels.clear();
+        for (VerseComponentsModel model : chapterModel.getVerseComponentsModels()) {
+            if (mVerseComponentsModels.size() > 0) {
+                if (model.getVerseNumber() == mVerseComponentsModels.get(mVerseComponentsModels.size() - 1).getVerseNumber()) {
+                    continue;
+                } else {
+                    mVerseComponentsModels.add(model);
+                }
+            } else {
+                mVerseComponentsModels.add(model);
+            }
+        }
     }
 
     private BookModel getBookModel(String bookId) {
@@ -78,7 +95,7 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
         });
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
-        mAdapter = new NumberAdapter(this, null, null, mNumberOfBlocks, mChapterNumber, mBookId, mOpenBook);
+        mAdapter = new NumberAdapter(this, null, null, mVerseComponentsModels, mChapterNumber, mBookId, mOpenBook);
         mRecyclerView.setAdapter(mAdapter);
 
         return view;

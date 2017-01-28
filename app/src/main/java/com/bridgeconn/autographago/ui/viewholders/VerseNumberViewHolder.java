@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ui.activities.BookActivity;
+import com.bridgeconn.autographago.ui.activities.SelectChapterAndVerseActivity;
 import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
     private String mBookId;
     private boolean mOpenBook;
 
-    public VerseNumberViewHolder(View itemView, Fragment fragment, int verseCount, int chapterNumber, String bookId, ArrayList<VerseComponentsModel> verseComponentsModels, boolean openBook) {
+    public VerseNumberViewHolder(View itemView, Fragment fragment, ArrayList<VerseComponentsModel> verseComponentsModels, int chapterNumber, String bookId, boolean openBook) {
         super(itemView);
         mTvVerseNumber = (TextView) itemView.findViewById(R.id.tv_number);
 
@@ -35,9 +36,9 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
         mOpenBook = openBook;
     }
 
-    public void onBind(final int position) {
-        mTvVerseNumber.setText(position + 1 + "");
-        mTvVerseNumber.setTag(position);
+    public void onBind(int position) {
+        mTvVerseNumber.setText(mVerseComponentsModels.get(position).getVerseNumber() + "");
+        mTvVerseNumber.setTag(mVerseComponentsModels.get(position).getVerseNumber());
         mTvVerseNumber.setOnClickListener(this);
     }
 
@@ -45,18 +46,18 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_number: {
-                int position = (int) v.getTag();
+                int verseNumber = (int) v.getTag();
                 if (mOpenBook) {
                     Intent intent = new Intent(mFragment.getContext(), BookActivity.class);
                     intent.putExtra(Constants.Keys.BOOK_ID, mBookId);
-                    intent.putExtra(Constants.Keys.CHAPTER_NO, mChapterNumber);
-                    intent.putExtra(Constants.Keys.VERSE_NO, position + 1);
+                    intent.putExtra(Constants.Keys.CHAPTER_NO, ((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
+                    intent.putExtra(Constants.Keys.VERSE_NO, verseNumber);
                     mFragment.startActivity(intent);
                 } else {
                     Intent output = new Intent();
                     output.putExtra(Constants.Keys.BOOK_ID, mBookId);
-                    output.putExtra(Constants.Keys.CHAPTER_NO, mChapterNumber);
-                    output.putExtra(Constants.Keys.VERSE_NO, position + 1);
+                    output.putExtra(Constants.Keys.CHAPTER_NO, ((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
+                    output.putExtra(Constants.Keys.VERSE_NO, verseNumber);
                     mFragment.getActivity().setResult(RESULT_OK, output);
                     mFragment.getActivity().finish();
                 }
