@@ -13,12 +13,14 @@ public class BookModel extends RealmObject {
     private RealmList<ChapterModel> chapterModels = new RealmList<>();
     @Ignore
     private boolean selected;
+    private int bookmarkChapterNumber;
 
     public BookModel(BookModel model) {
         bookId = model.getBookId();
         bookName = model.getBookName();
         chapterModels = model.getChapterModels();
         selected = model.isSelected();
+        bookmarkChapterNumber = model.getBookmarkChapterNumber();
     }
 
     public BookModel() {
@@ -54,5 +56,13 @@ public class BookModel extends RealmObject {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public int getBookmarkChapterNumber() {
+        return bookmarkChapterNumber;
+    }
+
+    public void setBookmarkChapterNumber(int bookmarkChapterNumber) {
+        this.bookmarkChapterNumber = bookmarkChapterNumber;
     }
 }

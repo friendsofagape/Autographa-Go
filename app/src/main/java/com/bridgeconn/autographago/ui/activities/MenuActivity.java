@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.BookmarkModel;
+import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
@@ -26,7 +26,7 @@ public class MenuActivity extends AppCompatActivity {
 
     private BookmarkAdapter mBookmarkAdapter;
 
-    private ArrayList<BookmarkModel> mBookmarkModels = new ArrayList<>();
+    private ArrayList<BookModel> mBookmarkModels = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +51,8 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void getBookmarks() {
-        List<BookmarkModel> results = new AutographaRepository<BookmarkModel>().query(new AllSpecifications.AllBookmarks(), new AllMappers.BookmarkMapper());
-        for (BookmarkModel model : results) {
+        List<BookModel> results = new AutographaRepository<BookModel>().query(new AllSpecifications.AllBookmarks(), new AllMappers.BookMapper());
+        for (BookModel model : results) {
             mBookmarkModels.add(model);
         }
         mBookmarkAdapter.notifyDataSetChanged();

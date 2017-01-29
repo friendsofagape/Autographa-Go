@@ -1,7 +1,6 @@
 package com.bridgeconn.autographago.ormutils;
 
 import com.bridgeconn.autographago.models.BookModel;
-import com.bridgeconn.autographago.models.BookmarkModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.models.NotesModel;
@@ -119,10 +118,12 @@ public class AllSpecifications {
         }
     }
 
-    public static class AllBookmarks implements Specification<BookmarkModel> {
+    public static class AllBookmarks implements Specification<BookModel> {
         @Override
-        public RealmResults<BookmarkModel> generateResults(Realm realm) {
-            return realm.where(BookmarkModel.class).findAll();
+        public RealmResults<BookModel> generateResults(Realm realm) {
+            RealmQuery<BookModel> query = realm.where(BookModel.class);
+            query = query.greaterThan("bookmarkChapterNumber", 0);
+            return query.findAll();
         }
     }
 

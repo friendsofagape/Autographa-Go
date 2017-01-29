@@ -2,6 +2,7 @@ package com.bridgeconn.autographago.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,7 +15,6 @@ import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
-import com.bridgeconn.autographago.models.BookmarkModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
@@ -37,6 +37,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mToolBarTitle;
     private ImageView mIvBookMark;
     private String mBookId;
+    private int mBookMarkNumber;
 
     private LinearLayout mBottomBar;
 
@@ -69,7 +70,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.tv_notes).setOnClickListener(this);
         findViewById(R.id.tv_share).setOnClickListener(this);
 
-        for (int k=0; k<Constants.CONTAINER.getBookModelList().size(); k++) {
+        for (int k = 0; k < Constants.CONTAINER.getBookModelList().size(); k++) {
             BookModel bookModel = Constants.CONTAINER.getBookModelList().get(k);
             if (bookModel.getBookId().equals(mBookId)) {
                 mBookModel = bookModel;
@@ -84,6 +85,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
             for (ChapterModel model : mBookModel.getChapterModels()) {
                 mChapterModels.add(model);
             }
+
+            mBookMarkNumber = mBookModel.getBookmarkChapterNumber();
         }
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list_chapters);
@@ -94,9 +97,34 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         mAdapter = new ChapterAdapter(this, mChapterModels, verseNumber);
         mRecyclerView.setAdapter(mAdapter);
 
+        if (mBookMarkNumber == 1) {
+            mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
+        }
+
         if (chapterNumber > 0) {
             mRecyclerView.smoothScrollToPosition(chapterNumber - 1);
         }
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+                if (mBookMarkNumber > 0) {
+                    if (firstVisibleItem == mBookMarkNumber - 1) {
+                        mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
+                    } else {
+                        mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.white));
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -201,10 +229,23 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_bookmark: {
-                BookmarkModel model = new BookmarkModel();
+                mIvBookMark.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
+
                 int position = mLayoutManager.findFirstVisibleItemPosition();
-                model.setChapterId(mBookId + "_" + (position + 1));
-                new AutographaRepository<BookmarkModel>().add(model);
+
+                mBookMarkNumber = position + 1;
+
+                for (int k = 0; k < Constants.CONTAINER.getBookModelList().size(); k++) {
+                    if (Constants.CONTAINER.getBookModelList().get(k).getBookId().equals(mBookId)) {
+                        Constants.CONTAINER.getBookModelList().get(k).setBookmarkChapterNumber(mBookMarkNumber);
+                        break;
+                    }
+                }
+                BookModel bookModel = new BookModel(mBookModel);
+                bookModel.setBookmarkChapterNumber(mBookMarkNumber);
+
+                new AutographaRepository<BookModel>().update(bookModel);
+
                 break;
             }
             case R.id.tv_highlight: {

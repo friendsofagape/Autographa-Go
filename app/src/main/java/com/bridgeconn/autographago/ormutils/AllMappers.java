@@ -1,7 +1,6 @@
 package com.bridgeconn.autographago.ormutils;
 
 import com.bridgeconn.autographago.models.BookModel;
-import com.bridgeconn.autographago.models.BookmarkModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.models.NotesModel;
@@ -50,13 +49,6 @@ public class AllMappers {
         @Override
         public SearchHistoryModel map(SearchHistoryModel searchHistoryModel) {
             return new SearchHistoryModel(searchHistoryModel);
-        }
-    }
-
-    public static class BookmarkMapper implements Mapper<BookmarkModel, BookmarkModel> {
-        @Override
-        public BookmarkModel map(BookmarkModel bookmarkModel) {
-            return new BookmarkModel(bookmarkModel);
         }
     }
 
