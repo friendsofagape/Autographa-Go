@@ -109,7 +109,7 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
     public int getSelectedChapterNumber() {
         for (int i = 0; i< mChapterModels.size(); i++) {
             if (mChapterModels.get(i).isSelected()) {
-                return i;
+                return mChapterModels.get(i).getChapterNumber();
             }
         }
         return 0;

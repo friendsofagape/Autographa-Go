@@ -91,18 +91,18 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list_chapters);
 
-        mRecyclerView.setHasFixedSize(false);
+        mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new ChapterAdapter(this, mChapterModels, verseNumber);
+        mAdapter = new ChapterAdapter(this, mChapterModels, verseNumber, chapterNumber - 1);
         mRecyclerView.setAdapter(mAdapter);
 
         if (mBookMarkNumber == 1) {
             mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
         }
 
-        if (chapterNumber > 0) {
-            mRecyclerView.smoothScrollToPosition(chapterNumber - 1);
+        if (chapterNumber > 1) {
+            mRecyclerView.scrollToPosition(chapterNumber - 1);
         }
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {

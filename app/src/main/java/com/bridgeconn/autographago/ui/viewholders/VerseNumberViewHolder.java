@@ -56,7 +56,7 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
                 } else {
                     Intent output = new Intent();
                     output.putExtra(Constants.Keys.BOOK_ID, mBookId);
-                    output.putExtra(Constants.Keys.CHAPTER_NO, ((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter()+1);
+                    output.putExtra(Constants.Keys.CHAPTER_NO, ((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
                     output.putExtra(Constants.Keys.VERSE_NO, verseNumber);
                     mFragment.getActivity().setResult(RESULT_OK, output);
                     mFragment.getActivity().finish();

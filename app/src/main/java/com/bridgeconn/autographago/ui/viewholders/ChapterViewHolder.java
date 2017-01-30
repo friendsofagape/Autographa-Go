@@ -17,34 +17,29 @@ public class ChapterViewHolder extends RecyclerView.ViewHolder {
     private Activity mContext;
     private ArrayList<ChapterModel> mChapterModels;
     private int mVerseNumber;
+    private int mChapterPosition;
 
-    public ChapterViewHolder(View itemView, Activity context, ArrayList<ChapterModel> chapterModels, int verseNumber) {
+    public ChapterViewHolder(View itemView, Activity context, ArrayList<ChapterModel> chapterModels, int verseNumber, int chapterPosition) {
         super(itemView);
         mRecyclerView = (RecyclerView) itemView.findViewById(R.id.list_chapters);
         mContext = context;
         mChapterModels = chapterModels;
         mVerseNumber = verseNumber;
+        mChapterPosition = chapterPosition;
     }
 
     public void onBind(int position) {
-//        ChapterModel chapterModel = mChapterModels.get(position);
-//        ArrayList<VerseComponentsModel> verseComponentsModels = new ArrayList<>();
-//        for (VerseComponentsModel model : chapterModel.getVerseComponentsModels()) {
-//            if (verseComponentsModels.size() > 0) {
-//                if (model.getVerseNumber() == verseComponentsModels.get(verseComponentsModels.size() - 1).getVerseNumber()) {
-//                    continue;
-//                }
-//            }
-//            verseComponentsModels.add(model);
-//        }
-        VerseAdapter adapter = new VerseAdapter(mContext, mChapterModels.get(position));//, verseComponentsModels);
+        VerseAdapter adapter = new VerseAdapter(mContext, mChapterModels.get(position));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(adapter);
 
-        // TODO fix this, or this will scroll for every new chapter
-//        if (mVerseNumber > 0) {
-//            mRecyclerView.smoothScrollToPosition(mVerseNumber - 1);
-//        }
+        // TODO fix this, this isn't working
+        if (mChapterPosition == position) {
+            if (mVerseNumber > 1) {
+                mRecyclerView.smoothScrollToPosition(mVerseNumber - 1);
+//                mRecyclerView.scrollToPosition(mVerseNumber - 1);
+            }
+        }
     }
 }
