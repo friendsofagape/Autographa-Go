@@ -3,9 +3,9 @@ package com.bridgeconn.autographago.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
+import io.realm.RealmObject;
 
-public class SearchModel implements Parcelable, Serializable{
+public class SearchModel extends RealmObject implements Parcelable {//}, Serializable {
 
     private String bookId;
     private String bookName;

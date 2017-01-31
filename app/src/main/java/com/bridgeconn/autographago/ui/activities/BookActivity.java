@@ -162,16 +162,17 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     searchModel.setBookName(mBookModel.getBookName());
                     searchModel.setChapterNumber(mChapterModels.get(i).getChapterNumber());
                     searchModel.setVerseNumber(mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber());
-                    models.add(searchModel);
                     searchModelSet.add(searchModel);
                 }
             }
+        }
+        for (SearchModel model : searchModelSet) {
+            models.add(model);
         }
         mAdapter.notifyDataSetChanged();
 
         Intent intent = new Intent(this, EditNoteActivity.class);
         intent.putParcelableArrayListExtra(Constants.Keys.VERSE_MODELS, models);
-        intent.putExtra(Constants.Keys.VERSE_SET, searchModelSet);
         startActivity(intent);
     }
 

@@ -1,6 +1,7 @@
 package com.bridgeconn.autographago.ui.viewholders;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -8,14 +9,15 @@ import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.NotesModel;
-import com.bridgeconn.autographago.ormutils.AllSpecifications;
-import com.bridgeconn.autographago.ormutils.AutographaRepository;
+import com.bridgeconn.autographago.ui.activities.EditNoteActivity;
 import com.bridgeconn.autographago.ui.activities.NotesActivity;
+import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
 
 public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+    private View mView;
     private TextView mTvTitle;
     private TextView mTvText;
     private ImageView mDelete;
@@ -25,6 +27,7 @@ public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     public NoteViewHolder(View itemView, Context context, ArrayList<NotesModel> notesModels) {
         super(itemView);
 
+        mView = itemView;
         mContext = context;
         mTvTitle = (TextView) itemView.findViewById(R.id.note_title);
         mTvText = (TextView) itemView.findViewById(R.id.note_text);
@@ -37,6 +40,8 @@ public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         mTvText.setText(mNotesModels.get(position).getText());
         mDelete.setTag(position);
         mDelete.setOnClickListener(this);
+        mView.setTag(position);
+        mView.setOnClickListener(this);
     }
 
     @Override
@@ -44,8 +49,14 @@ public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         switch (v.getId()) {
             case R.id.iv_delete_note: {
                 int position = (int) v.getTag();
-                new AutographaRepository<NotesModel>().remove(new AllSpecifications.NotesById(mNotesModels.get(position).getTimestamp()));
                 ((NotesActivity) mContext).refreshList(position);
+                break;
+            }
+            case R.id.note_view: {
+                int position = (int) v.getTag();
+                Intent intent = new Intent(mContext, EditNoteActivity.class);
+                intent.putExtra(Constants.Keys.SAVED_NOTE_TIMESTAMP, mNotesModels.get(position).getTimestamp());
+                mContext.startActivity(intent);
                 break;
             }
         }

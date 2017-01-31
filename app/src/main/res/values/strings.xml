@@ -20,7 +20,7 @@
     <string name="copy">COPY</string>
     <string name="paste">PASTE</string>
     
-    <string name="discard_note">Discard Note?</string>
+    <string name="discard_note">Discard Changes?</string>
     <string name="discard_note_message">Do you want to discard the note or save?</string>
     <string name="discard">DISCARD</string>
     <string name="cancel">CANCEL</string>

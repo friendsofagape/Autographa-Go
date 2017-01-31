@@ -7,10 +7,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
+import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ui.activities.BookActivity;
 import com.bridgeconn.autographago.ui.activities.SelectChapterAndVerseActivity;
 import com.bridgeconn.autographago.utils.Constants;
+import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 
@@ -55,9 +57,17 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
                     mFragment.startActivity(intent);
                 } else {
                     Intent output = new Intent();
-                    output.putExtra(Constants.Keys.BOOK_ID, mBookId);
-                    output.putExtra(Constants.Keys.CHAPTER_NO, ((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
-                    output.putExtra(Constants.Keys.VERSE_NO, verseNumber);
+                    SearchModel model = new SearchModel();
+                    model.setVerseNumber(verseNumber);
+                    model.setChapterNumber(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
+                    model.setBookName(UtilFunctions.getBookNameFromMapping(mFragment.getContext(), mBookId));
+                    model.setBookId(mBookId);
+
+                    output.putExtra(Constants.Keys.VERSE_NOTE_MODEL, model);
+
+//                    output.putExtra(Constants.Keys.BOOK_ID, mBookId);
+//                    output.putExtra(Constants.Keys.CHAPTER_NO, ((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
+//                    output.putExtra(Constants.Keys.VERSE_NO, verseNumber);
                     mFragment.getActivity().setResult(RESULT_OK, output);
                     mFragment.getActivity().finish();
                 }

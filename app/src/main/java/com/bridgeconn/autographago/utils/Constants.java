@@ -84,6 +84,8 @@ public class Constants {
         String VERSE_SET = "verse_set";
         String SELECT_VERSE_FOR_NOTE = "select_verse_for_note";
         String OPEN_BOOK = "open_book";
+        String VERSE_NOTE_MODEL = "verse_note_model";
+        String SAVED_NOTE_TIMESTAMP = "saved_note_timestamp";
     }
 
     public interface RequestCodes {
