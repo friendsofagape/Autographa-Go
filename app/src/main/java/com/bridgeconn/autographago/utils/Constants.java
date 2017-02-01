@@ -7,8 +7,11 @@ public class Constants {
     public static final String TAG = "AutographaGo";
     public static final String DUMMY_TAG = "abcd";
 
-    public static final String API_BASE_URL = "https://raw.githubusercontent.com/Bridgeconn/";
-    public static final String APPEND_URL_FILE = "Autographa_Repo/master/Bibles/English_ULB/01-GEN.usfm";
+    public static final String API_BASE_URL = "https://raw.githubusercontent.com/friendsofagape/Autographa_Repo/master/Bibles/";
+    public static final String META_DATA_FILE_NAME = "package.json";
+    public static final String USFM_ZIP_FILE_NAME = "Archive.zip";
+    public static final String APPEND_URL_FILE = "English/ULB/01-GEN.usfm";
+
     public static final String STORAGE_DIRECTORY = "/appname-external-data-cache/";
 
     public interface Markers {

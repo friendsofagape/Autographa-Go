@@ -42,18 +42,6 @@
         android:layout_margin="@dimen/activity_horizontal_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:id="@+id/download_bible"
-            android:text="Import bible"
-            android:clickable="true"
-            android:textSize="@dimen/heading_2"
-            android:padding="@dimen/activity_horizontal_margin"
-            android:textAllCaps="true"
-            android:drawableRight="@drawable/ic_file_download_white"
-            android:drawableTint="@color/black_40"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
         <ImageView
             android:visibility="gone"
             android:id="@+id/progress"
@@ -62,6 +50,31 @@
             android:layout_gravity="center"
             android:layout_width="40dp"
             android:layout_height="40dp" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/download_bible"
+                android:text="Import bible"
+                android:clickable="true"
+                android:textSize="@dimen/heading_2"
+                android:padding="@dimen/activity_horizontal_margin"
+                android:textAllCaps="true"
+                android:drawableRight="@drawable/ic_file_download_white"
+                android:drawableTint="@color/black_40"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/inflate_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

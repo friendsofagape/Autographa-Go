@@ -1,40 +1,26 @@
 package com.bridgeconn.autographago.ui.activities;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.utils.ApiInterface;
+import com.bridgeconn.autographago.models.ResponseModel;
 import com.bridgeconn.autographago.utils.Constants;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Random;
-
-import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import com.bridgeconn.autographago.utils.DownloadUtil;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView mTvDownload;
     private ImageView mProgress;
+    private LinearLayout mInflateLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +45,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         mTvDownload = (TextView) findViewById(R.id.download_bible);
         mProgress = (ImageView) findViewById(R.id.progress);
+        mInflateLayout = (LinearLayout) findViewById(R.id.inflate_layout);
 
         mTvDownload.setOnClickListener(this);
     }
@@ -68,141 +55,107 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         switch (v.getId()) {
             case R.id.download_bible: {
 
-                downloadFile(Constants.APPEND_URL_FILE);
+                getAvailableLanguages();
 
                 break;
             }
         }
     }
 
-    private void downloadFile(final String fileURL) {
+    private void showDialog() {
 
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+    }
 
-        Retrofit.Builder builder =
-                new Retrofit.Builder()
-                        .baseUrl(Constants.API_BASE_URL)
-                        .addConverterFactory(
-                                GsonConverterFactory.create()
-                        );
+    private void getAvailableLanguages() {
 
-        Retrofit retrofit =
-                builder
-                        .client(
-                                httpClient.build()
-                        )
-                        .build();
-
-        final ApiInterface downloadService = retrofit.create(ApiInterface.class);
-
-        new AsyncTask<Void, Long, Void>() {
+        DownloadUtil downloadUtil = new DownloadUtil();
+        downloadUtil.downloadJson(Constants.META_DATA_FILE_NAME, new DownloadUtil.FileDownloadCallback() {
 
             @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                mProgress.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                mProgress.setVisibility(View.GONE);
-            }
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-                Call<ResponseBody> call = downloadService.downloadFileWithDynamicUrlSync(fileURL);
-
-                call.enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        Log.i(Constants.DUMMY_TAG, "message = " + response.message());
-                        if (response.isSuccessful()) {
-                            Log.d(Constants.DUMMY_TAG, "server contacted and has file");
-
-                            try {
-                                File root = Environment.getExternalStorageDirectory();
-
-                                Random generator = new Random();
-                                int n = 10000;
-                                n = generator.nextInt(n);
-                                String fname = Constants.FILE_PREFIX + n;
-
-                                String sDBName = fname;
-                                if (root.canWrite()) {
-                                    String backupDBPath = Constants.STORAGE_DIRECTORY + sDBName;
-                                    File dir = new File(root, backupDBPath.replace(sDBName, ""));
-                                    if (dir.mkdir()) {
-                                    }
-
-                                    final File futureStudioIconFile = new File (root, backupDBPath);
-                                    if (futureStudioIconFile.exists ()) futureStudioIconFile.delete ();
-
-                                    InputStream inputStream = null;
-                                    OutputStream outputStream = null;
-
-                                    try {
-                                        byte[] fileReader = new byte[4096];
-
-                                        long fileSize = response.body().contentLength();
-                                        long fileSizeDownloaded = 0;
-
-                                        inputStream = response.body().byteStream();
-                                        outputStream = new FileOutputStream(futureStudioIconFile);
-
-                                        while (true) {
-                                            int read = inputStream.read(fileReader);
-
-                                            if (read == -1) {
-                                                break;
-                                            }
-
-                                            outputStream.write(fileReader, 0, read);
-
-                                            fileSizeDownloaded += read;
-
-                                            Log.d(Constants.DUMMY_TAG, "file download: " + fileSizeDownloaded + " of " + fileSize);
-                                        }
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Toast.makeText(SettingsActivity.this, "file downloaded successfully at " + futureStudioIconFile.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                        outputStream.flush();
-
-                                        return ;
-                                    } catch (IOException e) {
-                                        Log.e(Constants.DUMMY_TAG, e.toString());
-                                        return ;
-                                    } finally {
-                                        if (inputStream != null) {
-                                            inputStream.close();
-                                        }
-
-                                        if (outputStream != null) {
-                                            outputStream.close();
-                                        }
-                                    }
-                                } else {
-                                    Log.e(Constants.DUMMY_TAG, "sd cannot write");
-                                }
-                            } catch (IOException e) {
-                                Log.e(Constants.DUMMY_TAG, e.toString());
-                                return;
+            public void onSuccess(ResponseModel model) {
+                if (model.getLanguagesAvailable() != null) {
+                    for (final String language : model.getLanguagesAvailable()) {
+                        final View view = LayoutInflater.from(SettingsActivity.this).inflate(R.layout.button_verse, mInflateLayout, false);
+                        TextView button = (TextView) view.findViewById(R.id.button);
+                        button.setText(language);
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                getAvailableListOfVersions(language);
                             }
-                        } else {
-                            Log.d(Constants.DUMMY_TAG, "server contact failed");
-                        }
+                        });
+                        mInflateLayout.addView(view);
                     }
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.e(Constants.DUMMY_TAG, "error");
-                    }
-                });
-                return null;
+                }
             }
-        }.execute();
+
+            @Override
+            public void onFailure() {
+                Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
+            }
+        });
+    }
+
+    private void getAvailableListOfVersions(final String language) {
+        DownloadUtil downloadUtil = new DownloadUtil();
+        downloadUtil.downloadJson(language + "/" + Constants.META_DATA_FILE_NAME, new DownloadUtil.FileDownloadCallback() {
+
+            @Override
+            public void onSuccess(ResponseModel model) {
+                if (model.getListOfVersionsAvailable() != null) {
+                    for (final String version : model.getListOfVersionsAvailable()) {
+                        final View view = LayoutInflater.from(SettingsActivity.this).inflate(R.layout.button_verse, mInflateLayout, false);
+                        TextView button = (TextView) view.findViewById(R.id.button);
+                        button.setText(version);
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                getMetaData(language, version);
+                            }
+                        });
+                        mInflateLayout.addView(view);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure() {
+                Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
+            }
+        });
+    }
+
+    private void getMetaData(final String language, final String version) {
+        DownloadUtil downloadUtil = new DownloadUtil();
+        downloadUtil.downloadJson(language + "/" + version + "/" + Constants.META_DATA_FILE_NAME,
+                new DownloadUtil.FileDownloadCallback() {
+
+            @Override
+            public void onSuccess(ResponseModel model) {
+                if (model.getMetaData() != null) {
+                    TextView tv = new TextView(SettingsActivity.this);
+                    tv.setText(model.getMetaData().getSource() + " :: " +
+                            model.getMetaData().getLanguage() + " :: " +
+                            model.getMetaData().getLicense() + " :: "  +
+                            model.getMetaData().getYear() + " :: " +
+                            model.getMetaData().getVersion()
+                    );
+                    tv.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            DownloadUtil downloadUtil = new DownloadUtil();
+                            downloadUtil.downloadFile(language + "/" + version + "/" + Constants.USFM_ZIP_FILE_NAME, mProgress);
+                        }
+                    });
+                    mInflateLayout.addView(tv);
+                }
+            }
+
+            @Override
+            public void onFailure() {
+                Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
+            }
+        });
     }
 
 }

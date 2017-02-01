@@ -165,12 +165,22 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         } else {
             ArrayList<SearchModel> models = intent.getParcelableArrayListExtra(Constants.Keys.VERSE_MODELS);
             if (models != null) {
-                for (SearchModel model : models) {
+                for (final SearchModel model : models) {
                     mVerseList.add(model);
                     final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
                     TextView button = (TextView) view.findViewById(R.id.button);
                     button.setText(model.getBookName() + " " + model.getChapterNumber() + Constants.Styling.CHAR_COLON + model.getVerseNumber());
                     ImageView remove = (ImageView) view.findViewById(R.id.iv_remove);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(EditNoteActivity.this, BookActivity.class);
+                            intent.putExtra(Constants.Keys.BOOK_ID, model.getBookId());
+                            intent.putExtra(Constants.Keys.CHAPTER_NO,model.getChapterNumber());
+                            intent.putExtra(Constants.Keys.VERSE_NO, model.getVerseNumber());
+                            startActivity(intent);
+                        }
+                    });
                     remove.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -307,6 +317,16 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                             model.getChapterNumber() + Constants.Styling.CHAR_COLON +
                             model.getVerseNumber());
                     ImageView remove = (ImageView) view.findViewById(R.id.iv_remove);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(EditNoteActivity.this, BookActivity.class);
+                            intent.putExtra(Constants.Keys.BOOK_ID, model.getBookId());
+                            intent.putExtra(Constants.Keys.CHAPTER_NO,model.getChapterNumber());
+                            intent.putExtra(Constants.Keys.VERSE_NO, model.getVerseNumber());
+                            startActivity(intent);
+                        }
+                    });
                     remove.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
