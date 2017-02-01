@@ -60,8 +60,8 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
                     SearchModel model = new SearchModel();
                     model.setVerseNumber(verseNumber);
                     model.setChapterNumber(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
-                    model.setBookName(UtilFunctions.getBookNameFromMapping(mFragment.getContext(), mBookId));
-                    model.setBookId(mBookId);
+                    model.setBookId(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedBook());
+                    model.setBookName(UtilFunctions.getBookNameFromMapping(mFragment.getContext(), ((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedBook()));
 
                     output.putExtra(Constants.Keys.VERSE_NOTE_MODEL, model);
 

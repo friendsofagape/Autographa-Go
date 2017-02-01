@@ -30,16 +30,21 @@ import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
+import com.bridgeconn.autographago.ormutils.Mapper;
+import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class EditNoteActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private Realm realm;
     private EditText mEditor;
     private EditText mEtTitle;
     private TextView mSave;
@@ -51,6 +56,8 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        realm = Realm.getDefaultInstance();
 
         setContentView(R.layout.activity_edit_note);
 
@@ -122,19 +129,28 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         Intent intent = getIntent();
         long savedNoteTimeStamp = intent.getLongExtra(Constants.Keys.SAVED_NOTE_TIMESTAMP, 0);
         if (savedNoteTimeStamp > 0) {
-            List<NotesModel> notesModels = new AutographaRepository<NotesModel>().query(new AllSpecifications.NotesById(savedNoteTimeStamp), new AllMappers.NotesMapper());
+            List<NotesModel> notesModels = query(new AllSpecifications.NotesById(savedNoteTimeStamp), new AllMappers.NotesMapper());
             for (NotesModel notesModel : notesModels) {
                 mEtTitle.setText(notesModel.getTitle());
                 mEditor.setText(notesModel.getText());
                 mTimeStamp = notesModel.getTimestamp();
-                // TODO fix realm instance closed exception
-                /*
-                for (SearchModel model : notesModel.getVerseIds()) {
+
+                for (final SearchModel model : notesModel.getVerseIds()) {
                     mVerseList.add(model);
                     final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
                     TextView button = (TextView) view.findViewById(R.id.button);
                     button.setText(model.getBookName() + " " + model.getChapterNumber() + Constants.Styling.CHAR_COLON + model.getVerseNumber());
                     ImageView remove = (ImageView) view.findViewById(R.id.iv_remove);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(EditNoteActivity.this, BookActivity.class);
+                            intent.putExtra(Constants.Keys.BOOK_ID, model.getBookId());
+                            intent.putExtra(Constants.Keys.CHAPTER_NO,model.getChapterNumber());
+                            intent.putExtra(Constants.Keys.VERSE_NO, model.getVerseNumber());
+                            startActivity(intent);
+                        }
+                    });
                     remove.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -143,7 +159,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                     });
                     mButtonLayout.addView(view);
                 }
-                */
+
                 break;
             }
         } else {
@@ -165,6 +181,25 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                 }
             }
         }
+    }
+
+    public ArrayList<NotesModel> query(Specification<NotesModel> specification, Mapper<NotesModel, NotesModel> mapper) {
+        RealmResults<NotesModel> realmResults = specification.generateResults(realm);
+
+        ArrayList<NotesModel> resultsToReturn = new ArrayList<>();
+
+        for (NotesModel result : realmResults) {
+            resultsToReturn.add(mapper.map(result));
+        }
+
+        return resultsToReturn;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        realm.close();
     }
 
     private int findMin() {

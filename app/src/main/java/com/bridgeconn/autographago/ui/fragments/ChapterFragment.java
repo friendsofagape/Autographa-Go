@@ -50,11 +50,9 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
         if (mBookModel != null) {
             for (int i=0; i<mBookModel.getChapterModels().size(); i++) {
                 mChapterModels.add(mBookModel.getChapterModels().get(i));
-                if (i == 0) {
-                    mChapterModels.get(i).setSelected(true);
-                } else {
-                    mChapterModels.get(i).setSelected(false);
-                }
+            }
+            if (mBookModel.getChapterModels().size() > 0) {
+                setSelected(0);
             }
         }
     }
@@ -93,7 +91,7 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
     public void onDestroy() {
         super.onDestroy();
 
-        setSelected(-1);
+//        setSelected(-1);
     }
 
     public void setSelected(int position) {
@@ -103,7 +101,9 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
         if (position >= 0) {
             mChapterModels.get(position).setSelected(true);
         }
-        mAdapter.notifyDataSetChanged();
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     public int getSelectedChapterNumber() {

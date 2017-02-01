@@ -42,6 +42,9 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
         for (BookModel bookModel : Constants.CONTAINER.getBookModelList()) {
             mBookModelArrayList.add(bookModel);
         }
+        if (mBookModelArrayList.size() > 0) {
+            setSelected(0);
+        }
     }
 
     @Override
@@ -62,7 +65,7 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
     public void onDestroy() {
         super.onDestroy();
 
-        setSelected(-1);
+//        setSelected(-1);
     }
 
     public void setSelected(int position) {
@@ -72,7 +75,18 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
         if (position >= 0) {
             mBookModelArrayList.get(position).setSelected(true);
         }
-        mAdapter.notifyDataSetChanged();
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public String getSelectedBookId() {
+        for (int i = 0; i< mBookModelArrayList.size(); i++) {
+            if (mBookModelArrayList.get(i).isSelected()) {
+                return mBookModelArrayList.get(i).getBookId();
+            }
+        }
+        return null;
     }
 
 }

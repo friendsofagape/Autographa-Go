@@ -31,7 +31,7 @@ public class BookNameViewHolder extends RecyclerView.ViewHolder implements View.
         if (bookModel.isSelected()) {
             mTvChapterNumber.setBackgroundColor(mFragment.getResources().getColor(R.color.black_40));
         } else {
-            mTvChapterNumber.setBackground(mFragment.getResources().getDrawable(R.drawable.number_background));
+            mTvChapterNumber.setBackgroundColor(0);
         }
         mTvChapterNumber.setText(bookModel.getBookName());
         mTvChapterNumber.setTag(position);

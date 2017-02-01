@@ -71,6 +71,9 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
             if (bookName != null) {
                 getSupportActionBar().setTitle(bookName);
             }
+            if (!mOpenBook) {
+                getSupportActionBar().setTitle(getString(R.string.title_books));
+            }
 
             mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), Tabs, bookId, mOpenBook);
             mViewPager.setAdapter(mAdapter);
@@ -196,4 +199,7 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
         return chapterFragment.getSelectedChapterNumber();
     }
 
+    public String getSelectedBook() {
+        return bookFragment.getSelectedBookId();
+    }
 }
