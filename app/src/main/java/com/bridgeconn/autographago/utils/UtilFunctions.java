@@ -86,4 +86,8 @@ public class UtilFunctions {
             return null;
         }
     }
+
+    public static int dpToPx(Context context, int dp) {
+        return Math.round(dp * context.getResources().getDisplayMetrics().density);
+    }
 }

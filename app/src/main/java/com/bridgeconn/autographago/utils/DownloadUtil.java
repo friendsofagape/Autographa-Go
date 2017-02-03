@@ -1,5 +1,6 @@
 package com.bridgeconn.autographago.utils;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
@@ -83,7 +84,7 @@ public class DownloadUtil {
         }.execute();
     }
 
-    public void downloadFile(final String fileUrl, final ImageView mProgress) {
+    public void downloadFile(final String fileUrl, final ImageView mProgress, final Context context) {
 
         final ApiInterface downloadService = retrofit.create(ApiInterface.class);
 
@@ -159,6 +160,7 @@ public class DownloadUtil {
 
                                         outputStream.flush();
 
+                                        UnzipUtil.unzipFile(new File(futureStudioIconFile.getAbsolutePath()), context);
                                         return ;
                                     } catch (IOException e) {
                                         Log.e(Constants.DUMMY_TAG, e.toString());
@@ -173,6 +175,7 @@ public class DownloadUtil {
                                         }
                                     }
                                 } else {
+                                    // TODO ask for permission to write to storage
                                     Log.e(Constants.DUMMY_TAG, "sd cannot write");
                                 }
                             } catch (IOException e) {

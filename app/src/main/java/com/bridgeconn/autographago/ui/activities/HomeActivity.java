@@ -19,6 +19,9 @@ import com.bridgeconn.autographago.utils.USFMParser;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView mNotesView;
@@ -33,6 +36,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        RealmConfiguration config = new RealmConfiguration.Builder(this).build();
+        Realm.setDefaultConfiguration(config);
 
         String [] fileNames = {Constants.USFMFiles.HOSEA, Constants.USFMFiles._3_JOHN, Constants.USFMFiles.ZEPHANIAH};
 
