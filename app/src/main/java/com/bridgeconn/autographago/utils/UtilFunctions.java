@@ -90,4 +90,8 @@ public class UtilFunctions {
     public static int dpToPx(Context context, int dp) {
         return Math.round(dp * context.getResources().getDisplayMetrics().density);
     }
+
+    public static String getLanguageCodeFromName(String languageName) {
+        return "ENG";
+    }
 }

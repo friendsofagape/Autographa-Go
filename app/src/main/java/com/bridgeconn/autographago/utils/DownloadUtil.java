@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.bridgeconn.autographago.models.ResponseModel;
 
@@ -84,7 +84,8 @@ public class DownloadUtil {
         }.execute();
     }
 
-    public void downloadFile(final String fileUrl, final ImageView mProgress, final Context context) {
+    public void downloadFile(final String fileUrl, final ProgressBar mProgress, final Context context,
+                             final String language, final String versionCode, final String versionName) {
 
         final ApiInterface downloadService = retrofit.create(ApiInterface.class);
 
@@ -160,7 +161,7 @@ public class DownloadUtil {
 
                                         outputStream.flush();
 
-                                        UnzipUtil.unzipFile(new File(futureStudioIconFile.getAbsolutePath()), context);
+                                        UnzipUtil.unzipFile(new File(futureStudioIconFile.getAbsolutePath()), context, language, versionCode, versionName, mProgress);
                                         return ;
                                     } catch (IOException e) {
                                         Log.e(Constants.DUMMY_TAG, e.toString());

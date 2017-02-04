@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.apache.commons.io.IOUtils;
@@ -21,11 +23,11 @@ public class UnzipUtil {
 
     private static Handler myHandler;
 
-    public static void unzipFile(File zipfile, final Context context) {
-        File zipFile = zipfile;
-        String directory = null;
-        directory = zipFile.getParent();
-        directory = directory + "/";
+    public static void unzipFile(File zipfile, final Context context, final String languageName,
+                                 final String versionCode, final String versionName,final ProgressBar mProgress) {
+        final File zipFile = zipfile;
+        String directory = zipFile.getParent() + "/";
+        final File zipDirectory = new File(directory);
         myHandler = new Handler() {
 
             @Override
@@ -33,10 +35,29 @@ public class UnzipUtil {
                 // process incoming messages here
                 switch (msg.what) {
                     case 1:
-                        Toast toast = Toast.makeText(context,
-                                "Zip extracted successfully",
-                                Toast.LENGTH_SHORT);
-                        toast.show();
+                        Toast.makeText(context, "Zip extracted successfully", Toast.LENGTH_SHORT).show();
+                        zipFile.delete();
+                        if (zipDirectory.exists()) {
+                            File[] files = zipDirectory.listFiles();
+                            for (int i = 0; i < files.length; ++i) {
+                                File file = files[i];
+                                if (file.isDirectory() || !file.getPath().endsWith(".usfm")) {
+                                    continue;
+                                } else {
+                                    boolean success;
+                                    USFMParser usfmParser = new USFMParser();
+                                    success = usfmParser.parseUSFMFile(context, file.getAbsolutePath(), false, languageName, versionCode, versionName);
+
+                                    if (success) {
+                                        // delete that file
+                                        file.delete();
+                                    }
+                                }
+                            }
+                            Log.i(Constants.DUMMY_TAG, "DONE......");
+                            mProgress.setVisibility(View.GONE);
+                            // TODO refresh lish oof books on main screen
+                        }
                         break;
                 }
                 super.handleMessage(msg);

@@ -49,7 +49,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             } else {
                 // add to db
                 USFMParser usfmParser = new USFMParser();
-                usfmParser.parseUSFMFile(this, fileNames[i], true);
+                usfmParser.parseUSFMFile(this, fileNames[i], true, "English", "ULB", "Unlocked Literal Bible");
             }
         }
 

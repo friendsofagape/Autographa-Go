@@ -46,7 +46,7 @@ public class USFMParser {
      * @param fileName name of the usfm file to be parsed
      * @param fromAssets true if the file is stored in bundled assets or false for device storage
      */
-    public void parseUSFMFile(Context context, String fileName, boolean fromAssets) {
+    public boolean parseUSFMFile(Context context, String fileName, boolean fromAssets, String languageName, String versionCode, String versionName) {
         BufferedReader reader = null;
         try {
             if (fromAssets) {
@@ -55,14 +55,19 @@ public class USFMParser {
                 reader = new BufferedReader(new FileReader(new File(fileName)));
             }
             String mLine;
-            while ((mLine = reader.readLine()) != null) {
-                processLine(context, mLine);
+            try {
+                while ((mLine = reader.readLine()) != null) {
+                    processLine(context, mLine);
+                }
+                addComponentsToChapter();
+                addChaptersToBook();
+
+                addBookToContainer(languageName, versionCode, versionName);
+
+                return true;
+            } catch (Exception e) {
+                Log.e(Constants.TAG, "Exception in processing lines. So skipping this file" + e.toString());
             }
-            addComponentsToChapter();
-            addChaptersToBook();
-
-            addBookToContainer();
-
         } catch (IOException e) {
             Log.e(Constants.TAG, "Exception in reading file. " + e.toString());
         } finally {
@@ -74,6 +79,7 @@ public class USFMParser {
                 }
             }
         }
+        return false;
     }
 
     /**
@@ -285,11 +291,15 @@ public class USFMParser {
     /**
      * At the end, add the book to the CONTAINER
      */
-    private void addBookToContainer() {
+    private void addBookToContainer(String languageName, String versionCode, String versionName) {
         bookModelList.add(bookModel);
+        versionModel.setVersionCode(versionCode);
+        versionModel.setVersionName(versionName);
         versionModel.setBookModels(bookModelList);
         versionModelList.add(versionModel);
         languageModel.setVersionModels(versionModelList);
+        languageModel.setLanguageName(languageName);
+        languageModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
 
         new AutographaRepository<BookModel>().add(bookModel);
     }

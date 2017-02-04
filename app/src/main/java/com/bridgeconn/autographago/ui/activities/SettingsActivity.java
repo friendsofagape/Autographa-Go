@@ -13,8 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
@@ -29,7 +30,7 @@ import java.util.List;
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView mTvDownload;
-    private ImageView mProgress;
+    private ProgressBar mProgress;
     private LinearLayout mInflateLayout;
 
     @Override
@@ -54,7 +55,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         mTvDownload = (TextView) findViewById(R.id.download_bible);
-        mProgress = (ImageView) findViewById(R.id.progress);
+        mProgress = (ProgressBar) findViewById(R.id.progress);
         mInflateLayout = (LinearLayout) findViewById(R.id.inflate_layout);
 
         mTvDownload.setOnClickListener(this);
@@ -176,18 +177,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             public void onSuccess(ResponseModel model) {
                 if (model.getLanguagesAvailable() != null) {
                     showLanguageDialog(model.getLanguagesAvailable());
-//                    for (final String language : model.getLanguagesAvailable()) {
-//                        final View view = LayoutInflater.from(SettingsActivity.this).inflate(R.layout.button_verse, mInflateLayout, false);
-//                        TextView button = (TextView) view.findViewById(R.id.button);
-//                        button.setText(language);
-//                        button.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                getAvailableListOfVersions(language);
-//                            }
-//                        });
-//                        mInflateLayout.addView(view);
-//                    }
                 }
             }
 
@@ -206,18 +195,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             public void onSuccess(ResponseModel model) {
                 if (model.getListOfVersionsAvailable() != null) {
                     showVersionDialog(model.getListOfVersionsAvailable(), language);
-//                    for (final String version : model.getListOfVersionsAvailable()) {
-//                        final View view = LayoutInflater.from(SettingsActivity.this).inflate(R.layout.button_verse, mInflateLayout, false);
-//                        TextView button = (TextView) view.findViewById(R.id.button);
-//                        button.setText(version);
-//                        button.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                getMetaData(language, version);
-//                            }
-//                        });
-//                        mInflateLayout.addView(view);
-//                    }
                 }
             }
 
@@ -234,7 +211,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 new DownloadUtil.FileDownloadCallback() {
 
                     @Override
-                    public void onSuccess(ResponseModel model) {
+                    public void onSuccess(final ResponseModel model) {
                         if (model.getMetaData() != null) {
                             TextView tv = new TextView(SettingsActivity.this);
                             tv.setText(model.getMetaData().getSource() + " :: " +
@@ -243,14 +220,25 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                     model.getMetaData().getYear() + " :: " +
                                     model.getMetaData().getVersion()
                             );
-                            tv.setOnClickListener(new View.OnClickListener() {
+                            Button button = new Button(SettingsActivity.this);
+                            button.setText("DOWNLOAD");
+                            button.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    // TODO see why progress bar not showing
+                                    mProgress.setVisibility(View.VISIBLE);
                                     DownloadUtil downloadUtil = new DownloadUtil();
-                                    downloadUtil.downloadFile(language + "/" + version + "/" + Constants.USFM_ZIP_FILE_NAME, mProgress, SettingsActivity.this);
+                                    downloadUtil.downloadFile(
+                                            language + "/" + version + "/" + Constants.USFM_ZIP_FILE_NAME,
+                                            mProgress,
+                                            SettingsActivity.this,
+                                            language,
+                                            version,
+                                            model.getMetaData().getVersion());
                                 }
                             });
                             mInflateLayout.addView(tv);
+                            mInflateLayout.addView(button);
                         }
                     }
 
