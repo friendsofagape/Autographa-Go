@@ -48,7 +48,7 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_number: {
-                int verseNumber = (int) v.getTag();
+                String verseNumber = (String) v.getTag();
                 if (mOpenBook) {
                     Intent intent = new Intent(mFragment.getContext(), BookActivity.class);
                     intent.putExtra(Constants.Keys.BOOK_ID, mBookId);
@@ -65,9 +65,6 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
 
                     output.putExtra(Constants.Keys.VERSE_NOTE_MODEL, model);
 
-//                    output.putExtra(Constants.Keys.BOOK_ID, mBookId);
-//                    output.putExtra(Constants.Keys.CHAPTER_NO, ((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
-//                    output.putExtra(Constants.Keys.VERSE_NO, verseNumber);
                     mFragment.getActivity().setResult(RESULT_OK, output);
                     mFragment.getActivity().finish();
                 }

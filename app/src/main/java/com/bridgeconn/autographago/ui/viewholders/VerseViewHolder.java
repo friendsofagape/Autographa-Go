@@ -2,6 +2,7 @@ package com.bridgeconn.autographago.ui.viewholders;
 
 import android.app.Activity;
 import android.os.Build;
+import android.support.annotation.IntegerRes;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spannable;
@@ -22,13 +23,13 @@ import com.bridgeconn.autographago.ui.activities.BookActivity;
 import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private TextView mTvChapter;
     private Activity mContext;
     private ChapterModel mChapterModel;
-//    private ArrayList<VerseComponentsModel> mVerseComponentsModels;
 
     public VerseViewHolder(View itemView, Activity context, ChapterModel chapterModel) {//}, ArrayList<VerseComponentsModel> verseComponentsModels) {
         super(itemView);
@@ -36,20 +37,52 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
         mContext = context;
         mChapterModel = chapterModel;
-//        mVerseComponentsModels = verseComponentsModels;
     }
 
-    public void onBind(int verseNumber) {
+    public void onBind(int position) {
+        // TODO here find exact positon of verse number by looking into chapter model
         ArrayList<VerseComponentsModel> verseComponentsModels = new ArrayList<>();
-        for (VerseComponentsModel model : mChapterModel.getVerseComponentsModels()) {
-            if (model.getVerseNumber() == verseNumber) {
+//        for (VerseComponentsModel model : mChapterModel.getVerseComponentsModels()) {
+//            if (model.getVerseNumber().compareTo(String.valueOf(verseNumber)) == 0) {
+//                verseComponentsModels.add(model);
+//            } else if (model.getVerseNumber().compareTo(String.valueOf(verseNumber)) > 0) {
+//                break;
+//            } else {
+//                continue;
+//            }
+//        }
+
+        List<String> verseNumberList = new ArrayList<>();
+        for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
+            if (i==0) {
+                verseNumberList.add(mChapterModel.getVerseComponentsModels().get(i).getVerseNumber());
+            } else {
+                if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber().equals(verseNumberList.get(verseNumberList.size() - 1))) {
+                    continue;
+                } else {
+                    verseNumberList.add(mChapterModel.getVerseComponentsModels().get(i).getVerseNumber());
+                }
+            }
+        }
+
+        String verseNumber = verseNumberList.get(position);
+        int verNumberOne = Integer.parseInt(verseNumber.split("-")[0]);
+
+        for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
+            // TODO change compareTo function, as when it compares 10 with 9 it seems that 9>10
+            VerseComponentsModel model = mChapterModel.getVerseComponentsModels().get(i);
+            int verseNumberStringOne = Integer.parseInt(model.getVerseNumber().split("-")[0]);
+            if (verseNumberStringOne == verNumberOne) {
+//            if (model.getVerseNumber().compareTo(verseNumber) == 0) {
                 verseComponentsModels.add(model);
-            } else if (model.getVerseNumber() > verseNumber) {
+            } else if (verseNumberStringOne > verNumberOne) {
+//            } else if (model.getVerseNumber().compareTo(verseNumber) > 0) {
                 break;
             } else {
                 continue;
             }
         }
+
         addAllContent(verseComponentsModels);
 
         mTvChapter.setTag(verseNumber);
@@ -60,16 +93,16 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_chapter: {
-                int verseNumber = (int) v.getTag();
+                String verseNumber = (String) v.getTag();
                 Spannable spannable = new SpannableString(mTvChapter.getText());
                 UnderlineSpan [] spans = spannable.getSpans(0, spannable.length(), UnderlineSpan.class);
                 if (spans.length > 0) {
                     for (UnderlineSpan span : spans) {
                         spannable.removeSpan(span);
                         for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
-                            if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber() == verseNumber) {
+                            if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber().compareTo(verseNumber) == 0) {
                                 mChapterModel.getVerseComponentsModels().get(i).setSelected(false);
-                            } else if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber() > verseNumber) {
+                            } else if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber().compareTo(verseNumber) > 0) {
                                 break;
                             } else {
                                 continue;
@@ -78,12 +111,12 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                     }
                 } else {
                     for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
-                        if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber() == verseNumber) {
+                        if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber().compareTo(verseNumber) == 0) {
                             mChapterModel.getVerseComponentsModels().get(i).setSelected(true);
                             if (mContext instanceof BookActivity) {
                                 ((BookActivity) mContext).showBottomBar();
                             }
-                        } else if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber() > verseNumber) {
+                        } else if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber().compareTo(verseNumber) > 0) {
                             break;
                         } else {
                             continue;
@@ -169,13 +202,12 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                     break;
                                 } else {
                                     if (appendNumber) {
-                                        if (verseComponentsModel.getVerseNumber() == 1) {
-                                            if (verseComponentsModel.getVerseNumber() == 1) {
-                                                int chapterSize = (int)(22 * mContext.getResources().getDisplayMetrics().scaledDensity);
-                                                SpannableString chapterNumberString = new SpannableString(mChapterModel.getChapterNumber() + "");
-                                                chapterNumberString.setSpan(new AbsoluteSizeSpan(chapterSize), 0, chapterNumberString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                                mTvChapter.append(chapterNumberString);
-                                            }
+                                        String [] verseNumberSplit = verseComponentsModel.getVerseNumber().split("-");
+                                        if (Integer.parseInt(verseNumberSplit[0]) == 1) {
+                                            int chapterSize = (int)(22 * mContext.getResources().getDisplayMetrics().scaledDensity);
+                                            SpannableString chapterNumberString = new SpannableString(mChapterModel.getChapterNumber() + "");
+                                            chapterNumberString.setSpan(new AbsoluteSizeSpan(chapterSize), 0, chapterNumberString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                            mTvChapter.append(chapterNumberString);
                                         } else {
                                             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                                                 spannableStringBuilder.append(Html.fromHtml("<sup>" + verseComponentsModel.getVerseNumber() + "</sup>"));

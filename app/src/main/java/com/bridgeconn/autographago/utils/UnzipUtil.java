@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.bridgeconn.autographago.models.ResponseModel;
+
 import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedInputStream;
@@ -21,12 +23,17 @@ import java.util.zip.ZipFile;
 
 public class UnzipUtil {
 
+    public interface FileUnzipCallback {
+        void onSuccess(File zipFile, String directoryName);
+        void onFailure();
+    }
+
     private static Handler myHandler;
 
-    public static void unzipFile(File zipfile, final Context context, final String languageName,
-                                 final String versionCode, final String versionName,final ProgressBar mProgress) {
-        final File zipFile = zipfile;
-        String directory = zipFile.getParent() + "/";
+    public static void unzipFile(final File zipfile, final Context context, final String languageName,
+                                 final String versionCode, final String versionName, final FileUnzipCallback callback) {
+        final File zipFile1 = zipfile;
+        final String directory = zipFile1.getParent() + "/";
         final File zipDirectory = new File(directory);
         myHandler = new Handler() {
 
@@ -34,37 +41,22 @@ public class UnzipUtil {
             public void handleMessage(Message msg) {
                 // process incoming messages here
                 switch (msg.what) {
-                    case 1:
-                        Toast.makeText(context, "Zip extracted successfully", Toast.LENGTH_SHORT).show();
-                        zipFile.delete();
-                        if (zipDirectory.exists()) {
-                            File[] files = zipDirectory.listFiles();
-                            for (int i = 0; i < files.length; ++i) {
-                                File file = files[i];
-                                if (file.isDirectory() || !file.getPath().endsWith(".usfm")) {
-                                    continue;
-                                } else {
-                                    boolean success;
-                                    USFMParser usfmParser = new USFMParser();
-                                    success = usfmParser.parseUSFMFile(context, file.getAbsolutePath(), false, languageName, versionCode, versionName);
-
-                                    if (success) {
-                                        // delete that file
-                                        file.delete();
-                                    }
-                                }
-                            }
-                            Log.i(Constants.DUMMY_TAG, "DONE......");
-                            mProgress.setVisibility(View.GONE);
-                            // TODO refresh lish oof books on main screen
-                        }
+                    case 1: {
+//                        Toast.makeText(context, "Zip extracted successfully", Toast.LENGTH_SHORT).show();
+                        callback.onSuccess(zipfile, directory);
                         break;
+                    }
+                    case 2: {
+                        callback.onFailure();
+                        break;
+                    }
+
                 }
                 super.handleMessage(msg);
             }
 
         };
-        Thread workthread = new Thread(new UnZip(zipFile, directory));
+        Thread workthread = new Thread(new UnZip(zipfile, directory));
         workthread.start();
     }
 

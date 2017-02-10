@@ -57,7 +57,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         Intent intent = getIntent();
-        int verseNumber = intent.getIntExtra(Constants.Keys.VERSE_NO, 0);
+        String verseNumber = intent.getStringExtra(Constants.Keys.VERSE_NO);
         int chapterNumber = intent.getIntExtra(Constants.Keys.CHAPTER_NO, 0);
         mBookId = intent.getStringExtra(Constants.Keys.BOOK_ID);
 
@@ -178,6 +178,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
     private void findSelectedAndShare() {
         StringBuilder shareBody = new StringBuilder(getString(R.string.share_body));
+        shareBody.append(" ");
         for (int i=0;  i<mChapterModels.size(); i++) {
             for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
                 if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {

@@ -1,6 +1,7 @@
 package com.bridgeconn.autographago.ui.activities;
 
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
@@ -10,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -17,14 +19,18 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.ResponseModel;
 import com.bridgeconn.autographago.ui.adapters.DownloadDialogAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.DownloadUtil;
+import com.bridgeconn.autographago.utils.USFMParser;
+import com.bridgeconn.autographago.utils.UnzipUtil;
 import com.bridgeconn.autographago.utils.UtilFunctions;
 
+import java.io.File;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
@@ -159,7 +165,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             }
         });
 
-        builder.setTitle(getString(R.string.select_language));
+        builder.setTitle(getString(R.string.select_version));
 
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -182,9 +188,14 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onFailure() {
+                showNetworkToast();
                 Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
             }
         });
+    }
+
+    private void showNetworkToast() {
+        Toast.makeText(SettingsActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
     }
 
     public void getAvailableListOfVersions(final String language) {
@@ -200,12 +211,14 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onFailure() {
+                showNetworkToast();
                 Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
             }
         });
     }
 
     public void getMetaData(final String language, final String version) {
+        // TODO make this a foreground service with notification
         DownloadUtil downloadUtil = new DownloadUtil();
         downloadUtil.downloadJson(language + "/" + version + "/" + Constants.META_DATA_FILE_NAME,
                 new DownloadUtil.FileDownloadCallback() {
@@ -215,26 +228,83 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                         if (model.getMetaData() != null) {
                             TextView tv = new TextView(SettingsActivity.this);
                             tv.setText(model.getMetaData().getSource() + " :: " +
-                                    model.getMetaData().getLanguage() + " :: " +
+                                    model.getMetaData().getLanguageName() + " :: " +
                                     model.getMetaData().getLicense() + " :: "  +
                                     model.getMetaData().getYear() + " :: " +
-                                    model.getMetaData().getVersion()
+                                    model.getMetaData().getVersionName()
                             );
                             Button button = new Button(SettingsActivity.this);
                             button.setText("DOWNLOAD");
                             button.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    // TODO see why progress bar not showing
+                                    // TODO see why progress bar is hanging
                                     mProgress.setVisibility(View.VISIBLE);
                                     DownloadUtil downloadUtil = new DownloadUtil();
                                     downloadUtil.downloadFile(
                                             language + "/" + version + "/" + Constants.USFM_ZIP_FILE_NAME,
-                                            mProgress,
                                             SettingsActivity.this,
                                             language,
                                             version,
-                                            model.getMetaData().getVersion());
+                                            model.getMetaData().getVersionName(),
+                                            new UnzipUtil.FileUnzipCallback() {
+
+                                                @Override
+                                                public void onSuccess(final File zipFile, String directoryName) {
+
+                                                    new AsyncTask<Void, Long, Void>() {
+
+                                                        @Override
+                                                        protected void onPostExecute(Void aVoid) {
+                                                            super.onPostExecute(aVoid);
+
+                                                            mProgress.setVisibility(View.GONE);
+                                                            Toast.makeText(SettingsActivity.this, "Parsing DONE", Toast.LENGTH_SHORT).show();
+                                                        }
+
+                                                        @Override
+                                                        protected Void doInBackground(Void... voids) {
+                                                            final File zipFile1 = zipFile;
+                                                            String directory = zipFile1.getParent() + "/";
+                                                            final File zipDirectory = new File(directory);
+
+                                                            zipFile1.delete();
+                                                            if (zipDirectory.exists()) {
+                                                                File[] files = zipDirectory.listFiles();
+                                                                for (int i = 0; i < files.length; ++i) {
+                                                                    File file = files[i];
+                                                                    if (file.isDirectory() || !file.getPath().endsWith(".usfm")) {
+                                                                        continue;
+                                                                    } else {
+                                                                        boolean success;
+                                                                        USFMParser usfmParser = new USFMParser();
+                                                                        success = usfmParser.parseUSFMFile(SettingsActivity.this,
+                                                                                file.getAbsolutePath(),
+                                                                                false,
+                                                                                language,
+                                                                                version,
+                                                                                model.getMetaData().getVersionName());
+
+                                                                        if (success) {
+                                                                            // delete that file
+                                                                            file.delete();
+                                                                        }
+                                                                    }
+                                                                }
+                                                                Log.i(Constants.DUMMY_TAG, "DONE......");
+                                                                // TODO refresh lish oof books on main screen
+                                                            }
+
+                                                            return null;
+                                                        }
+                                                    }.execute();
+                                                }
+
+                                                @Override
+                                                public void onFailure() {
+                                                    Toast.makeText(SettingsActivity.this, "Unzip Error", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
                                 }
                             });
                             mInflateLayout.addView(tv);
@@ -244,9 +314,21 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
                     @Override
                     public void onFailure() {
+                        showNetworkToast();
                         Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
                     }
                 });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 }

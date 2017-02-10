@@ -12,7 +12,7 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
     private String chapterId;
     private String type;
     @Index
-    private int verseNumber;
+    private String verseNumber;
     private String text;
     @Ignore
     private boolean added;
@@ -52,11 +52,11 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
         this.type = type;
     }
 
-    public int getVerseNumber() {
+    public String getVerseNumber() {
         return verseNumber;
     }
 
-    public void setVerseNumber(int verseNumber) {
+    public void setVerseNumber(String verseNumber) {
         this.verseNumber = verseNumber;
     }
 
@@ -102,9 +102,9 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
 
     @Override
     public int compareTo(VerseComponentsModel model) {
-        if (verseNumber > model.verseNumber) {
+        if (verseNumber.compareTo(model.verseNumber) > 0) {
             return 1;
-        } else if (verseNumber == model.verseNumber) {
+        } else if (verseNumber.compareTo(model.verseNumber) == 0) {
             return marker.compareTo(model.marker);
         }
         return -1;

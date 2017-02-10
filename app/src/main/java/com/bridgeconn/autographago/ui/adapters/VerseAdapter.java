@@ -18,31 +18,42 @@ public class VerseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private Activity mContext;
     private LayoutInflater mLayoutInflater;
     private ChapterModel mChapterModel;
-//    private ArrayList<VerseComponentsModel> mVerseComponentsModels;
 
-    public VerseAdapter(Activity context, ChapterModel chapterModel) {//}, ArrayList<VerseComponentsModel> verseComponentsModels) {
+    public VerseAdapter(Activity context, ChapterModel chapterModel) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         mChapterModel = chapterModel;
-//        mVerseComponentsModels = verseComponentsModels;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new VerseViewHolder(mLayoutInflater.inflate(R.layout.item_verse, parent, false), mContext, mChapterModel);//, mVerseComponentsModels);
+        return new VerseViewHolder(mLayoutInflater.inflate(R.layout.item_verse, parent, false), mContext, mChapterModel);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof VerseViewHolder) {
-            ((VerseViewHolder) holder).onBind(position + 1);
+            ((VerseViewHolder) holder).onBind(position);
         }
     }
 
     @Override
     public int getItemCount() {
-//        return mVerseComponentsModels.size();
-        return mChapterModel.getVerseComponentsModels().get(mChapterModel.getVerseComponentsModels().size() - 1).getVerseNumber();
+        int size = 0;
+        for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
+            if (i==0) {
+                size++;
+            } else {
+                if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber().equals(
+                        mChapterModel.getVerseComponentsModels().get(i-1).getVerseNumber())) {
+                    continue;
+                } else {
+                    size++;
+                }
+            }
+        }
+        return size;
+//        return mChapterModel.getVerseComponentsModels().get(mChapterModel.getVerseComponentsModels().size() - 1).getVerseNumber();
     }
 
 }

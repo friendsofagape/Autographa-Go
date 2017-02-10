@@ -14,6 +14,16 @@ public class Constants {
 
     public static final String STORAGE_DIRECTORY = "/appname-external-data-cache/";
 
+    public interface VersionNames {
+        String UDB = "Unlocked Dynamic Bible";
+        String ULB = "Unlocked Literal Bible";
+    }
+
+    public interface VersionCodes {
+        String UDB = "UDB";
+        String ULB = "ULB";
+    }
+
     public interface Markers {
         String MARKER_BOOK_NAME = "\\id";
         String MARKER_CHAPTER_NUMBER = "\\c";
@@ -39,8 +49,6 @@ public class Constants {
     }
 
     public static final String SHARE_TEXT_TYPE = "text/plain";
-
-    public static final String FILE_PREFIX = "File-";
 
     public static final AllBooksModel CONTAINER = new AllBooksModel();
 
@@ -93,9 +101,5 @@ public class Constants {
 
     public interface RequestCodes {
         int EDIT_NOTES = 0;
-    }
-
-    public interface PrefKeys {
-        String DEFAULT_HIGHLIGHT_COLOR = "default_highlight_color";
     }
 }

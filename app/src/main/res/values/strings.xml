@@ -26,10 +26,11 @@
     <string name="cancel">CANCEL</string>
     <string name="note_saved">Note saved successfully</string>
 
-    <string name="share_body">Reading </string>
+    <string name="share_body">Reading</string>
     <string name="title_notes">Notes</string>
 
     <string name="title_books">Books</string>
     <string name="select_language">Select a Language</string>
+    <string name="select_version">Select a Version</string>
 
 </resources>

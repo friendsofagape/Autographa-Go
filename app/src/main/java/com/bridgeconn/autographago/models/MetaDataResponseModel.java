@@ -2,68 +2,90 @@ package com.bridgeconn.autographago.models;
 
 public class MetaDataResponseModel {
 
-    private String language;
-    private String Version;
-    private String Source;
-    private String License;
-    private int Year;
+    private String languageName;
+    private String languageCode;
+    private String versionCode;
+    private String versionName;
+    private String source;
+    private String license;
+    private int year;
 
-    public MetaDataResponseModel(String language, String version, String source, String license, int year) {
-        this.language = language;
-        this.Version = version;
-        this.Source = source;
-        this.License = license;
-        this.Year = year;
+    public MetaDataResponseModel(String languageName, String languageCode, String versionCode, String versionName, String source, String license, int year) {
+        this.languageName = languageName;
+        this.languageCode = languageCode;
+        this.versionCode = versionCode;
+        this.versionName = versionName;
+        this.source = source;
+        this.license = license;
+        this.year = year;
     }
 
     public MetaDataResponseModel() {
     }
 
     public MetaDataResponseModel(MetaDataResponseModel model) {
-        language = model.getLanguage();
-        Version = model.getVersion();
-        Source = model.getSource();
-        License = model.getLicense();
-        Year = model.getYear();
+        languageName = model.getLanguageName();
+        languageCode = model.getLanguageCode();
+        versionCode = model.getVersionCode();
+        versionName = model.getVersionName();
+        source = model.getSource();
+        license = model.getLicense();
+        year = model.getYear();
     }
 
-    public String getLanguage() {
-        return language;
+    public String getLanguageName() {
+        return languageName;
     }
 
-    public void setLanguage(String language) {
-        this.language = language;
+    public void setLanguageName(String languageName) {
+        this.languageName = languageName;
     }
 
-    public String getVersion() {
-        return Version;
+    public String getLanguageCode() {
+        return languageCode;
     }
 
-    public void setVersion(String version) {
-        this.Version = version;
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
+
+    public String getVersionCode() {
+        return versionCode;
+    }
+
+    public void setVersionCode(String versionCode) {
+        this.versionCode = versionCode;
+    }
+
+    public String getVersionName() {
+        return versionName;
+    }
+
+    public void setVersionName(String versionName) {
+        this.versionName = versionName;
     }
 
     public String getSource() {
-        return Source;
+        return source;
     }
 
     public void setSource(String source) {
-        this.Source = source;
+        this.source = source;
     }
 
     public String getLicense() {
-        return License;
+        return license;
     }
 
     public void setLicense(String license) {
-        this.License = license;
+        this.license = license;
     }
 
     public int getYear() {
-        return Year;
+        return year;
     }
 
     public void setYear(int year) {
-        this.Year = year;
+        this.year = year;
     }
 }

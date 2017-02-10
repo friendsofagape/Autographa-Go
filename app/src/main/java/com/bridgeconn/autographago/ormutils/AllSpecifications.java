@@ -23,6 +23,21 @@ public class AllSpecifications {
         }
     }
 
+    public static class LanguageModelByCode implements Specification<LanguageModel> {
+        private String code;
+
+        public LanguageModelByCode(String code) {
+            this.code = code;
+        }
+
+        @Override
+        public RealmResults<LanguageModel> generateResults(Realm realm) {
+            RealmQuery<LanguageModel> query = realm.where(LanguageModel.class);
+            query = query.equalTo("languageCode", code);
+            return query.findAll();
+        }
+    }
+
     public static class AllVersions implements Specification<VersionModel> {
         @Override
         public RealmResults<VersionModel> generateResults(Realm realm) {
@@ -30,10 +45,25 @@ public class AllSpecifications {
         }
     }
 
+    public static class BooksByLanguageAndVersion implements Specification<BookModel> {
+        private String language, version;
+
+        public BooksByLanguageAndVersion(String language, String version) {
+            this.language = language;
+            this.version = version;
+        }
+
+        @Override
+        public RealmResults<BookModel> generateResults(Realm realm) {
+            RealmQuery<BookModel> query = realm.where(BookModel.class);
+            return query.findAll();
+        }
+    }
+
     public static class AllBooks implements Specification<BookModel> {
         @Override
         public RealmResults<BookModel> generateResults(Realm realm) {
-            return realm.where(BookModel.class).findAll();
+            return realm.where(BookModel.class).findAll().sort("bookName");
         }
     }
 

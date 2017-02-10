@@ -10,7 +10,7 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
     private String bookId;
     private String bookName;
     private int chapterNumber;
-    private int verseNumber;
+    private String verseNumber;
     private String text;
 
     public SearchModel() {
@@ -48,11 +48,11 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
         this.chapterNumber = chapterNumber;
     }
 
-    public int getVerseNumber() {
+    public String getVerseNumber() {
         return verseNumber;
     }
 
-    public void setVerseNumber(int verseNumber) {
+    public void setVerseNumber(String verseNumber) {
         this.verseNumber = verseNumber;
     }
 
@@ -74,7 +74,7 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
         dest.writeString(this.bookId);
         dest.writeString(this.bookName);
         dest.writeInt(this.chapterNumber);
-        dest.writeInt(this.verseNumber);
+        dest.writeString(this.verseNumber);
         dest.writeString(this.text);
     }
 
@@ -82,7 +82,7 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
         this.bookId = in.readString();
         this.bookName = in.readString();
         this.chapterNumber = in.readInt();
-        this.verseNumber = in.readInt();
+        this.verseNumber = in.readString();
         this.text = in.readString();
     }
 

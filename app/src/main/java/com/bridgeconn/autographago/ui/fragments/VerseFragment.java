@@ -55,7 +55,7 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
         mVerseComponentsModels.clear();
         for (VerseComponentsModel model : chapterModel.getVerseComponentsModels()) {
             if (mVerseComponentsModels.size() > 0) {
-                if (model.getVerseNumber() == mVerseComponentsModels.get(mVerseComponentsModels.size() - 1).getVerseNumber()) {
+                if (model.getVerseNumber().equals(mVerseComponentsModels.get(mVerseComponentsModels.size() - 1).getVerseNumber())) {
                     continue;
                 } else {
                     mVerseComponentsModels.add(model);
@@ -77,7 +77,22 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
 
     private int getNumberOfVerses(BookModel bookModel) {
         ChapterModel chapterModel = bookModel.getChapterModels().get(mChapterNumber - 1);
-        return chapterModel.getVerseComponentsModels().get(chapterModel.getVerseComponentsModels().size() - 1).getVerseNumber();
+
+        int size = 0;
+        for (int i=0; i<chapterModel.getVerseComponentsModels().size(); i++) {
+            if (i==0) {
+                size++;
+            } else {
+                if (chapterModel.getVerseComponentsModels().get(i).getVerseNumber().equals(
+                        chapterModel.getVerseComponentsModels().get(i-1).getVerseNumber())) {
+                    continue;
+                } else {
+                    size++;
+                }
+            }
+        }
+        return size;
+//        return chapterModel.getVerseComponentsModels().get(chapterModel.getVerseComponentsModels().size() - 1).getVerseNumber();
     }
 
     @Override

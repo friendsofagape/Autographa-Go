@@ -119,7 +119,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         searchModel.setBookId(model.getBookId());
                         searchModel.setBookName(model.getBookName());
                         searchModel.setChapterNumber(1);
-                        searchModel.setVerseNumber(1);
+                        searchModel.setVerseNumber("1");
                         searchModel.setText(getVerseText(model.getChapterModels().get(0)));
                         mSearchResultModels.add(searchModel);
                         break;
@@ -132,7 +132,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private String getVerseText(ChapterModel chapterModel) {
         String text = "";
         for (VerseComponentsModel verseComponentsModel : chapterModel.getVerseComponentsModels()) {
-            if (verseComponentsModel.getVerseNumber() > 1) {
+            String [] verseNumberSplit = verseComponentsModel.getVerseNumber().split("-");
+            if (Integer.parseInt(verseNumberSplit[0]) > 1) {
+//            if (verseComponentsModel.getVerseNumber() > 1) {
                 break;
             }
             switch (verseComponentsModel.getType()) {

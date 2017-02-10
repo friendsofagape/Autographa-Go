@@ -3,11 +3,14 @@ package com.bridgeconn.autographago.utils;
 import android.content.Context;
 import android.util.Log;
 
+import com.bridgeconn.autographago.models.AllLanguagesModel;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VersionModel;
+import com.bridgeconn.autographago.ormutils.AllMappers;
+import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 
 import java.io.BufferedReader;
@@ -15,11 +18,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import io.realm.RealmList;
 
 public class USFMParser {
+
+    private AllLanguagesModel allLanguagesModel;
+    private List<LanguageModel> languageModelList;
 
     private LanguageModel languageModel;
     private RealmList<VersionModel> versionModelList;
@@ -30,7 +38,11 @@ public class USFMParser {
     private RealmList<ChapterModel> chapterModelList;
     private RealmList<VerseComponentsModel> verseComponentsModelList;
 
+    // TODO add hifen logic of verse number to parser also
     public USFMParser() {
+        allLanguagesModel = new AllLanguagesModel();
+        languageModelList = new ArrayList<>();
+
         languageModel = new LanguageModel();
         versionModelList = new RealmList<>();
         versionModel = new VersionModel();
@@ -55,7 +67,7 @@ public class USFMParser {
                 reader = new BufferedReader(new FileReader(new File(fileName)));
             }
             String mLine;
-            try {
+//            try {
                 while ((mLine = reader.readLine()) != null) {
                     processLine(context, mLine);
                 }
@@ -65,9 +77,9 @@ public class USFMParser {
                 addBookToContainer(languageName, versionCode, versionName);
 
                 return true;
-            } catch (Exception e) {
-                Log.e(Constants.TAG, "Exception in processing lines. So skipping this file" + e.toString());
-            }
+//            } catch (Exception e) {
+//                Log.e(Constants.TAG, "Exception in processing lines. So skipping this file" + e.toString());
+//            }
         } catch (IOException e) {
             Log.e(Constants.TAG, "Exception in reading file. " + e.toString());
         } finally {
@@ -87,8 +99,11 @@ public class USFMParser {
      * @param line each line in the file
      */
     private void processLine(Context context, String line) {
-        line = line.trim();
+//        line = line.trim();
         String[] splitString = line.split(Constants.Styling.SPLIT_SPACE);
+        if (splitString.length == 0) {
+            return;
+        }
         switch (splitString[0]) {
             case Constants.Markers.MARKER_BOOK_NAME: {
                 addBook(context, splitString);
@@ -234,7 +249,7 @@ public class USFMParser {
         }
 
         verseComponentsModel.setType(Constants.MarkerTypes.VERSE);
-        verseComponentsModel.setVerseNumber(Integer.parseInt(splitString[1]));
+        verseComponentsModel.setVerseNumber(splitString[1]);
 
         for (int i=2; i<splitString.length; i++) {
             // whenever a new marker comes in between a line, append a new line marker before that
@@ -246,10 +261,10 @@ public class USFMParser {
         verseComponentsModel.setText(stringBuilder.toString());
 
         for (int i=verseComponentsModelList.size()-1; i>=0; i--) {
-            if (verseComponentsModelList.get(i).getVerseNumber() > 0 ) {
+            if (verseComponentsModelList.get(i).getVerseNumber() != null) {//.equals("") ) {
                 break;
             }
-            verseComponentsModelList.get(i).setVerseNumber(Integer.parseInt(splitString[1]));
+            verseComponentsModelList.get(i).setVerseNumber(splitString[1]);
             if (chapterModelList.size() > 0) { // dont really need this check, but still
                 verseComponentsModelList.get(i).setChapterId(bookModel.getBookId() + "_" + chapterModelList.get(chapterModelList.size() - 1).getChapterNumber());
             }
@@ -267,13 +282,13 @@ public class USFMParser {
         if (chapterModelList.size() > 0) {
             if (verseComponentsModelList.size() > 0) {
                 for (VerseComponentsModel model : verseComponentsModelList) {
-                    if (model.getVerseNumber() > 0) {
+                    if (model.getVerseNumber() != null) {//.equals("")) {
                         chapterModelList.get(chapterModelList.size() - 1).getVerseComponentsModels().add(model);
                     }
                 }
                 for (Iterator<VerseComponentsModel> iterator = verseComponentsModelList.iterator(); iterator.hasNext(); ) {
                     VerseComponentsModel model = iterator.next();
-                    if (model.getVerseNumber() > 0) {
+                    if (model.getVerseNumber() != null) {//.equals("")) {
                         iterator.remove();
                     }
                 }
@@ -302,6 +317,20 @@ public class USFMParser {
         languageModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
 
         new AutographaRepository<BookModel>().add(bookModel);
+
+//        new AutographaRepository<LanguageModel>().add(languageModel);
+    }
+
+    private void someExtraWork(String languageCode) {
+        List<LanguageModel> languageModelList = new AutographaRepository<LanguageModel>().query(
+                new AllSpecifications.LanguageModelByCode(languageCode), new AllMappers.LanguageMapper());
+
+        if (languageModelList.size() > 0) {
+            // Append to this list
+        } else {
+            // create new list
+        }
+        new AutographaRepository<LanguageModel>().add(languageModel);
     }
 
     /**
@@ -312,8 +341,8 @@ public class USFMParser {
         if (verseComponentsModelList.size() > 0) {
             StringBuilder stringBuilder = new StringBuilder("");
             stringBuilder.append(verseComponentsModelList.get(verseComponentsModelList.size() - 1).getText());
-            stringBuilder.append(Constants.Styling.NEW_LINE);
-            stringBuilder.append(line);
+            stringBuilder.append(" " + Constants.Styling.NEW_LINE);
+            stringBuilder.append(" " + line + " ");
             verseComponentsModelList.get(verseComponentsModelList.size() - 1).setText(stringBuilder.toString());
         }
     }
@@ -325,7 +354,7 @@ public class USFMParser {
      */
     private void addFormattingToNextVerse(String line) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
-        verseComponentsModel.setText(line + " ");
+        verseComponentsModel.setText(" " + line + " ");
         verseComponentsModel.setAdded(false);
         verseComponentsModelList.add(verseComponentsModel);
     }

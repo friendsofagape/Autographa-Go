@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.bridgeconn.autographago.models.ResponseModel;
 
@@ -84,24 +85,13 @@ public class DownloadUtil {
         }.execute();
     }
 
-    public void downloadFile(final String fileUrl, final ProgressBar mProgress, final Context context,
-                             final String language, final String versionCode, final String versionName) {
+    public void downloadFile(final String fileUrl, final Context context,
+                             final String language, final String versionCode, final String versionName,
+                             final UnzipUtil.FileUnzipCallback unzipCallback) {
 
         final ApiInterface downloadService = retrofit.create(ApiInterface.class);
 
         new AsyncTask<Void, Long, Void>() {
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                mProgress.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                mProgress.setVisibility(View.GONE);
-            }
 
             @Override
             protected Void doInBackground(Void... voids) {
@@ -161,9 +151,10 @@ public class DownloadUtil {
 
                                         outputStream.flush();
 
-                                        UnzipUtil.unzipFile(new File(futureStudioIconFile.getAbsolutePath()), context, language, versionCode, versionName, mProgress);
+                                        UnzipUtil.unzipFile(new File(futureStudioIconFile.getAbsolutePath()), context, language, versionCode, versionName, unzipCallback);
                                         return ;
                                     } catch (IOException e) {
+                                        Toast.makeText(context, "File Error", Toast.LENGTH_SHORT).show();
                                         Log.e(Constants.DUMMY_TAG, e.toString());
                                         return ;
                                     } finally {
@@ -177,18 +168,22 @@ public class DownloadUtil {
                                     }
                                 } else {
                                     // TODO ask for permission to write to storage
+                                    Toast.makeText(context, "Storage Permission Error", Toast.LENGTH_SHORT).show();
                                     Log.e(Constants.DUMMY_TAG, "sd cannot write");
                                 }
                             } catch (IOException e) {
+                                Toast.makeText(context, "File write Error", Toast.LENGTH_SHORT).show();
                                 Log.e(Constants.DUMMY_TAG, e.toString());
                                 return;
                             }
                         } else {
+                            Toast.makeText(context, "Server Error", Toast.LENGTH_SHORT).show();
                             Log.d(Constants.DUMMY_TAG, "server contact failed");
                         }
                     }
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Toast.makeText(context, "Network Error", Toast.LENGTH_SHORT).show();
                         Log.e(Constants.DUMMY_TAG, "error");
                     }
                 });

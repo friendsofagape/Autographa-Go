@@ -16,10 +16,10 @@ public class ChapterViewHolder extends RecyclerView.ViewHolder {
     private RecyclerView mRecyclerView;
     private Activity mContext;
     private ArrayList<ChapterModel> mChapterModels;
-    private int mVerseNumber;
+    private String mVerseNumber;
     private int mChapterPosition;
 
-    public ChapterViewHolder(View itemView, Activity context, ArrayList<ChapterModel> chapterModels, int verseNumber, int chapterPosition) {
+    public ChapterViewHolder(View itemView, Activity context, ArrayList<ChapterModel> chapterModels, String verseNumber, int chapterPosition) {
         super(itemView);
         mRecyclerView = (RecyclerView) itemView.findViewById(R.id.list_chapters);
         mContext = context;
@@ -35,11 +35,12 @@ public class ChapterViewHolder extends RecyclerView.ViewHolder {
         mRecyclerView.setAdapter(adapter);
 
         // TODO fix this, this isn't working
-        if (mChapterPosition == position) {
-            if (mVerseNumber > 1) {
-                mRecyclerView.smoothScrollToPosition(mVerseNumber - 1);
-//                mRecyclerView.scrollToPosition(mVerseNumber - 1);
-            }
-        }
+        // TODO if this fixes, then also check for versenumber here
+//        if (mChapterPosition == position) {
+//            if (mVerseNumber > 1) {
+//                mRecyclerView.smoothScrollToPosition(mVerseNumber - 1);
+//      //          mRecyclerView.scrollToPosition(mVerseNumber - 1);
+//            }
+//        }
     }
 }
