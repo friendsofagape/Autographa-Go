@@ -5,6 +5,7 @@ import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.models.NotesModel;
 import com.bridgeconn.autographago.models.SearchHistoryModel;
+import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VersionModel;
 
@@ -56,6 +57,13 @@ public class AllMappers {
         @Override
         public NotesModel map(NotesModel notesModel) {
             return new NotesModel(notesModel);
+        }
+    }
+
+    public static class HistoryMapper implements Mapper<SearchModel, SearchModel> {
+        @Override
+        public SearchModel map(SearchModel searchModel) {
+            return new SearchModel(searchModel);
         }
     }
 

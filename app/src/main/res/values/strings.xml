@@ -33,4 +33,7 @@
     <string name="select_language">Select a Language</string>
     <string name="select_version">Select a Version</string>
 
+    <string name="notes">Notes</string>
+    <string name="history">History</string>
+
 </resources>

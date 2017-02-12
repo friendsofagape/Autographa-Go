@@ -6,7 +6,9 @@
 
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="black_60">#60000000</color>
     <color name="black_40">#40000000</color>
+    <color name="black_20">#20000000</color>
 
     <color name="yellow">#FFFFFF00</color>
 

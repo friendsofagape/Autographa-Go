@@ -95,6 +95,14 @@
                     android:src="@drawable/ic_search_white" />
 
                 <ImageView
+                    android:id="@+id/iv_history"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/menu_item_margin"
+                    android:tint="@color/white"
+                    android:src="@drawable/ic_history_white" />
+
+                <ImageView
                     android:id="@+id/iv_settings"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

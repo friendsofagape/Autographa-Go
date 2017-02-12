@@ -21,20 +21,11 @@
                 android:layout_height="match_parent" >
 
                 <TextView
-                    android:text="@string/notes"
+                    android:text="@string/history"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:textSize="@dimen/title"
                     android:textColor="@color/white"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:id="@+id/iv_new_note"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_note_add_white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -49,14 +40,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_margin="@dimen/activity_horizontal_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/list_notes"
+            android:id="@+id/list_history"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/item_note" />
+            tools:listitem="@layout/item_history" />
 
     </LinearLayout>
 

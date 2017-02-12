@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
+import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.activities.BookActivity;
 import com.bridgeconn.autographago.ui.activities.SelectChapterAndVerseActivity;
 import com.bridgeconn.autographago.utils.Constants;
@@ -49,20 +50,31 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
         switch (v.getId()) {
             case R.id.tv_number: {
                 String verseNumber = (String) v.getTag();
+
+                SearchModel model = new SearchModel();
+                model.setVerseNumber(verseNumber);
+                model.setChapterNumber(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
+
                 if (mOpenBook) {
+
+                    model.setBookId(mBookId);
+                    model.setBookName(UtilFunctions.getBookNameFromMapping(mFragment.getContext(), mBookId));
+                    model.setTimeStamp(System.currentTimeMillis());
+
+                    new AutographaRepository<SearchModel>().add(model);
+
                     Intent intent = new Intent(mFragment.getContext(), BookActivity.class);
                     intent.putExtra(Constants.Keys.BOOK_ID, mBookId);
                     intent.putExtra(Constants.Keys.CHAPTER_NO, ((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
                     intent.putExtra(Constants.Keys.VERSE_NO, verseNumber);
                     mFragment.startActivity(intent);
+
                 } else {
-                    Intent output = new Intent();
-                    SearchModel model = new SearchModel();
-                    model.setVerseNumber(verseNumber);
-                    model.setChapterNumber(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
+
                     model.setBookId(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedBook());
                     model.setBookName(UtilFunctions.getBookNameFromMapping(mFragment.getContext(), ((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedBook()));
 
+                    Intent output = new Intent();
                     output.putExtra(Constants.Keys.VERSE_NOTE_MODEL, model);
 
                     mFragment.getActivity().setResult(RESULT_OK, output);

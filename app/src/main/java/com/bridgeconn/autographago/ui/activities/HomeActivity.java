@@ -33,6 +33,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mNotesView;
     private ImageView mMenuView;
     private ImageView mSearchView;
+    private ImageView mHistoryView;
     private ImageView mSettingsView;
     private RecyclerView mRecyclerView;
     private BookAdapter mAdapter;
@@ -69,6 +70,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mNotesView = (ImageView) findViewById(R.id.iv_notes);
         mMenuView = (ImageView) findViewById(R.id.iv_menu);
         mSearchView = (ImageView) findViewById(R.id.iv_search);
+        mHistoryView = (ImageView) findViewById(R.id.iv_history);
         mSettingsView = (ImageView) findViewById(R.id.iv_settings);
         mRecyclerView = (RecyclerView) findViewById(R.id.list_books);
         mSpinner = (AppCompatSpinner) findViewById(R.id.spinner);
@@ -82,6 +84,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mNotesView.setOnClickListener(this);
         mMenuView.setOnClickListener(this);
         mSearchView.setOnClickListener(this);
+        mHistoryView.setOnClickListener(this);
         mSettingsView.setOnClickListener(this);
 
         List<String> categories = new ArrayList<>();
@@ -144,6 +147,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.iv_search: {
                 Intent searchIntent = new Intent(this, SearchActivity.class);
                 startActivity(searchIntent);
+                break;
+            }
+            case R.id.iv_history: {
+                Intent historyIntent = new Intent(this, HistoryActivity.class);
+                startActivity(historyIntent);
                 break;
             }
             case R.id.iv_settings: {

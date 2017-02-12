@@ -5,6 +5,7 @@ import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.models.NotesModel;
 import com.bridgeconn.autographago.models.SearchHistoryModel;
+import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VersionModel;
 
@@ -176,6 +177,13 @@ public class AllSpecifications {
             RealmQuery<NotesModel> query = realm.where(NotesModel.class);
             query = query.equalTo("timestamp", id);
             return query.findAll();
+        }
+    }
+
+    public static class AllHistory implements Specification<SearchModel> {
+        @Override
+        public RealmResults<SearchModel> generateResults(Realm realm) {
+            return realm.where(SearchModel.class).findAll().sort("timeStamp", Sort.DESCENDING);
         }
     }
 

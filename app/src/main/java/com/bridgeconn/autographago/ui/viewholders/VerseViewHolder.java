@@ -42,15 +42,6 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public void onBind(int position) {
         // TODO here find exact positon of verse number by looking into chapter model
         ArrayList<VerseComponentsModel> verseComponentsModels = new ArrayList<>();
-//        for (VerseComponentsModel model : mChapterModel.getVerseComponentsModels()) {
-//            if (model.getVerseNumber().compareTo(String.valueOf(verseNumber)) == 0) {
-//                verseComponentsModels.add(model);
-//            } else if (model.getVerseNumber().compareTo(String.valueOf(verseNumber)) > 0) {
-//                break;
-//            } else {
-//                continue;
-//            }
-//        }
 
         List<String> verseNumberList = new ArrayList<>();
         for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
