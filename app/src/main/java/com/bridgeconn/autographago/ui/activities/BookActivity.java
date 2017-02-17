@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,6 +22,7 @@ import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.ChapterAdapter;
+import com.bridgeconn.autographago.ui.customviews.BounceInterpolator;
 import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
@@ -231,6 +234,12 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_bookmark: {
+
+                BounceInterpolator interpolator = new BounceInterpolator(0.2, 20);
+                final Animation myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
+                myAnim.setInterpolator(interpolator);
+                mIvBookMark.startAnimation(myAnim);
+
                 mIvBookMark.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
 
                 int position = mLayoutManager.findFirstVisibleItemPosition();

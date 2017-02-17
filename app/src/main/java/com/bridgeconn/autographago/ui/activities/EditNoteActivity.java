@@ -308,33 +308,33 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         switch (requestCode) {
             case Constants.RequestCodes.EDIT_NOTES: {
                 if (resultCode == RESULT_OK) {
-                    // TODO here book name is always first one
                     final SearchModel model = data.getParcelableExtra(Constants.Keys.VERSE_NOTE_MODEL);
-                    mVerseList.add(model);
-                    final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
-                    TextView button = (TextView) view.findViewById(R.id.button);
-                    button.setText(model.getBookName() + " " +
-                            model.getChapterNumber() + Constants.Styling.CHAR_COLON +
-                            model.getVerseNumber());
-                    ImageView remove = (ImageView) view.findViewById(R.id.iv_remove);
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(EditNoteActivity.this, BookActivity.class);
-                            intent.putExtra(Constants.Keys.BOOK_ID, model.getBookId());
-                            intent.putExtra(Constants.Keys.CHAPTER_NO,model.getChapterNumber());
-                            intent.putExtra(Constants.Keys.VERSE_NO, model.getVerseNumber());
-                            startActivity(intent);
-                        }
-                    });
-                    remove.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mVerseList.remove(model);
-                            mButtonLayout.removeView(view);
-                        }
-                    });
-                    mButtonLayout.addView(view);
+                    if (mVerseList.add(model)) {
+                        final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
+                        TextView button = (TextView) view.findViewById(R.id.button);
+                        button.setText(model.getBookName() + " " +
+                                model.getChapterNumber() + Constants.Styling.CHAR_COLON +
+                                model.getVerseNumber());
+                        ImageView remove = (ImageView) view.findViewById(R.id.iv_remove);
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(EditNoteActivity.this, BookActivity.class);
+                                intent.putExtra(Constants.Keys.BOOK_ID, model.getBookId());
+                                intent.putExtra(Constants.Keys.CHAPTER_NO, model.getChapterNumber());
+                                intent.putExtra(Constants.Keys.VERSE_NO, model.getVerseNumber());
+                                startActivity(intent);
+                            }
+                        });
+                        remove.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mVerseList.remove(model);
+                                mButtonLayout.removeView(view);
+                            }
+                        });
+                        mButtonLayout.addView(view);
+                    }
                 }
                 break;
             }

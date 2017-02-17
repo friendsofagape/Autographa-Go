@@ -118,7 +118,7 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
                 this.bookId != null &&
                 this.bookId.equals(((SearchModel) obj).bookId) &&
                 this.chapterNumber == ((SearchModel) obj).chapterNumber &&
-                this.verseNumber == ((SearchModel) obj).verseNumber;
+                this.verseNumber.equals(((SearchModel) obj).verseNumber);
     }
 
     @Override
