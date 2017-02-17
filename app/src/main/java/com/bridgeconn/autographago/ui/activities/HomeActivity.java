@@ -51,22 +51,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
-        RealmConfiguration config = new RealmConfiguration.Builder(this).build();
-        Realm.setDefaultConfiguration(config);
-
-        String [] fileNames = {Constants.USFMFiles.HOSEA, Constants.USFMFiles._3_JOHN, Constants.USFMFiles.ZEPHANIAH};
-
-        for (int i=0; i<fileNames.length; i++) {
-            ArrayList<BookModel> bookModels = new AutographaRepository<BookModel>().query(new AllSpecifications.BookModelById(fileNames[i]), new AllMappers.BookMapper());
-            if (bookModels.size() > 0) {
-                // already in db
-            } else {
-                // add to db
-                USFMParser usfmParser = new USFMParser();
-                usfmParser.parseUSFMFile(this, fileNames[i], true, "English", "ULB", "Unlocked Literal Bible");
-            }
-        }
-
         mNotesView = (ImageView) findViewById(R.id.iv_notes);
         mMenuView = (ImageView) findViewById(R.id.iv_menu);
         mSearchView = (ImageView) findViewById(R.id.iv_search);
@@ -122,8 +106,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getAllBooks() {
-
-        new AutographaRepository<BookModel>().addToContainer();
 
         for (BookModel bookModel : Constants.CONTAINER.getBookModelList()) {
             mBookModelArrayList.add(bookModel);

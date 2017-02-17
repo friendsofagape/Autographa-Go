@@ -13,22 +13,22 @@
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.activities.HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-
+        <activity android:name=".ui.activities.SplashActivity"
+            android:theme="@style/SplashTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
                 <!--<action android:name="android.intent.action.VIEW"/>-->
-
                 <!--<category android:name="android.intent.category.DEFAULT"/>-->
                 <!--<category android:name="android.intent.category.BROWSABLE"/>-->
-
                 <!--<data android:scheme="file"-->
                 <!--android:mimeType="*/*"-->
                 <!--android:pathPattern=".*\\.usfm" />-->
-
             </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.activities.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity android:name=".ui.activities.BookActivity"
