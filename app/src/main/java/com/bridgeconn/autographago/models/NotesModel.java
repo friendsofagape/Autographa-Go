@@ -13,7 +13,7 @@ public class NotesModel extends RealmObject implements Parcelable {
     private long timestamp;
     private String title;
     private String text;
-    private RealmList<SearchModel> verseIds = new RealmList<>();
+    private RealmList<VerseIdModel> verseIds = new RealmList<>();
 
     public NotesModel(NotesModel model) {
         timestamp = model.getTimestamp();
@@ -49,11 +49,11 @@ public class NotesModel extends RealmObject implements Parcelable {
         this.text = text;
     }
 
-    public RealmList<SearchModel> getVerseIds() {
+    public RealmList<VerseIdModel> getVerseIds() {
         return verseIds;
     }
 
-    public void setVerseIds(RealmList<SearchModel> verseIds) {
+    public void setVerseIds(RealmList<VerseIdModel> verseIds) {
         this.verseIds = verseIds;
     }
 
@@ -75,7 +75,7 @@ public class NotesModel extends RealmObject implements Parcelable {
         this.title = in.readString();
         this.text = in.readString();
         this.verseIds = new RealmList<>();
-        in.readList(this.verseIds, SearchModel.class.getClassLoader());
+        in.readList(this.verseIds, VerseIdModel.class.getClassLoader());
     }
 
     public static final Creator<NotesModel> CREATOR = new Creator<NotesModel>() {
@@ -92,7 +92,7 @@ public class NotesModel extends RealmObject implements Parcelable {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof SearchModel &&
+        return obj instanceof NotesModel &&
                 this.title != null &&
                 this.text != null &&
                 this.timestamp == ((NotesModel) obj).timestamp &&

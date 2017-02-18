@@ -97,6 +97,7 @@ public class Constants {
         String OPEN_BOOK = "open_book";
         String VERSE_NOTE_MODEL = "verse_note_model";
         String SAVED_NOTE_TIMESTAMP = "saved_note_timestamp";
+        String NOTES_MODEL = "notes_model";
     }
 
     public interface RequestCodes {

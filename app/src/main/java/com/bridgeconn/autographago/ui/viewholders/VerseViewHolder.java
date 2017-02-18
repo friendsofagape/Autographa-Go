@@ -2,7 +2,6 @@ package com.bridgeconn.autographago.ui.viewholders;
 
 import android.app.Activity;
 import android.os.Build;
-import android.support.annotation.IntegerRes;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spannable;
@@ -40,7 +39,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
     }
 
     public void onBind(int position) {
-        // TODO here find exact positon of verse number by looking into chapter model
+        // TODO here find exact position of verse number by looking into chapter model
         ArrayList<VerseComponentsModel> verseComponentsModels = new ArrayList<>();
 
         List<String> verseNumberList = new ArrayList<>();
@@ -85,15 +84,23 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
         switch (v.getId()) {
             case R.id.tv_chapter: {
                 String verseNumber = (String) v.getTag();
+                String verseNo = verseNumber;
+                int verNumberOne = Integer.parseInt(verseNo.split("-")[0]);
+
                 Spannable spannable = new SpannableString(mTvChapter.getText());
                 UnderlineSpan [] spans = spannable.getSpans(0, spannable.length(), UnderlineSpan.class);
                 if (spans.length > 0) {
                     for (UnderlineSpan span : spans) {
                         spannable.removeSpan(span);
+
                         for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
-                            if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber().compareTo(verseNumber) == 0) {
+
+                            VerseComponentsModel model = mChapterModel.getVerseComponentsModels().get(i);
+                            int verseNumberStringOne = Integer.parseInt(model.getVerseNumber().split("-")[0]);
+
+                            if (verseNumberStringOne == verNumberOne) {
                                 mChapterModel.getVerseComponentsModels().get(i).setSelected(false);
-                            } else if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber().compareTo(verseNumber) > 0) {
+                            } else if (verseNumberStringOne > verNumberOne) {
                                 break;
                             } else {
                                 continue;
@@ -102,12 +109,16 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                     }
                 } else {
                     for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
-                        if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber().compareTo(verseNumber) == 0) {
+
+                        VerseComponentsModel model = mChapterModel.getVerseComponentsModels().get(i);
+                        int verseNumberStringOne = Integer.parseInt(model.getVerseNumber().split("-")[0]);
+
+                        if (verseNumberStringOne == verNumberOne) {
                             mChapterModel.getVerseComponentsModels().get(i).setSelected(true);
                             if (mContext instanceof BookActivity) {
                                 ((BookActivity) mContext).showBottomBar();
                             }
-                        } else if (mChapterModel.getVerseComponentsModels().get(i).getVerseNumber().compareTo(verseNumber) > 0) {
+                        } else if (verseNumberStringOne > verNumberOne) {
                             break;
                         } else {
                             continue;

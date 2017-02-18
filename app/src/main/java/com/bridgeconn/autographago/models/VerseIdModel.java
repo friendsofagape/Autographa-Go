@@ -4,9 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
-public class SearchModel extends RealmObject implements Parcelable {//}, Serializable {
+public class VerseIdModel extends RealmObject implements Parcelable {
 
     private String bookId;
     private String bookName;
@@ -14,20 +13,19 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
     private String verseNumber;
     private String text;
     private long timeStamp;
-    @PrimaryKey
     private String searchId;
 
-    public SearchModel() {
+    public VerseIdModel() {
     }
 
-    public SearchModel(SearchModel searchModel) {
-        bookId = searchModel.getBookId();
-        bookName = searchModel.getBookName();
-        chapterNumber = searchModel.getChapterNumber();
-        verseNumber = searchModel.getVerseNumber();
-        text = searchModel.getText();
-        timeStamp = searchModel.getTimeStamp();
-        searchId = searchModel.getSearchId();
+    public VerseIdModel(VerseIdModel verseIdModel) {
+        bookId = verseIdModel.getBookId();
+        bookName = verseIdModel.getBookName();
+        chapterNumber = verseIdModel.getChapterNumber();
+        verseNumber = verseIdModel.getVerseNumber();
+        text = verseIdModel.getText();
+        timeStamp = verseIdModel.getTimeStamp();
+        searchId = verseIdModel.getSearchId();
     }
 
     public String getBookId() {
@@ -102,7 +100,7 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
         dest.writeString(this.searchId);
     }
 
-    protected SearchModel(Parcel in) {
+    protected VerseIdModel(Parcel in) {
         this.bookId = in.readString();
         this.bookName = in.readString();
         this.chapterNumber = in.readInt();
@@ -112,25 +110,25 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
         this.searchId = in.readString();
     }
 
-    public static final Creator<SearchModel> CREATOR = new Creator<SearchModel>() {
+    public static final Creator<VerseIdModel> CREATOR = new Creator<VerseIdModel>() {
         @Override
-        public SearchModel createFromParcel(Parcel source) {
-            return new SearchModel(source);
+        public VerseIdModel createFromParcel(Parcel source) {
+            return new VerseIdModel(source);
         }
 
         @Override
-        public SearchModel[] newArray(int size) {
-            return new SearchModel[size];
+        public VerseIdModel[] newArray(int size) {
+            return new VerseIdModel[size];
         }
     };
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof SearchModel &&
+        return obj instanceof VerseIdModel &&
                 this.bookId != null &&
-                this.bookId.equals(((SearchModel) obj).bookId) &&
-                this.chapterNumber == ((SearchModel) obj).chapterNumber &&
-                this.verseNumber.equals(((SearchModel) obj).verseNumber);
+                this.bookId.equals(((VerseIdModel) obj).bookId) &&
+                this.chapterNumber == ((VerseIdModel) obj).chapterNumber &&
+                this.verseNumber.equals(((VerseIdModel) obj).verseNumber);
     }
 
     @Override

@@ -76,6 +76,7 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
     }
 
     private int getNumberOfVerses(BookModel bookModel) {
+        // TODO fix book model not getting updated ??
         ChapterModel chapterModel = bookModel.getChapterModels().get(mChapterNumber - 1);
 
         int size = 0;

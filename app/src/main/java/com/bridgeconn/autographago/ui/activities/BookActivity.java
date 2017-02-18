@@ -18,8 +18,8 @@ import android.widget.TextView;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
-import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
+import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.ChapterAdapter;
 import com.bridgeconn.autographago.ui.customviews.BounceInterpolator;
@@ -154,22 +154,23 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void findSelectedAndAddNote() {
-        HashSet<SearchModel> searchModelSet = new HashSet<>();
-        ArrayList<SearchModel> models = new ArrayList<>();
+        HashSet<VerseIdModel> verseIdModelHashSet = new HashSet<>();
+        ArrayList<VerseIdModel> models = new ArrayList<>();
         for (int i=0;  i<mChapterModels.size(); i++) {
             for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
                 if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {
                     mChapterModels.get(i).getVerseComponentsModels().get(j).setSelected(false);
-                    SearchModel searchModel = new SearchModel();
-                    searchModel.setBookId(mBookId);
-                    searchModel.setBookName(mBookModel.getBookName());
-                    searchModel.setChapterNumber(mChapterModels.get(i).getChapterNumber());
-                    searchModel.setVerseNumber(mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber());
-                    searchModelSet.add(searchModel);
+                    VerseIdModel verseIdModel = new VerseIdModel();
+                    verseIdModel.setBookId(mBookId);
+                    verseIdModel.setBookName(mBookModel.getBookName());
+                    verseIdModel.setChapterNumber(mChapterModels.get(i).getChapterNumber());
+                    verseIdModel.setVerseNumber(mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber());
+                    verseIdModelHashSet.add(verseIdModel);
                 }
             }
         }
-        for (SearchModel model : searchModelSet) {
+        // TODO fix this set, all items not added properly
+        for (VerseIdModel model : verseIdModelHashSet) {
             models.add(model);
         }
         mAdapter.notifyDataSetChanged();

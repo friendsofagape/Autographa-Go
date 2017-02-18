@@ -55,7 +55,9 @@ public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             case R.id.note_view: {
                 int position = (int) v.getTag();
                 Intent intent = new Intent(mContext, EditNoteActivity.class);
-                intent.putExtra(Constants.Keys.SAVED_NOTE_TIMESTAMP, mNotesModels.get(position).getTimestamp());
+                mNotesModels.get(position);
+                intent.putExtra(Constants.Keys.NOTES_MODEL, mNotesModels.get(position));
+//                intent.putExtra(Constants.Keys.SAVED_NOTE_TIMESTAMP, mNotesModels.get(position).getTimestamp());
                 mContext.startActivity(intent);
                 break;
             }

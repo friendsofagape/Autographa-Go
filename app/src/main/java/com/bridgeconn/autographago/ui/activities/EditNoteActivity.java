@@ -13,6 +13,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,7 +27,7 @@ import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.NotesModel;
-import com.bridgeconn.autographago.models.SearchModel;
+import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
@@ -50,7 +51,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
     private TextView mSave;
     private LinearLayout mButtonLayout;
     private ImageView mAddVerse;
-    private HashSet<SearchModel> mVerseList = new HashSet<>();
+    private HashSet<VerseIdModel> mVerseList = new HashSet<>();
     private long mTimeStamp = 0;
 
     @Override
@@ -124,18 +125,13 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
             }
         });
 
-        // TODO new note or edit note
-
         Intent intent = getIntent();
-        long savedNoteTimeStamp = intent.getLongExtra(Constants.Keys.SAVED_NOTE_TIMESTAMP, 0);
-        if (savedNoteTimeStamp > 0) {
-            List<NotesModel> notesModels = query(new AllSpecifications.NotesById(savedNoteTimeStamp), new AllMappers.NotesMapper());
-            for (NotesModel notesModel : notesModels) {
+        NotesModel notesModel = intent.getParcelableExtra(Constants.Keys.NOTES_MODEL);
+        if (notesModel != null) {
                 mEtTitle.setText(notesModel.getTitle());
                 mEditor.setText(notesModel.getText());
                 mTimeStamp = notesModel.getTimestamp();
-
-                for (final SearchModel model : notesModel.getVerseIds()) {
+                for (final VerseIdModel model : notesModel.getVerseIds()) {
                     mVerseList.add(model);
                     final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
                     TextView button = (TextView) view.findViewById(R.id.button);
@@ -159,13 +155,10 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                     });
                     mButtonLayout.addView(view);
                 }
-
-                break;
-            }
         } else {
-            ArrayList<SearchModel> models = intent.getParcelableArrayListExtra(Constants.Keys.VERSE_MODELS);
+            ArrayList<VerseIdModel> models = intent.getParcelableArrayListExtra(Constants.Keys.VERSE_MODELS);
             if (models != null) {
-                for (final SearchModel model : models) {
+                for (final VerseIdModel model : models) {
                     mVerseList.add(model);
                     final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
                     TextView button = (TextView) view.findViewById(R.id.button);
@@ -308,7 +301,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         switch (requestCode) {
             case Constants.RequestCodes.EDIT_NOTES: {
                 if (resultCode == RESULT_OK) {
-                    final SearchModel model = data.getParcelableExtra(Constants.Keys.VERSE_NOTE_MODEL);
+                    final VerseIdModel model = data.getParcelableExtra(Constants.Keys.VERSE_NOTE_MODEL);
                     if (mVerseList.add(model)) {
                         final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
                         TextView button = (TextView) view.findViewById(R.id.button);
@@ -345,11 +338,11 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         NotesModel notesModel = new NotesModel();
         notesModel.setTitle(mEtTitle.getText().toString());
         notesModel.setText(mEditor.getText().toString());
-        RealmList<SearchModel> list = new RealmList<>();
-        for (SearchModel model : mVerseList) {
+        RealmList<VerseIdModel> list = new RealmList<>();
+        for (VerseIdModel model : mVerseList) {
             list.add(model);
+            notesModel.getVerseIds().add(model);
         }
-        notesModel.setVerseIds(list);
         if (mTimeStamp > 0) {
             // previous note
             notesModel.setTimestamp(mTimeStamp);
@@ -358,8 +351,18 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
             notesModel.setTimestamp(System.currentTimeMillis());
             new AutographaRepository<NotesModel>().add(notesModel);
         }
+        for (int i=0; i<notesModel.getVerseIds().size(); i++) {
+            Log.i(Constants.DUMMY_TAG, "SAVED == " + notesModel.getVerseIds().get(i).getBookId() + " :: " + notesModel.getVerseIds().get(i).getChapterNumber() + " :: " + notesModel.getVerseIds().get(i).getVerseNumber());
+        }
+
+        List<NotesModel> resultList = new AutographaRepository<NotesModel>().query(new AllSpecifications.NotesById(notesModel.getTimestamp()), new AllMappers.NotesMapper());
+        for (NotesModel model : resultList) {
+            for (int i=0; i<model.getVerseIds().size(); i++) {
+                Log.i(Constants.DUMMY_TAG, "RESULT == " + model.getVerseIds().get(i).getBookId() + " :: " + model.getVerseIds().get(i).getChapterNumber() + " :: " + model.getVerseIds().get(i).getVerseNumber());
+            }
+        }
+
         Toast.makeText(EditNoteActivity.this, getString(R.string.note_saved), Toast.LENGTH_SHORT).show();
-        // TODO call notify item added to notes list in notes activity
         finish();
     }
 
