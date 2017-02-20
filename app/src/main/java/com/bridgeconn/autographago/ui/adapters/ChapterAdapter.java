@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.ChapterModel;
-import com.bridgeconn.autographago.ui.viewholders.ChapterViewHolder;
+import com.bridgeconn.autographago.ui.viewholders.VerseViewHolder;
 
 import java.util.ArrayList;
 
@@ -29,19 +29,35 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ChapterViewHolder(mLayoutInflater.inflate(R.layout.item_chapter, parent, false), mContext, mChapterModels, mVerseNumber, mChapterPosition);
+        return new VerseViewHolder(mLayoutInflater.inflate(R.layout.item_verse, parent, false), mContext, mChapterModels);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof ChapterViewHolder) {
-            ((ChapterViewHolder) holder).onBind(position);
+        if (holder instanceof VerseViewHolder) {
+            ((VerseViewHolder) holder).onBind(position);
         }
     }
 
     @Override
     public int getItemCount() {
-        return mChapterModels.size();
+        int size = 0;
+
+        for (int k=0; k<mChapterModels.size(); k++) {
+            for (int i=0; i<mChapterModels.get(k).getVerseComponentsModels().size(); i++) {
+                if (i==0) {
+                    size++;
+                } else {
+                    if (mChapterModels.get(k).getVerseComponentsModels().get(i).getVerseNumber().equals(
+                            mChapterModels.get(k).getVerseComponentsModels().get(i-1).getVerseNumber())) {
+                        continue;
+                    } else {
+                        size++;
+                    }
+                }
+            }
+        }
+        return size;
     }
 
 }

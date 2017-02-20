@@ -30,7 +30,6 @@ import java.util.HashSet;
 
 public class BookActivity extends AppCompatActivity implements View.OnClickListener {
 
-    //    private Button unzipButton;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private ChapterAdapter mAdapter;
@@ -104,9 +103,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
             mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
         }
 
-        if (chapterNumber > 1) {
-            mRecyclerView.scrollToPosition(chapterNumber - 1);
-        }
+        mRecyclerView.scrollToPosition(findPositionToScroll(chapterNumber-1, verseNumber));
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -119,8 +116,9 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 super.onScrolled(recyclerView, dx, dy);
 
                 int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+                int chapterNum = findChapterNumber(firstVisibleItem);
                 if (mBookMarkNumber > 0) {
-                    if (firstVisibleItem == mBookMarkNumber - 1) {
+                    if (chapterNum == mBookMarkNumber) {
                         mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
                     } else {
                         mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.white));
@@ -128,6 +126,31 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
+    }
+
+    private int findPositionToScroll(int chapterPosition, String verseNumber) {
+        int size = 0;
+        for (int k=0; k<mChapterModels.size(); k++) {
+            for (int i=0; i<mChapterModels.get(k).getVerseComponentsModels().size(); i++) {
+                if (i==0) {
+                    if (k == chapterPosition && mChapterModels.get(k).getVerseComponentsModels().get(i).getVerseNumber().equals(verseNumber)) {
+                        return size;
+                    }
+                    size++;
+                } else {
+                    if (mChapterModels.get(k).getVerseComponentsModels().get(i).getVerseNumber().equals(
+                            mChapterModels.get(k).getVerseComponentsModels().get(i-1).getVerseNumber())) {
+                        continue;
+                    } else {
+                        if (k == chapterPosition && mChapterModels.get(k).getVerseComponentsModels().get(i).getVerseNumber().equals(verseNumber)) {
+                            return size;
+                        }
+                        size++;
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
     @Override
@@ -169,7 +192,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }
-        // TODO fix this set, all items not added properly
         for (VerseIdModel model : verseIdModelHashSet) {
             models.add(model);
         }
@@ -231,6 +253,31 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         mAdapter.notifyDataSetChanged();
     }
 
+    private int findChapterNumber(int position) {
+        int size = 0;
+        for (int i=0; i<mChapterModels.size(); i++) {
+            for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
+                if (j==0) {
+                    if (size == position) {
+                        return i+1;
+                    }
+                    size++;
+                } else {
+                    if (mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber().equals(
+                            mChapterModels.get(i).getVerseComponentsModels().get(j-1).getVerseNumber())) {
+                        continue;
+                    } else {
+                        if (size == position) {
+                            return i+1;
+                        }
+                        size++;
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -245,7 +292,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
                 int position = mLayoutManager.findFirstVisibleItemPosition();
 
-                mBookMarkNumber = position + 1;
+                mBookMarkNumber = findChapterNumber(position);
 
                 for (int k = 0; k < Constants.CONTAINER.getBookModelList().size(); k++) {
                     if (Constants.CONTAINER.getBookModelList().get(k).getBookId().equals(mBookId)) {
@@ -307,7 +354,4 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     // TODO clear this - how do we store highlights in db, or map notes in db
-    // TODO for this, wither each verse component will be new line
-    // TODO as user can select any text
-    // TODO or we store position of text along with each component, and there can be multiple positionings for one component
 }

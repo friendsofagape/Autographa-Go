@@ -28,18 +28,73 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     private TextView mTvChapter;
     private Activity mContext;
-    private ChapterModel mChapterModel;
+    private ArrayList<ChapterModel> mChapterModels;
 
-    public VerseViewHolder(View itemView, Activity context, ChapterModel chapterModel) {//}, ArrayList<VerseComponentsModel> verseComponentsModels) {
+    public VerseViewHolder(View itemView, Activity context, ArrayList<ChapterModel> chapterModels) {//}, ArrayList<VerseComponentsModel> verseComponentsModels) {
         super(itemView);
         mTvChapter = (TextView) itemView.findViewById(R.id.tv_chapter);
 
         mContext = context;
-        mChapterModel = chapterModel;
+        mChapterModels = chapterModels;
+    }
+
+    private int findChapterNumber(int position) {
+        int size = 0;
+        for (int i=0; i<mChapterModels.size(); i++) {
+            for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
+                if (j==0) {
+                    if (size == position) {
+                        return i+1;
+                    }
+                    size++;
+                } else {
+                    if (mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber().equals(
+                            mChapterModels.get(i).getVerseComponentsModels().get(j-1).getVerseNumber())) {
+                        continue;
+                    } else {
+                        if (size == position) {
+                            return i+1;
+                        }
+                        size++;
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
+    private String findVerseNumber(int position) {
+        int size = 0;
+        for (int i=0; i<mChapterModels.size(); i++) {
+            for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
+                if (j==0) {
+                    if (size == position) {
+                        return mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber();
+                    }
+                    size++;
+                } else {
+                    if (mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber().equals(
+                            mChapterModels.get(i).getVerseComponentsModels().get(j-1).getVerseNumber())) {
+                        continue;
+                    } else {
+                        if (size == position) {
+                            return mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber();
+                        }
+                        size++;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public void onBind(int position) {
-        // TODO here find exact position of verse number by looking into chapter model
+        int chapterNumber = findChapterNumber(position);
+        if (chapterNumber < 1) {
+            return;
+        }
+        ChapterModel mChapterModel = mChapterModels.get(chapterNumber-1);
+
         ArrayList<VerseComponentsModel> verseComponentsModels = new ArrayList<>();
 
         List<String> verseNumberList = new ArrayList<>();
@@ -55,27 +110,25 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
             }
         }
 
-        String verseNumber = verseNumberList.get(position);
+        String verseNumber = findVerseNumber(position);
+        if (verseNumber == null) {
+            return;
+        }
         int verNumberOne = Integer.parseInt(verseNumber.split("-")[0]);
-
         for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
-            // TODO change compareTo function, as when it compares 10 with 9 it seems that 9>10
             VerseComponentsModel model = mChapterModel.getVerseComponentsModels().get(i);
             int verseNumberStringOne = Integer.parseInt(model.getVerseNumber().split("-")[0]);
             if (verseNumberStringOne == verNumberOne) {
-//            if (model.getVerseNumber().compareTo(verseNumber) == 0) {
                 verseComponentsModels.add(model);
             } else if (verseNumberStringOne > verNumberOne) {
-//            } else if (model.getVerseNumber().compareTo(verseNumber) > 0) {
                 break;
             } else {
                 continue;
             }
         }
+        addAllContent(verseComponentsModels, chapterNumber);
 
-        addAllContent(verseComponentsModels);
-
-        mTvChapter.setTag(verseNumber);
+        mTvChapter.setTag(position);
         mTvChapter.setOnClickListener(this);
     }
 
@@ -83,7 +136,9 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_chapter: {
-                String verseNumber = (String) v.getTag();
+                int position = (int) v.getTag();
+
+                String verseNumber = findVerseNumber(position);
                 String verseNo = verseNumber;
                 int verNumberOne = Integer.parseInt(verseNo.split("-")[0]);
 
@@ -92,7 +147,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 if (spans.length > 0) {
                     for (UnderlineSpan span : spans) {
                         spannable.removeSpan(span);
-
+                        ChapterModel mChapterModel = mChapterModels.get(findChapterNumber(position) - 1);
                         for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
 
                             VerseComponentsModel model = mChapterModel.getVerseComponentsModels().get(i);
@@ -108,6 +163,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                         }
                     }
                 } else {
+                    ChapterModel mChapterModel = mChapterModels.get(findChapterNumber(position) - 1);
                     for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
 
                         VerseComponentsModel model = mChapterModel.getVerseComponentsModels().get(i);
@@ -136,7 +192,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
      * call removeAllViews() on linear layout before adding any new views
      * @param verseComponentsModels
      */
-    private void addAllContent(ArrayList<VerseComponentsModel> verseComponentsModels) {
+    private void addAllContent(ArrayList<VerseComponentsModel> verseComponentsModels, int chapterNumber) {
         mTvChapter.setText("");
 
         for (int i=0; i<verseComponentsModels.size(); i++) {
@@ -207,7 +263,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                         String [] verseNumberSplit = verseComponentsModel.getVerseNumber().split("-");
                                         if (Integer.parseInt(verseNumberSplit[0]) == 1) {
                                             int chapterSize = (int)(22 * mContext.getResources().getDisplayMetrics().scaledDensity);
-                                            SpannableString chapterNumberString = new SpannableString(mChapterModel.getChapterNumber() + "");
+                                            SpannableString chapterNumberString = new SpannableString(chapterNumber + "");
                                             chapterNumberString.setSpan(new AbsoluteSizeSpan(chapterSize), 0, chapterNumberString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                                             mTvChapter.append(chapterNumberString);
                                         } else {
@@ -236,38 +292,4 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
             mTvChapter.append(spannableStringBuilder);
         }
     }
-
-    private void findMinMax() {
-        int min = 0;
-        int max = mTvChapter.getText().length();
-        if (mTvChapter.isFocused()) {
-            final int selStart = mTvChapter.getSelectionStart();
-            final int selEnd = mTvChapter.getSelectionEnd();
-
-            min = Math.max(0, Math.min(selStart, selEnd));
-            max = Math.max(0, Math.max(selStart, selEnd));
-        }
-
-        String textString = mTvChapter.getText().toString();
-        Spannable spanText = Spannable.Factory.getInstance().newSpannable(mTvChapter.getText());
-        spanText.setSpan(new BackgroundColorSpan(0xFFFFFF00), min, max, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mTvChapter.setText(spanText);
-    }
-
-    private String findText() {
-        int min = 0;
-        int max = mTvChapter.getText().length();
-        if (mTvChapter.isFocused()) {
-            final int selStart = mTvChapter.getSelectionStart();
-            final int selEnd = mTvChapter.getSelectionEnd();
-
-            min = Math.max(0, Math.min(selStart, selEnd));
-            max = Math.max(0, Math.max(selStart, selEnd));
-        }
-
-        String textString = mTvChapter.getText().toString();
-        return textString.substring(min, max);
-    }
-
-
 }
