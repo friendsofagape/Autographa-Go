@@ -39,8 +39,23 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
         }
         mNumberOfBlocks = getNumberOfVerses(mBookModel);
 
-        mAdapter.changeVerseCount(mNumberOfBlocks);
-        mAdapter.changeChapterNumber(mChapterNumber);
+
+        ChapterModel chapterModel = mBookModel.getChapterModels().get(mChapterNumber - 1);
+        mVerseComponentsModels.clear();
+        for (VerseComponentsModel model : chapterModel.getVerseComponentsModels()) {
+            if (mVerseComponentsModels.size() > 0) {
+                if (model.getVerseNumber().equals(mVerseComponentsModels.get(mVerseComponentsModels.size() - 1).getVerseNumber())) {
+                    continue;
+                } else {
+                    mVerseComponentsModels.add(model);
+                }
+            } else {
+                mVerseComponentsModels.add(model);
+            }
+        }
+
+//        mAdapter.changeVerseCount(mNumberOfBlocks);
+//        mAdapter.changeChapterNumber(mChapterNumber);
         mAdapter.notifyDataSetChanged();
     }
 
