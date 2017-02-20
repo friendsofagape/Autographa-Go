@@ -30,7 +30,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private Activity mContext;
     private ArrayList<ChapterModel> mChapterModels;
 
-    public VerseViewHolder(View itemView, Activity context, ArrayList<ChapterModel> chapterModels) {//}, ArrayList<VerseComponentsModel> verseComponentsModels) {
+    public VerseViewHolder(View itemView, Activity context, ArrayList<ChapterModel> chapterModels) {
         super(itemView);
         mTvChapter = (TextView) itemView.findViewById(R.id.tv_chapter);
 

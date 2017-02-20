@@ -161,15 +161,18 @@ public class AutographaRepository<T extends RealmObject> implements Repository<T
             BookModel bookModel = new BookModel();
             bookModel.setBookId(resultsToReturn.get(i).getBookId());
             bookModel.setBookName(resultsToReturn.get(i).getBookName());
+            bookModel.setBookmarkChapterNumber(resultsToReturn.get(i).getBookmarkChapterNumber());
             for (int j=0; j<resultsToReturn.get(i).getChapterModels().size(); j++) {
                 ChapterModel chapterModel = new ChapterModel();
                 chapterModel.setChapterId(resultsToReturn.get(i).getChapterModels().get(j).getChapterId());
                 chapterModel.setChapterNumber(resultsToReturn.get(i).getChapterModels().get(j).getChapterNumber());
                 for (int k=0; k<resultsToReturn.get(i).getChapterModels().get(j).getVerseComponentsModels().size(); k++) {
                     VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
+                    verseComponentsModel.setChapterId(resultsToReturn.get(i).getChapterModels().get(j).getChapterId());
                     verseComponentsModel.setType(resultsToReturn.get(i).getChapterModels().get(j).getVerseComponentsModels().get(k).getType());
                     verseComponentsModel.setVerseNumber(resultsToReturn.get(i).getChapterModels().get(j).getVerseComponentsModels().get(k).getVerseNumber());
                     verseComponentsModel.setText(resultsToReturn.get(i).getChapterModels().get(j).getVerseComponentsModels().get(k).getText());
+                    verseComponentsModel.setHighlighted(resultsToReturn.get(i).getChapterModels().get(j).getVerseComponentsModels().get(k).isHighlighted());
                     chapterModel.getVerseComponentsModels().add(verseComponentsModel);
                 }
                 bookModel.getChapterModels().add(chapterModel);

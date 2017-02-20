@@ -11,10 +11,12 @@ import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
+import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.BookmarkAdapter;
+import com.bridgeconn.autographago.ui.adapters.HighlightAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +29,10 @@ public class MenuActivity extends AppCompatActivity {
     private RecyclerView mRecyclerViewBookmarks;
 
     private BookmarkAdapter mBookmarkAdapter;
+    private HighlightAdapter mHighlightAdapter;
 
     private ArrayList<BookModel> mBookmarkModels = new ArrayList<>();
+    private  ArrayList<VerseComponentsModel> mHighlightModels = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +54,19 @@ public class MenuActivity extends AppCompatActivity {
         mRecyclerViewHighlights = (RecyclerView) findViewById(R.id.list_highlights);
         mRecyclerViewBookmarks = (RecyclerView) findViewById(R.id.list_bookmarks);
 
-        mTvHighlights.setVisibility(View.GONE);
-        mRecyclerViewHighlights.setVisibility(View.GONE);
-
-        mRecyclerViewBookmarks.setHasFixedSize(false);
+        mRecyclerViewBookmarks.setHasFixedSize(true);
         mRecyclerViewBookmarks.setLayoutManager(new LinearLayoutManager(this));
         mBookmarkAdapter = new BookmarkAdapter(this, mBookmarkModels);
         mRecyclerViewBookmarks.setAdapter(mBookmarkAdapter);
 
         getBookmarks();
+
+        mRecyclerViewHighlights.setHasFixedSize(true);
+        mRecyclerViewHighlights.setLayoutManager(new LinearLayoutManager(this));
+        mHighlightAdapter = new HighlightAdapter(this, mHighlightModels);
+        mRecyclerViewHighlights.setAdapter(mHighlightAdapter);
+
+        getHighlights();
     }
 
     private void getBookmarks() {
@@ -67,7 +75,14 @@ public class MenuActivity extends AppCompatActivity {
             mBookmarkModels.add(model);
         }
         mBookmarkAdapter.notifyDataSetChanged();
+    }
 
+    private void getHighlights() {
+        List<VerseComponentsModel> results = new AutographaRepository<VerseComponentsModel>().query(new AllSpecifications.AllHighlights(), new AllMappers.VerseComponentsMapper());
+        for (VerseComponentsModel model : results) {
+            mHighlightModels.add(model);
+        }
+        mHighlightAdapter.notifyDataSetChanged();
     }
 
     @Override

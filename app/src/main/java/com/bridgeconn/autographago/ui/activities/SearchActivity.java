@@ -93,7 +93,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list_results);
 
-        mRecyclerView.setHasFixedSize(false);
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new SearchAdapter(this, mSearchResultModels);
         mRecyclerView.setAdapter(mAdapter);
@@ -160,10 +160,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 String [] splitString = verseComponentsModel.getChapterId().split("_");
                 if (splitString.length > 1) {
                     searchModel.setBookId(splitString[0]);
-                    ArrayList<BookModel> bookList = new AutographaRepository<BookModel>().query(new AllSpecifications.BookModelById(splitString[0]), new AllMappers.BookMapper());
-                    if (bookList.size() > 0) {
-                        searchModel.setBookName(bookList.get(0).getBookName());
-                    }
+                    searchModel.setBookName(UtilFunctions.getBookNameFromMapping(this, splitString[0]));
                     searchModel.setChapterNumber(Integer.parseInt(splitString[1]));
                 }
                 searchModel.setVerseNumber(verseComponentsModel.getVerseNumber());

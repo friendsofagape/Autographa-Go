@@ -47,7 +47,7 @@ public class BookmarkItemViewHolder extends RecyclerView.ViewHolder implements V
                 Intent intent = new Intent(mContext, BookActivity.class);
                 intent.putExtra(Constants.Keys.BOOK_ID, model.getBookId());
                 intent.putExtra(Constants.Keys.CHAPTER_NO, model.getBookmarkChapterNumber());
-                intent.putExtra(Constants.Keys.VERSE_NO, 1);
+                intent.putExtra(Constants.Keys.VERSE_NO, "1");
                 mContext.startActivity(intent);
                 break;
             }

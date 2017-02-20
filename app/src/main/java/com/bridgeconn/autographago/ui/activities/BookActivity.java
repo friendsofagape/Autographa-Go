@@ -165,11 +165,28 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void findSelectedAndHighlight() {
+
+        int bookPosition = 0;
+        for (int k = 0; k < Constants.CONTAINER.getBookModelList().size(); k++) {
+            if (Constants.CONTAINER.getBookModelList().get(k).getBookId().equals(mBookId)) {
+                bookPosition = k;
+                break;
+            }
+        }
+
         for (int i=0;  i<mChapterModels.size(); i++) {
             for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
                 if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {
                     mChapterModels.get(i).getVerseComponentsModels().get(j).setSelected(false);
                     mChapterModels.get(i).getVerseComponentsModels().get(j).setHighlighted(true);
+
+                    Constants.CONTAINER.getBookModelList().get(bookPosition).
+                            getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(true);
+                    BookModel bookModel = new BookModel(mBookModel);
+                    bookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setChapterId(
+                            bookModel.getChapterModels().get(i).getChapterId());
+                    bookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(true);
+                    new AutographaRepository<BookModel>().update(bookModel);
                 }
             }
         }

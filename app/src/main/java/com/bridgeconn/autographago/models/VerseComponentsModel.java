@@ -1,5 +1,7 @@
 package com.bridgeconn.autographago.models;
 
+import android.support.annotation.NonNull;
+
 import com.bridgeconn.autographago.utils.Constants;
 
 import io.realm.RealmList;
@@ -9,6 +11,8 @@ import io.realm.annotations.Index;
 
 public class VerseComponentsModel extends RealmObject implements Comparable<VerseComponentsModel> {
 
+    @Index
+    @NonNull
     private String chapterId;
     private String type;
     @Index

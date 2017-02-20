@@ -1,7 +1,6 @@
 package com.bridgeconn.autographago.ormutils;
 
 import com.bridgeconn.autographago.models.BookModel;
-import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.models.NotesModel;
 import com.bridgeconn.autographago.models.SearchHistoryModel;
@@ -68,20 +67,6 @@ public class AllSpecifications {
         }
     }
 
-    public static class AllChapters implements Specification<ChapterModel> {
-        @Override
-        public RealmResults<ChapterModel> generateResults(Realm realm) {
-            return realm.where(ChapterModel.class).findAll();
-        }
-    }
-
-    public static class AllVerseComponents implements Specification<VerseComponentsModel> {
-        @Override
-        public RealmResults<VerseComponentsModel> generateResults(Realm realm) {
-            return realm.where(VerseComponentsModel.class).findAll();
-        }
-    }
-
     public static class BookModelById implements Specification<BookModel> {
         private String bookId;
 
@@ -123,7 +108,7 @@ public class AllSpecifications {
         public RealmResults<VerseComponentsModel> generateResults(Realm realm) {
             RealmQuery<VerseComponentsModel> query = realm.where(VerseComponentsModel.class);
             query = query.contains("text", text, Case.INSENSITIVE);
-            return query.findAll().distinct("verseNumber");
+            return query.findAll().distinct("chapterId", "verseNumber");
         }
     }
 
@@ -187,4 +172,12 @@ public class AllSpecifications {
         }
     }
 
+    public static class AllHighlights implements Specification<VerseComponentsModel> {
+        @Override
+        public RealmResults<VerseComponentsModel> generateResults(Realm realm) {
+            RealmQuery<VerseComponentsModel> query = realm.where(VerseComponentsModel.class);
+            query = query.equalTo("highlighted", true);
+            return query.findAll().distinct("chapterId", "verseNumber");
+        }
+    }
 }

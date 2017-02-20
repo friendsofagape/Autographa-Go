@@ -33,6 +33,10 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
     public void onItemClick(int number, String bookId) {
         mChapterNumber = number;
 
+        mBookModel = getBookModel(bookId);
+        if (mBookModel == null) {
+            return;
+        }
         mNumberOfBlocks = getNumberOfVerses(mBookModel);
 
         mAdapter.changeVerseCount(mNumberOfBlocks);
@@ -49,6 +53,9 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
         mOpenBook = getArguments().getBoolean(Constants.Keys.OPEN_BOOK);
 
         mBookModel = getBookModel(mBookId);
+        if (mBookModel == null) {
+            return;
+        }
         mNumberOfBlocks = getNumberOfVerses(mBookModel);
 
         ChapterModel chapterModel = mBookModel.getChapterModels().get(mChapterNumber - 1);
