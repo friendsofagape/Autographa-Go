@@ -15,18 +15,11 @@ import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
-import com.bridgeconn.autographago.ormutils.AllMappers;
-import com.bridgeconn.autographago.ormutils.AllSpecifications;
-import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.BookAdapter;
 import com.bridgeconn.autographago.utils.Constants;
-import com.bridgeconn.autographago.utils.USFMParser;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -59,7 +52,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mRecyclerView = (RecyclerView) findViewById(R.id.list_books);
         mSpinner = (AppCompatSpinner) findViewById(R.id.spinner);
 
-        mRecyclerView.setHasFixedSize(false);
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new BookAdapter(this, mBookModelArrayList);
         mRecyclerView.setAdapter(mAdapter);
@@ -82,15 +75,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getAllBooks();
     }
 
-    private void getBooksByLanguageAndVersion(String language, String version) {
-        new AutographaRepository<BookModel>().addToContainer();
-
-        for (BookModel bookModel : Constants.CONTAINER.getBookModelList()) {
-            mBookModelArrayList.add(bookModel);
-        }
-
-//        mAdapter.notifyDataSetChanged();
-    }
+//    private void getBooksByLanguageAndVersion(String language, String version) {
+//        new AutographaRepository<BookModel>().addToContainer();
+//
+//        for (BookModel bookModel : Constants.CONTAINER.getBookModelList()) {
+//            mBookModelArrayList.add(bookModel);
+//        }
+//
+////        mAdapter.notifyDataSetChanged();
+//    }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

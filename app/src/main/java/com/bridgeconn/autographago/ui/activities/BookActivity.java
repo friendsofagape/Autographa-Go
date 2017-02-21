@@ -174,6 +174,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
+        BookModel bookModel = new BookModel(mBookModel);
+
         for (int i=0;  i<mChapterModels.size(); i++) {
             for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
                 if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {
@@ -182,14 +184,16 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
                     Constants.CONTAINER.getBookModelList().get(bookPosition).
                             getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(true);
-                    BookModel bookModel = new BookModel(mBookModel);
+
                     bookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setChapterId(
                             bookModel.getChapterModels().get(i).getChapterId());
                     bookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(true);
-                    new AutographaRepository<BookModel>().update(bookModel);
                 }
             }
         }
+
+        new AutographaRepository<BookModel>().update(bookModel);
+
         mAdapter.notifyDataSetChanged();
     }
 
@@ -317,10 +321,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                     }
                 }
-                BookModel bookModel = new BookModel(mBookModel);
-                bookModel.setBookmarkChapterNumber(mBookMarkNumber);
-
-                new AutographaRepository<BookModel>().update(bookModel);
+                mBookModel.setBookmarkChapterNumber(mBookMarkNumber);
+                new AutographaRepository<BookModel>().update(mBookModel);
 
                 break;
             }

@@ -316,7 +316,11 @@ public class USFMParser {
         languageModel.setLanguageName(languageName);
         languageModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
 
-        new AutographaRepository<BookModel>().add(bookModel);
+        // check if book already exists, then do not add or else it will overwrite bookmarks and highlights etc
+        ArrayList<BookModel> results = new AutographaRepository<BookModel>().query(new AllSpecifications.BookModelById(bookModel.getBookId()), new AllMappers.BookMapper());
+        if (results.size() == 0) {
+            new AutographaRepository<BookModel>().add(bookModel);
+        }
 
 //        new AutographaRepository<LanguageModel>().add(languageModel);
     }
