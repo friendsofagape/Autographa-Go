@@ -28,7 +28,7 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
 
     @Override
     public void onItemClick(int number, String bookId) {
-        mBookId = Constants.CONTAINER.getBookModelList().get(number).getBookId();
+        mBookId = bookId;
         mBookModel = getBookModel(mBookId);
         if (mBookModel != null) {
             mChapterModels.clear();

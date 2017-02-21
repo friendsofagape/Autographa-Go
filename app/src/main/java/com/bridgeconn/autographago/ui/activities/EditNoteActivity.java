@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +32,7 @@ import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
+import com.bridgeconn.autographago.ui.customviews.FlowLayout;
 import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
     private EditText mEditor;
     private EditText mEtTitle;
     private TextView mSave;
-    private LinearLayout mButtonLayout;
+    private FlowLayout mButtonLayout;
     private ImageView mAddVerse;
     private HashSet<VerseIdModel> mVerseList = new HashSet<>();
     private long mTimeStamp = 0;
@@ -75,7 +75,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         mEtTitle = (EditText) findViewById(R.id.et_title);
         mEditor = (EditText) findViewById(R.id.editor);
         mSave = (TextView) findViewById(R.id.iv_save);
-        mButtonLayout = (LinearLayout) findViewById(R.id.button_layout);
+        mButtonLayout = (FlowLayout) findViewById(R.id.button_layout);
         mAddVerse = (ImageView) findViewById(R.id.iv_add_verse);
 
         mSave.setOnClickListener(this);
@@ -133,57 +133,46 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                 mTimeStamp = notesModel.getTimestamp();
                 for (final VerseIdModel model : notesModel.getVerseIds()) {
                     mVerseList.add(model);
-                    final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
-                    TextView button = (TextView) view.findViewById(R.id.button);
-                    button.setText(model.getBookName() + " " + model.getChapterNumber() + Constants.Styling.CHAR_COLON + model.getVerseNumber());
-                    ImageView remove = (ImageView) view.findViewById(R.id.iv_remove);
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(EditNoteActivity.this, BookActivity.class);
-                            intent.putExtra(Constants.Keys.BOOK_ID, model.getBookId());
-                            intent.putExtra(Constants.Keys.CHAPTER_NO,model.getChapterNumber());
-                            intent.putExtra(Constants.Keys.VERSE_NO, model.getVerseNumber());
-                            startActivity(intent);
-                        }
-                    });
-                    remove.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mButtonLayout.removeView(view);
-                        }
-                    });
-                    mButtonLayout.addView(view);
+                    addNoteButton(model, false);
                 }
         } else {
             ArrayList<VerseIdModel> models = intent.getParcelableArrayListExtra(Constants.Keys.VERSE_MODELS);
             if (models != null) {
                 for (final VerseIdModel model : models) {
                     mVerseList.add(model);
-                    final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
-                    TextView button = (TextView) view.findViewById(R.id.button);
-                    button.setText(model.getBookName() + " " + model.getChapterNumber() + Constants.Styling.CHAR_COLON + model.getVerseNumber());
-                    ImageView remove = (ImageView) view.findViewById(R.id.iv_remove);
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(EditNoteActivity.this, BookActivity.class);
-                            intent.putExtra(Constants.Keys.BOOK_ID, model.getBookId());
-                            intent.putExtra(Constants.Keys.CHAPTER_NO,model.getChapterNumber());
-                            intent.putExtra(Constants.Keys.VERSE_NO, model.getVerseNumber());
-                            startActivity(intent);
-                        }
-                    });
-                    remove.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mButtonLayout.removeView(view);
-                        }
-                    });
-                    mButtonLayout.addView(view);
+                    addNoteButton(model, false);
                 }
             }
         }
+    }
+
+    private void addNoteButton(final VerseIdModel model, final boolean removeFromList) {
+        final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
+        TextView button = (TextView) view.findViewById(R.id.button);
+        button.setText(model.getBookName() + " " +
+                model.getChapterNumber() + Constants.Styling.CHAR_COLON +
+                model.getVerseNumber());
+        ImageView remove = (ImageView) view.findViewById(R.id.iv_remove);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EditNoteActivity.this, BookActivity.class);
+                intent.putExtra(Constants.Keys.BOOK_ID, model.getBookId());
+                intent.putExtra(Constants.Keys.CHAPTER_NO,model.getChapterNumber());
+                intent.putExtra(Constants.Keys.VERSE_NO, model.getVerseNumber());
+                startActivity(intent);
+            }
+        });
+        remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (removeFromList) {
+                    mVerseList.remove(model);
+                }
+                mButtonLayout.removeView(view);
+            }
+        });
+        mButtonLayout.addView(view);
     }
 
     public ArrayList<NotesModel> query(Specification<NotesModel> specification, Mapper<NotesModel, NotesModel> mapper) {
@@ -303,30 +292,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                 if (resultCode == RESULT_OK) {
                     final VerseIdModel model = data.getParcelableExtra(Constants.Keys.VERSE_NOTE_MODEL);
                     if (mVerseList.add(model)) {
-                        final View view = LayoutInflater.from(this).inflate(R.layout.button_verse, mButtonLayout, false);
-                        TextView button = (TextView) view.findViewById(R.id.button);
-                        button.setText(model.getBookName() + " " +
-                                model.getChapterNumber() + Constants.Styling.CHAR_COLON +
-                                model.getVerseNumber());
-                        ImageView remove = (ImageView) view.findViewById(R.id.iv_remove);
-                        button.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(EditNoteActivity.this, BookActivity.class);
-                                intent.putExtra(Constants.Keys.BOOK_ID, model.getBookId());
-                                intent.putExtra(Constants.Keys.CHAPTER_NO, model.getChapterNumber());
-                                intent.putExtra(Constants.Keys.VERSE_NO, model.getVerseNumber());
-                                startActivity(intent);
-                            }
-                        });
-                        remove.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                mVerseList.remove(model);
-                                mButtonLayout.removeView(view);
-                            }
-                        });
-                        mButtonLayout.addView(view);
+                        addNoteButton(model, true);
                     }
                 }
                 break;

@@ -74,6 +74,7 @@
             <RelativeLayout
                 android:id="@+id/verse_layout"
                 android:layout_below="@id/et_title"
+                android:layout_marginLeft="@dimen/default_content_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -88,19 +89,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_toLeftOf="@id/iv_add_verse"
-                    android:scrollbars="none"
-                    android:layout_height="wrap_content">
-
-                <LinearLayout
+                <com.bridgeconn.autographago.ui.customviews.FlowLayout
                     android:id="@+id/button_layout"
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                </HorizontalScrollView>
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/iv_add_verse"
+                    app:childSpacing="1dp"
+                    app:rowSpacing="2dp"/>
 
             </RelativeLayout>
 
