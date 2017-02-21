@@ -26,4 +26,20 @@ public class SharedPrefs {
         editor.putString(key, value);
         editor.commit();
     }
+
+    public static void putInt(String key, int value) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putInt(key, value);
+        editor.apply();
+    }
+
+    public static int getInt(String key, int defValue) {
+        return sharedPrefs.getInt(key, defValue);
+    }
+
+    public static void putIntInstant(String key, int value) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putInt(key, value);
+        editor.commit();
+    }
 }

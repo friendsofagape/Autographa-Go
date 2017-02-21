@@ -11,18 +11,19 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.ui.adapters.BookAdapter;
 import com.bridgeconn.autographago.utils.Constants;
+import com.bridgeconn.autographago.utils.SharedPrefs;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
+    private ImageView mContinueRead;
     private ImageView mNotesView;
     private ImageView mMenuView;
     private ImageView mSearchView;
@@ -44,6 +45,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
+        mContinueRead = (ImageView) findViewById(R.id.iv_continue_reading);
         mNotesView = (ImageView) findViewById(R.id.iv_notes);
         mMenuView = (ImageView) findViewById(R.id.iv_menu);
         mSearchView = (ImageView) findViewById(R.id.iv_search);
@@ -58,6 +60,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mRecyclerView.setAdapter(mAdapter);
 
         mSpinner.setOnItemSelectedListener(this);
+        mContinueRead.setOnClickListener(this);
         mNotesView.setOnClickListener(this);
         mMenuView.setOnClickListener(this);
         mSearchView.setOnClickListener(this);
@@ -88,7 +91,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String item = parent.getItemAtPosition(position).toString();
-        Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+//        Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
 
         String[] arr = item.split(" ");
 //        getBooksByLanguageAndVersion(arr[0], arr[1]);
@@ -109,6 +112,23 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.iv_continue_reading: {
+                String bookId = SharedPrefs.getString(Constants.PrefKeys.LAST_READ_BOOK_ID, null);
+                int chapter = SharedPrefs.getInt(Constants.PrefKeys.LAST_READ_CHAPTER, 1);
+                String verse = SharedPrefs.getString(Constants.PrefKeys.LAST_READ_VERSE, null);
+                if (bookId == null) {
+                    break;
+                }
+                if (verse == null) {
+                    break;
+                }
+                Intent readIntent = new Intent(this, BookActivity.class);
+                readIntent.putExtra(Constants.Keys.BOOK_ID, bookId);
+                readIntent.putExtra(Constants.Keys.CHAPTER_NO, chapter);
+                readIntent.putExtra(Constants.Keys.VERSE_NO, verse);
+                startActivity(readIntent);
+                break;
+            }
             case R.id.iv_notes: {
                 Intent notesIntent = new Intent(this, NotesActivity.class);
                 startActivity(notesIntent);

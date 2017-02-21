@@ -24,6 +24,7 @@ import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.ChapterAdapter;
 import com.bridgeconn.autographago.ui.customviews.BounceInterpolator;
 import com.bridgeconn.autographago.utils.Constants;
+import com.bridgeconn.autographago.utils.SharedPrefs;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -299,6 +300,31 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         return 0;
     }
 
+    private String findVerseNumber(int position) {
+        int size = 0;
+        for (int i=0; i<mChapterModels.size(); i++) {
+            for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
+                if (j==0) {
+                    if (size == position) {
+                        return mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber();
+                    }
+                    size++;
+                } else {
+                    if (mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber().equals(
+                            mChapterModels.get(i).getVerseComponentsModels().get(j-1).getVerseNumber())) {
+                        continue;
+                    } else {
+                        if (size == position) {
+                            return mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber();
+                        }
+                        size++;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -372,5 +398,15 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         mBottomBar.setVisibility(View.GONE);
     }
 
-    // TODO clear this - how do we store highlights in db, or map notes in db
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+        int chapterNum = findChapterNumber(firstVisibleItem);
+        String verseNum = findVerseNumber(firstVisibleItem);
+        SharedPrefs.putString(Constants.PrefKeys.LAST_READ_BOOK_ID, mBookId);
+        SharedPrefs.putInt(Constants.PrefKeys.LAST_READ_CHAPTER, chapterNum);
+        SharedPrefs.putString(Constants.PrefKeys.LAST_READ_VERSE, verseNum);
+    }
 }

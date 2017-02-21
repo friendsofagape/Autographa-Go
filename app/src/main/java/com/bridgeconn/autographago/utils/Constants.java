@@ -103,4 +103,10 @@ public class Constants {
     public interface RequestCodes {
         int EDIT_NOTES = 0;
     }
+
+    public interface PrefKeys {
+        String LAST_READ_BOOK_ID = "last_read_book";
+        String LAST_READ_CHAPTER = "last_read_chapter";
+        String LAST_READ_VERSE = "last_read_verse";
+    }
 }
