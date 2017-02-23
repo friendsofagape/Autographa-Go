@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.ui.viewholders.VerseViewHolder;
+import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -18,18 +19,20 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private ArrayList<ChapterModel> mChapterModels;
     private String mVerseNumber;
     private int mChapterPosition;
+    private Constants.FontSize mFontSize;
 
-    public ChapterAdapter(Activity context, ArrayList<ChapterModel> chapterModels, String verseNumber, int chapterPosition) {
+    public ChapterAdapter(Activity context, ArrayList<ChapterModel> chapterModels, String verseNumber, int chapterPosition, Constants.FontSize fontSize) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         mChapterModels = chapterModels;
         mVerseNumber = verseNumber;
         mChapterPosition = chapterPosition;
+        mFontSize = fontSize;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new VerseViewHolder(mLayoutInflater.inflate(R.layout.item_verse, parent, false), mContext, mChapterModels);
+        return new VerseViewHolder(mLayoutInflater.inflate(R.layout.item_verse, parent, false), mContext, mChapterModels, mFontSize);
     }
 
     @Override

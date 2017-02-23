@@ -20,6 +20,7 @@ import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.adapters.NotesAdapter;
 import com.bridgeconn.autographago.utils.Constants;
+import com.bridgeconn.autographago.utils.SharedPrefs;
 
 import java.util.ArrayList;
 
@@ -36,6 +37,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
         super.onCreate(savedInstanceState);
 
         realm = Realm.getDefaultInstance();
@@ -55,7 +57,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
 
         mIvNewNote = (ImageView) findViewById(R.id.iv_new_note);
         mRecyclerView = (RecyclerView) findViewById(R.id.list_notes);
-        mRecyclerView.setHasFixedSize(false);
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mAdapter = new NotesAdapter(this, mNotesModels);

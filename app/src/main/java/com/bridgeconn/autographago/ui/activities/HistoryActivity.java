@@ -13,6 +13,7 @@ import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.HistoryAdapter;
+import com.bridgeconn.autographago.utils.SharedPrefs;
 
 import java.util.ArrayList;
 
@@ -24,6 +25,7 @@ public class HistoryActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
@@ -38,7 +40,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list_history);
 
-        mRecyclerView.setHasFixedSize(false);
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new HistoryAdapter(this, mHistoryModels);
         mRecyclerView.setAdapter(mAdapter);

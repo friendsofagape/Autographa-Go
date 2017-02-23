@@ -46,6 +46,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_book);
@@ -97,7 +98,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new ChapterAdapter(this, mChapterModels, verseNumber, chapterNumber - 1);
+        mAdapter = new ChapterAdapter(this, mChapterModels, verseNumber, chapterNumber - 1, SharedPrefs.getFontSize());
         mRecyclerView.setAdapter(mAdapter);
 
         if (mBookMarkNumber == 1) {

@@ -10,7 +10,7 @@
         android:id="@+id/button"
         android:layout_marginLeft="@dimen/button_padding"
         android:layout_marginRight="@dimen/button_padding"
-        android:textSize="@dimen/small_button_text"
+        android:textSize="?attr/small_button_text"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

@@ -18,6 +18,7 @@ import com.bridgeconn.autographago.ui.fragments.BookFragment;
 import com.bridgeconn.autographago.ui.fragments.ChapterFragment;
 import com.bridgeconn.autographago.ui.fragments.VerseFragment;
 import com.bridgeconn.autographago.utils.Constants;
+import com.bridgeconn.autographago.utils.SharedPrefs;
 
 import java.util.ArrayList;
 
@@ -36,6 +37,7 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_select_chapter_and_verse);

@@ -8,7 +8,7 @@
         android:id="@+id/tv_text"
         android:maxLines="1"
         android:textStyle="bold"
-        android:textSize="@dimen/heading_2"
+        android:textSize="?attr/heading_2"
         android:padding="@dimen/activity_horizontal_margin"
         android:background="@color/black_20"
         android:layout_width="match_parent"

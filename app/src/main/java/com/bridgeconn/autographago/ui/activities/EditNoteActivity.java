@@ -34,6 +34,7 @@ import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.customviews.FlowLayout;
 import com.bridgeconn.autographago.utils.Constants;
+import com.bridgeconn.autographago.utils.SharedPrefs;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -56,6 +57,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
         super.onCreate(savedInstanceState);
 
         realm = Realm.getDefaultInstance();

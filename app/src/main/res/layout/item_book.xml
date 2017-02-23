@@ -15,6 +15,7 @@
         android:drawableTint="@color/colorPrimaryDark"
         android:drawablePadding="@dimen/menu_item_margin"
         android:maxLines="1"
+        android:textSize="?attr/title_text"
         android:ellipsize="end"
         android:textAllCaps="true"/>
 

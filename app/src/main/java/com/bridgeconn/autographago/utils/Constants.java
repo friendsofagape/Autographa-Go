@@ -1,5 +1,6 @@
 package com.bridgeconn.autographago.utils;
 
+import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.AllBooksModel;
 
 public class Constants {
@@ -108,5 +109,29 @@ public class Constants {
         String LAST_READ_BOOK_ID = "last_read_book";
         String LAST_READ_CHAPTER = "last_read_chapter";
         String LAST_READ_VERSE = "last_read_verse";
+    }
+
+    public enum FontSize {
+        XSmall(R.style.FontSize_XSmall, "XSmall"),
+        Small(R.style.FontSize_Small, "Small"),
+        Medium(R.style.FontSize_Medium, "Medium"),
+        Large(R.style.FontSize_Large, "Large"),
+        XLarge(R.style.FontSize_XLarge, "XLarge");
+
+        private int resId;
+        private String title;
+
+        public int getResId() {
+            return resId;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        FontSize(int resId, String title) {
+            this.resId = resId;
+            this.title = title;
+        }
     }
 }

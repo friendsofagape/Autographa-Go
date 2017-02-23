@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/note_title"
-        android:textSize="@dimen/heading_1"
+        android:textSize="?attr/heading_1"
         android:maxLines="1"
         android:ellipsize="end"
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
 
     <TextView
         android:id="@+id/note_text"
-        android:textSize="@dimen/body"
+        android:textSize="?attr/body"
         android:maxLines="2"
         android:ellipsize="end"
         android:layout_below="@id/note_title"

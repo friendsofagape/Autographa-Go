@@ -23,7 +23,7 @@
                     android:text="Notes"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:textSize="@dimen/title"
+                    android:textSize="?attr/title_text"
                     android:textColor="@color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -35,7 +35,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:text="Done"
-                    android:textSize="@dimen/button_text"
+                    android:textSize="?attr/button_text"
                     android:textAllCaps="true"
                     android:textColor="@color/white"
                     android:padding="@dimen/default_content_padding" />
@@ -61,7 +61,7 @@
                 android:id="@+id/et_title"
                 android:maxLines="1"
                 android:hint="Title"
-                android:textSize="@dimen/heading_1"
+                android:textSize="?attr/heading_1"
                 android:textIsSelectable="false"
                 android:layout_width="match_parent"
                 android:imeOptions="actionDone"
@@ -116,7 +116,7 @@
         <EditText
             android:id="@+id/editor"
             android:hint="Note"
-            android:textSize="@dimen/body"
+            android:textSize="?attr/body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />

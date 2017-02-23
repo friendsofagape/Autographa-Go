@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,6 +19,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +28,7 @@ import com.bridgeconn.autographago.models.ResponseModel;
 import com.bridgeconn.autographago.ui.adapters.DownloadDialogAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.DownloadUtil;
+import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.USFMParser;
 import com.bridgeconn.autographago.utils.UnzipUtil;
 import com.bridgeconn.autographago.utils.UtilFunctions;
@@ -33,14 +36,17 @@ import com.bridgeconn.autographago.utils.UtilFunctions;
 import java.io.File;
 import java.util.List;
 
-public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
+public class SettingsActivity extends AppCompatActivity implements View.OnClickListener,
+        SeekBar.OnSeekBarChangeListener {
 
     private TextView mTvDownload;
     private ProgressBar mProgress;
     private LinearLayout mInflateLayout;
+    private AppCompatSeekBar mSeekBarTextSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_settings);
@@ -63,8 +69,70 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         mTvDownload = (TextView) findViewById(R.id.download_bible);
         mProgress = (ProgressBar) findViewById(R.id.progress);
         mInflateLayout = (LinearLayout) findViewById(R.id.inflate_layout);
+        mSeekBarTextSize = (AppCompatSeekBar) findViewById(R.id.seekbar_text_size);
 
         mTvDownload.setOnClickListener(this);
+
+        mSeekBarTextSize.setMax(4);
+        mSeekBarTextSize.setOnSeekBarChangeListener(this);
+        mSeekBarTextSize.setProgress(getFontSizeInt(SharedPrefs.getFontSize()));
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (fromUser) {
+            SharedPrefs.setFontSize(getFontSizeEnum(progress));
+        }
+    }
+
+    private int getFontSizeInt(Constants.FontSize fontSize) {
+        switch (fontSize) {
+            case XSmall: {
+                return 0;
+            }
+            case Small: {
+                return 1;
+            }
+            case Medium: {
+                return 2;
+            }
+            case Large: {
+                return 3;
+            }
+            case XLarge: {
+                return 4;
+            }
+        }
+        return 3;
+    }
+
+    private Constants.FontSize getFontSizeEnum(int progress) {
+        switch (progress) {
+            case 0: {
+                return Constants.FontSize.XSmall;
+            }
+            case 1: {
+                return Constants.FontSize.Small;
+            }
+            case 2: {
+                return Constants.FontSize.Medium;
+            }
+            case 3: {
+                return Constants.FontSize.Large;
+            }
+            case 4: {
+                return Constants.FontSize.XLarge;
+            }
+        }
+        return Constants.FontSize.Medium;
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
     }
 
     @Override
@@ -77,33 +145,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 break;
             }
         }
-    }
-
-    private void showDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
-        builder.setTitle(getString(R.string.discard_note));
-        builder.setMessage(getString(R.string.discard_note_message));
-
-        String positiveText = getString(R.string.discard);
-        builder.setPositiveButton(positiveText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                });
-
-        String negativeText = getString(R.string.cancel);
-        builder.setNegativeButton(negativeText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
     }
 
     private void showLanguageDialog(List<String> languages) {

@@ -18,4 +18,17 @@
         </attr>
         <attr name="rtl" format="boolean"/>
     </declare-styleable>
+
+    <declare-styleable name="FontSize">
+        <attr name="heading_1" format="dimension" />
+        <attr name="heading_2" format="dimension" />
+        <attr name="heading_3" format="dimension" />
+        <attr name="heading_4" format="dimension" />
+        <attr name="title_text" format="dimension" />
+        <attr name="body" format="dimension" />
+        <attr name="button_text" format="dimension" />
+        <attr name="small_button_text" format="dimension" />
+        <attr name="app_bar_text" format="dimension" />
+    </declare-styleable>
+
 </resources>

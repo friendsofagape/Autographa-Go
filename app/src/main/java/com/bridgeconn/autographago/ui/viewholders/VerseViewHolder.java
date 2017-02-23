@@ -29,13 +29,15 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private TextView mTvChapter;
     private Activity mContext;
     private ArrayList<ChapterModel> mChapterModels;
+    private Constants.FontSize mFontSize;
 
-    public VerseViewHolder(View itemView, Activity context, ArrayList<ChapterModel> chapterModels) {
+    public VerseViewHolder(View itemView, Activity context, ArrayList<ChapterModel> chapterModels, Constants.FontSize fontSize) {
         super(itemView);
         mTvChapter = (TextView) itemView.findViewById(R.id.tv_chapter);
 
         mContext = context;
         mChapterModels = chapterModels;
+        mFontSize = fontSize;
     }
 
     private int findChapterNumber(int position) {
@@ -200,22 +202,22 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
             boolean appendNumber = false;
             VerseComponentsModel verseComponentsModel = verseComponentsModels.get(i);
 
-            int size = 14;
+            int textSize = getTextSize(14);
             switch (verseComponentsModel.getType()) {
                 case Constants.MarkerTypes.SECTION_HEADING_ONE: {
-                    size = 20;
+                    textSize = getTextSize(20);
                     break;
                 }
                 case Constants.MarkerTypes.SECTION_HEADING_TWO: {
-                    size = 18;
+                    textSize = getTextSize(18);
                     break;
                 }
                 case Constants.MarkerTypes.SECTION_HEADING_THREE: {
-                    size = 16;
+                    textSize = getTextSize(16);
                     break;
                 }
                 case Constants.MarkerTypes.SECTION_HEADING_FOUR: {
-                    size = 14;
+                    textSize = getTextSize(14);
                     break;
                 }
                 case Constants.MarkerTypes.CHUNK: {
@@ -227,7 +229,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                     break;
                 }
                 case Constants.MarkerTypes.VERSE: {
-                    size = 14;
+                    textSize = getTextSize(14);
                     appendNumber = true;
                     break;
                 }
@@ -284,12 +286,33 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 }
             }
 
-            int px = (int)(size * mContext.getResources().getDisplayMetrics().scaledDensity);
+            int px = (int)(textSize * mContext.getResources().getDisplayMetrics().scaledDensity);
             spannableStringBuilder.setSpan(new AbsoluteSizeSpan(px), 0, spannableStringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             if (verseComponentsModel.isHighlighted()) {
                 spannableStringBuilder.setSpan(new BackgroundColorSpan(0xFFFFFF00), 0, spannableStringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             mTvChapter.append(spannableStringBuilder);
         }
+    }
+
+    private int getTextSize(int prevSize) {
+        switch (mFontSize) {
+            case XSmall: {
+                return (prevSize - 4);
+            }
+            case Small: {
+                return (prevSize - 2);
+            }
+            case Medium: {
+                return prevSize;
+            }
+            case Large: {
+                return (prevSize + 2);
+            }
+            case XLarge: {
+                return (prevSize + 4);
+            }
+        }
+        return prevSize;
     }
 }
