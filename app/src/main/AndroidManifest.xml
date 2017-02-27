@@ -54,6 +54,9 @@
         <activity android:name=".ui.activities.HistoryActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity android:name=".ui.activities.AboutPageActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
     </application>
 
 </manifest>

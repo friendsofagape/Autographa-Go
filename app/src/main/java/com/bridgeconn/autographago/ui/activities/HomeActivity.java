@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
@@ -24,6 +25,7 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
+    private TextView mToolbarTitle;
     private ImageView mContinueRead;
     private ImageView mNotesView;
     private ImageView mMenuView;
@@ -49,6 +51,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
+        mToolbarTitle = (TextView) findViewById(R.id.toolbar_title);
         mContinueRead = (ImageView) findViewById(R.id.iv_continue_reading);
         mNotesView = (ImageView) findViewById(R.id.iv_notes);
         mMenuView = (ImageView) findViewById(R.id.iv_menu);
@@ -64,6 +67,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mRecyclerView.setAdapter(mAdapter);
 
         mSpinner.setOnItemSelectedListener(this);
+        mToolbarTitle.setOnClickListener(this);
         mContinueRead.setOnClickListener(this);
         mNotesView.setOnClickListener(this);
         mMenuView.setOnClickListener(this);
@@ -116,6 +120,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.toolbar_title: {
+                Intent intent = new Intent(this, AboutPageActivity.class);
+                startActivity(intent);
+                break;
+            }
             case R.id.iv_continue_reading: {
                 String bookId = SharedPrefs.getString(Constants.PrefKeys.LAST_READ_BOOK_ID, null);
                 int chapter = SharedPrefs.getInt(Constants.PrefKeys.LAST_READ_CHAPTER, 1);
