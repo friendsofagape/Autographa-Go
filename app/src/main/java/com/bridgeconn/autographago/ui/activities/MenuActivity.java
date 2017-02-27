@@ -17,6 +17,7 @@ import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.BookmarkAdapter;
 import com.bridgeconn.autographago.ui.adapters.HighlightAdapter;
 import com.bridgeconn.autographago.utils.SharedPrefs;
+import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,8 @@ public class MenuActivity extends AppCompatActivity {
         getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        UtilFunctions.applyReadingMode();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);

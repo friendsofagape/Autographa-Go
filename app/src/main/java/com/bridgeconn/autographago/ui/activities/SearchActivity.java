@@ -46,6 +46,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         setContentView(R.layout.activity_search);
 
+        UtilFunctions.applyReadingMode();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
         toolbar.setContentInsetStartWithNavigation(0);

@@ -99,16 +99,44 @@ public class Constants {
         String VERSE_NOTE_MODEL = "verse_note_model";
         String SAVED_NOTE_TIMESTAMP = "saved_note_timestamp";
         String NOTES_MODEL = "notes_model";
+
+        String READING_MODE_CHANGE = "reading_mode_change";
+        String TEXT_SIZE_CHANGED = "text_size_changed";
     }
 
     public interface RequestCodes {
         int EDIT_NOTES = 0;
+        int SETTINGS = 1;
     }
 
     public interface PrefKeys {
         String LAST_READ_BOOK_ID = "last_read_book";
         String LAST_READ_CHAPTER = "last_read_chapter";
         String LAST_READ_VERSE = "last_read_verse";
+
+        String FONT_SIZE = "font_size";
+        String READING_MODE = "reading_mode";
+    }
+
+    public enum ReadingMode {
+        Day(0, "Day"),
+        Night(1, "Night");
+
+        private int value;
+        private String title;
+
+        public int getValue() {
+            return value;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        ReadingMode(int value, String title) {
+            this.value = value;
+            this.title = title;
+        }
     }
 
     public enum FontSize {

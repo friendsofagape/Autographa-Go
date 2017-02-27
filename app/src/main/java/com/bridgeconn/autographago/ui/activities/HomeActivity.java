@@ -17,6 +17,7 @@ import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.ui.adapters.BookAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
+import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        UtilFunctions.applyReadingMode();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setContentInsetStartWithNavigation(0);
@@ -152,7 +155,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             case R.id.iv_settings: {
                 Intent settingIntent = new Intent(this, SettingsActivity.class);
-                startActivity(settingIntent);
+                startActivityForResult(settingIntent, Constants.RequestCodes.SETTINGS);
+                break;
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case Constants.RequestCodes.SETTINGS: {
+                if (resultCode == RESULT_OK) {
+                    boolean readingMode, fontSize;
+                    readingMode = data.getBooleanExtra(Constants.Keys.TEXT_SIZE_CHANGED, false);
+                    fontSize = data.getBooleanExtra(Constants.Keys.READING_MODE_CHANGE, false);
+                    if (readingMode || fontSize) {
+                        this.recreate();
+                    }
+                }
                 break;
             }
         }

@@ -1,9 +1,11 @@
 package com.bridgeconn.autographago.ui.activities;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSeekBar;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -40,9 +43,12 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         SeekBar.OnSeekBarChangeListener {
 
     private TextView mTvDownload;
+    private ImageView mDayMode, mNightMode;
     private ProgressBar mProgress;
     private LinearLayout mInflateLayout;
     private AppCompatSeekBar mSeekBarTextSize;
+    private Constants.ReadingMode mReadingMode;
+    private Constants.FontSize mFontSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_settings);
+
+        UtilFunctions.applyReadingMode();
 
         if (android.os.Build.VERSION.SDK_INT > 9)
         {
@@ -67,21 +75,41 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         mTvDownload = (TextView) findViewById(R.id.download_bible);
+        mDayMode = (ImageView) findViewById(R.id.iv_day_mode);
+        mNightMode = (ImageView) findViewById(R.id.iv_night_mode);
         mProgress = (ProgressBar) findViewById(R.id.progress);
         mInflateLayout = (LinearLayout) findViewById(R.id.inflate_layout);
         mSeekBarTextSize = (AppCompatSeekBar) findViewById(R.id.seekbar_text_size);
 
         mTvDownload.setOnClickListener(this);
+        mDayMode.setOnClickListener(this);
+        mNightMode.setOnClickListener(this);
+
+        mFontSize = SharedPrefs.getFontSize();
+        mReadingMode = SharedPrefs.getReadingMode();
 
         mSeekBarTextSize.setMax(4);
         mSeekBarTextSize.setOnSeekBarChangeListener(this);
         mSeekBarTextSize.setProgress(getFontSizeInt(SharedPrefs.getFontSize()));
+
+        switch (SharedPrefs.getReadingMode()) {
+            case Day: {
+                mDayMode.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
+                mNightMode.setColorFilter(ContextCompat.getColor(this, R.color.black_40));
+                break;
+            }
+            case Night: {
+                mDayMode.setColorFilter(ContextCompat.getColor(this, R.color.black_40));
+                mNightMode.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
+                break;
+            }
+        }
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (fromUser) {
-            SharedPrefs.setFontSize(getFontSizeEnum(progress));
+            mFontSize = getFontSizeEnum(progress);
         }
     }
 
@@ -139,9 +167,19 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.download_bible: {
-
                 getAvailableLanguages();
-
+                break;
+            }
+            case R.id.iv_day_mode: {
+                mReadingMode = Constants.ReadingMode.Day;
+                mDayMode.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
+                mNightMode.setColorFilter(ContextCompat.getColor(this, R.color.black_40));
+                break;
+            }
+            case R.id.iv_night_mode: {
+                mReadingMode = Constants.ReadingMode.Night;
+                mDayMode.setColorFilter(ContextCompat.getColor(this, R.color.black_40));
+                mNightMode.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
                 break;
             }
         }
@@ -365,11 +403,34 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                saveToSharedPrefs();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void saveToSharedPrefs() {
+        Intent output = new Intent();
+        if (SharedPrefs.getFontSize().equals(mFontSize)) {
+            output.putExtra(Constants.Keys.TEXT_SIZE_CHANGED, false);
+        } else {
+            SharedPrefs.putFontSize(mFontSize);
+            output.putExtra(Constants.Keys.TEXT_SIZE_CHANGED, true);
+        }
+        if (SharedPrefs.getReadingMode().equals(mReadingMode)) {
+            output.putExtra(Constants.Keys.READING_MODE_CHANGE, false);
+        } else {
+            SharedPrefs.putReadingMode(mReadingMode);
+            output.putExtra(Constants.Keys.READING_MODE_CHANGE, true);
+        }
+        setResult(RESULT_OK, output);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        saveToSharedPrefs();
     }
 
 }

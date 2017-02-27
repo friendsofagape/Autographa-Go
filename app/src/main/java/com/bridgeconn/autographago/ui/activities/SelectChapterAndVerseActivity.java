@@ -19,6 +19,7 @@ import com.bridgeconn.autographago.ui.fragments.ChapterFragment;
 import com.bridgeconn.autographago.ui.fragments.VerseFragment;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
+import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 
@@ -41,6 +42,8 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_select_chapter_and_verse);
+
+        UtilFunctions.applyReadingMode();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);

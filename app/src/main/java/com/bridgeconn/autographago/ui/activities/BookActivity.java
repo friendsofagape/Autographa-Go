@@ -25,6 +25,7 @@ import com.bridgeconn.autographago.ui.adapters.ChapterAdapter;
 import com.bridgeconn.autographago.ui.customviews.BounceInterpolator;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
+import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,6 +51,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_book);
+
+        UtilFunctions.applyReadingMode();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_menu_white);

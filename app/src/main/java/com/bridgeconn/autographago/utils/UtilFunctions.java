@@ -3,6 +3,7 @@ package com.bridgeconn.autographago.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Environment;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -18,6 +19,19 @@ import java.io.InputStream;
 import java.nio.channels.FileChannel;
 
 public class UtilFunctions {
+
+    public static void applyReadingMode() {
+        switch (SharedPrefs.getReadingMode()) {
+            case Day: {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            }
+            case Night: {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            }
+        }
+    }
 
     public static void pullDB(String sDBName) {
         try {

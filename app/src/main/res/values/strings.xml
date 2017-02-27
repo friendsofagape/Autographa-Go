@@ -36,4 +36,7 @@
     <string name="notes">Notes</string>
     <string name="history">History</string>
 
+    <string name="text_reading_mode">Reading Mode</string>
+    <string name="text_text_size">Text Size</string>
+
 </resources>

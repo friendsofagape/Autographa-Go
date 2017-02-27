@@ -20,6 +20,7 @@ import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ui.activities.BookActivity;
 import com.bridgeconn.autographago.utils.Constants;
+import com.bridgeconn.autographago.utils.SharedPrefs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -289,7 +290,16 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
             int px = (int)(textSize * mContext.getResources().getDisplayMetrics().scaledDensity);
             spannableStringBuilder.setSpan(new AbsoluteSizeSpan(px), 0, spannableStringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             if (verseComponentsModel.isHighlighted()) {
-                spannableStringBuilder.setSpan(new BackgroundColorSpan(0xFFFFFF00), 0, spannableStringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                switch (SharedPrefs.getReadingMode()) {
+                    case Day: {
+                        spannableStringBuilder.setSpan(new BackgroundColorSpan(0xFFFFFF00), 0, spannableStringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        break;
+                    }
+                    case Night: {
+                        spannableStringBuilder.setSpan(new BackgroundColorSpan(0x77FFA500), 0, spannableStringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        break;
+                    }
+                }
             }
             mTvChapter.append(spannableStringBuilder);
         }

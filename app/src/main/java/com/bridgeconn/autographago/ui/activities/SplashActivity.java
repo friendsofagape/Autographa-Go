@@ -11,6 +11,7 @@ import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.USFMParser;
+import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,8 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
         super.onCreate(savedInstanceState);
+
+        UtilFunctions.applyReadingMode();
 
         String [] fileNames = {Constants.USFMFiles.HOSEA, Constants.USFMFiles._3_JOHN, Constants.USFMFiles.ZEPHANIAH};
 

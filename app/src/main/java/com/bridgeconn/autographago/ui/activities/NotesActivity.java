@@ -21,6 +21,7 @@ import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.adapters.NotesAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
+import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 
@@ -43,6 +44,8 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
         realm = Realm.getDefaultInstance();
 
         setContentView(R.layout.activity_notes);
+
+        UtilFunctions.applyReadingMode();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);

@@ -7,19 +7,27 @@ public class SharedPrefs {
 
     private static SharedPreferences sharedPrefs;
 
-    private final static String FONT_SIZE = "FONT_SIZE";
-
     public static void init(Context context) {
         sharedPrefs = context.getSharedPreferences("default", Context.MODE_PRIVATE);
     }
 
     public static Constants.FontSize getFontSize() {
-        return Constants.FontSize.valueOf(sharedPrefs.getString(FONT_SIZE, Constants.FontSize.Medium.name()));
+        return Constants.FontSize.valueOf(sharedPrefs.getString(Constants.PrefKeys.FONT_SIZE, Constants.FontSize.Medium.name()));
     }
 
-    public static void setFontSize(Constants.FontSize style) {
+    public static void putFontSize(Constants.FontSize style) {
         SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.putString(FONT_SIZE, style.name());
+        editor.putString(Constants.PrefKeys.FONT_SIZE, style.name());
+        editor.commit();
+    }
+
+    public static Constants.ReadingMode getReadingMode() {
+        return Constants.ReadingMode.valueOf(sharedPrefs.getString(Constants.PrefKeys.READING_MODE, Constants.ReadingMode.Day.name()));
+    }
+
+    public static void putReadingMode(Constants.ReadingMode mode) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(Constants.PrefKeys.READING_MODE, mode.name());
         editor.commit();
     }
 

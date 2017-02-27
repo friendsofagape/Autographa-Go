@@ -35,6 +35,7 @@ import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.customviews.FlowLayout;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
+import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -63,6 +64,8 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         realm = Realm.getDefaultInstance();
 
         setContentView(R.layout.activity_edit_note);
+
+        UtilFunctions.applyReadingMode();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
@@ -220,7 +223,6 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // TODO show a dialog, sure you want to discard
                 showDiscardDialog();
                 return true;
             default:
