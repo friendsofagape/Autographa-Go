@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -354,68 +355,92 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     BroadcastReceiver onComplete=new BroadcastReceiver() {
         public void onReceive(final Context ctxt, Intent intent) {
-            UnzipUtil.unzipFile(new File(filePath),
-                    ctxt, language, versionCode, versionName,
-                    new UnzipUtil.FileUnzipCallback() {
 
-                        @Override
-                        public void onSuccess(final File zipFile, String directoryName) {
-
-                            new AsyncTask<Void, Long, Void>() {
-
-                                @Override
-                                protected void onPostExecute(Void aVoid) {
-                                    super.onPostExecute(aVoid);
-
-                                    Log.i(Constants.DUMMY_TAG, "Parsing DONE");
-                                }
-
-                                @Override
-                                protected Void doInBackground(Void... voids) {
-                                    final File zipFile1 = zipFile;
-                                    String directory = zipFile1.getParent() + "/";
-                                    final File zipDirectory = new File(directory);
-
-                                    zipFile1.delete();
-                                    if (zipDirectory.exists()) {
-                                        File[] files = zipDirectory.listFiles();
-                                        for (int i = 0; i < files.length; ++i) {
-                                            File file = files[i];
-                                            if (file.isDirectory() || !file.getPath().endsWith(".usfm")) {
-                                                continue;
-                                            } else {
-                                                boolean success;
-                                                USFMParser usfmParser = new USFMParser();
-                                                success = usfmParser.parseUSFMFile(ctxt,
-                                                        file.getAbsolutePath(),
-                                                        false,
-                                                        language,
-                                                        versionCode,
-                                                        versionName);
-
-                                                if (success) {
-                                                    // delete that file
-                                                    file.delete();
-                                                }
-                                            }
-                                        }
-                                        Log.i(Constants.DUMMY_TAG, "DONE......");
-                                        // TODO refresh lish oof books on main screen
-                                    }
-                                    zipDirectory.delete();
-
-                                    return null;
-                                }
-                            }.execute();
+            DownloadManager.Query query = new DownloadManager.Query();
+            query.setFilterById(intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0));
+            DownloadManager manager = (DownloadManager) ctxt.getSystemService(Context.DOWNLOAD_SERVICE);
+            Cursor cursor = manager.query(query);
+            if (cursor.moveToFirst()) {
+                if (cursor.getCount() > 0) {
+                    int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                        String file = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
+                        // So something here on success
+                        startUnzipping(ctxt);
+                    } else {
+                        int message = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
+                        if (message == DownloadManager.ERROR_INSUFFICIENT_SPACE) {
+                            Toast.makeText(ctxt, getString(R.string.insufficient_storage), Toast.LENGTH_SHORT).show();
                         }
-
-                        @Override
-                        public void onFailure() {
-                            Log.i(Constants.DUMMY_TAG, "Unzip Error");
-                        }
-                    });
+                        // So something here on failed.
+                    }
+                }
+            }
         }
     };
+
+    private void startUnzipping(final Context context) {
+        UnzipUtil.unzipFile(new File(filePath),
+                context, language, versionCode, versionName,
+                new UnzipUtil.FileUnzipCallback() {
+
+                    @Override
+                    public void onSuccess(final File zipFile, String directoryName) {
+
+                        new AsyncTask<Void, Long, Void>() {
+
+                            @Override
+                            protected void onPostExecute(Void aVoid) {
+                                super.onPostExecute(aVoid);
+
+                                Log.i(Constants.DUMMY_TAG, "Parsing DONE");
+                            }
+
+                            @Override
+                            protected Void doInBackground(Void... voids) {
+                                final File zipFile1 = zipFile;
+                                String directory = zipFile1.getParent() + "/";
+                                final File zipDirectory = new File(directory);
+
+                                zipFile1.delete();
+                                if (zipDirectory.exists()) {
+                                    File[] files = zipDirectory.listFiles();
+                                    for (int i = 0; i < files.length; ++i) {
+                                        File file = files[i];
+                                        if (file.isDirectory() || !file.getPath().endsWith(".usfm")) {
+                                            continue;
+                                        } else {
+                                            boolean success;
+                                            USFMParser usfmParser = new USFMParser();
+                                            success = usfmParser.parseUSFMFile(context,
+                                                    file.getAbsolutePath(),
+                                                    false,
+                                                    language,
+                                                    versionCode,
+                                                    versionName);
+
+                                            if (success) {
+                                                // delete that file
+                                                file.delete();
+                                            }
+                                        }
+                                    }
+                                    Log.i(Constants.DUMMY_TAG, "DONE......");
+                                    // TODO refresh lish oof books on main screen
+                                }
+                                zipDirectory.delete();
+
+                                return null;
+                            }
+                        }.execute();
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        Log.i(Constants.DUMMY_TAG, "Unzip Error");
+                    }
+                });
+    }
 
     private static String downloadUrl;
 
