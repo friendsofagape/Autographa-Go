@@ -102,11 +102,17 @@ public class Constants {
 
         String READING_MODE_CHANGE = "reading_mode_change";
         String TEXT_SIZE_CHANGED = "text_size_changed";
+
+        String LANGUAGE = "language";
+        String VERSION = "version";
+        String VERSION_NAME = "version_name";
     }
 
     public interface RequestCodes {
         int EDIT_NOTES = 0;
         int SETTINGS = 1;
+        int PERMISSION_STORAGE = 2;
+        int APP_SETTINGS_STORAGE = 3;
     }
 
     public interface PrefKeys {

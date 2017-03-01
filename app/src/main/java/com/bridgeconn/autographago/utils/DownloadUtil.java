@@ -1,24 +1,11 @@
 package com.bridgeconn.autographago.utils;
 
-import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.bridgeconn.autographago.models.ResponseModel;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Random;
-
 import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -84,112 +71,4 @@ public class DownloadUtil {
             }
         }.execute();
     }
-
-    public void downloadFile(final String fileUrl, final Context context,
-                             final String language, final String versionCode, final String versionName,
-                             final UnzipUtil.FileUnzipCallback unzipCallback) {
-
-        final ApiInterface downloadService = retrofit.create(ApiInterface.class);
-
-        new AsyncTask<Void, Long, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-                Call<ResponseBody> call = downloadService.downloadFileWithDynamicUrlSync(fileUrl);
-
-                call.enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        Log.i(Constants.DUMMY_TAG, "message = " + response.message());
-                        if (response.isSuccessful()) {
-                            Log.d(Constants.DUMMY_TAG, "server contacted and has file");
-
-                            try {
-                                File root = Environment.getExternalStorageDirectory();
-
-                                Random generator = new Random();
-                                int n = 10000;
-                                n = generator.nextInt(n);
-                                String fname = Constants.USFM_ZIP_FILE_NAME;
-
-                                String sDBName = fname;
-                                if (root.canWrite()) {
-                                    String backupDBPath = Constants.STORAGE_DIRECTORY + sDBName;
-                                    File dir = new File(root, backupDBPath.replace(sDBName, ""));
-                                    if (dir.mkdir()) {
-                                    }
-
-                                    final File futureStudioIconFile = new File (root, backupDBPath);
-                                    if (futureStudioIconFile.exists ()) futureStudioIconFile.delete ();
-
-                                    InputStream inputStream = null;
-                                    OutputStream outputStream = null;
-
-                                    try {
-                                        byte[] fileReader = new byte[4096];
-
-                                        long fileSize = response.body().contentLength();
-                                        long fileSizeDownloaded = 0;
-
-                                        inputStream = response.body().byteStream();
-                                        outputStream = new FileOutputStream(futureStudioIconFile);
-
-                                        while (true) {
-                                            int read = inputStream.read(fileReader);
-
-                                            if (read == -1) {
-                                                break;
-                                            }
-
-                                            outputStream.write(fileReader, 0, read);
-
-                                            fileSizeDownloaded += read;
-
-                                            Log.d(Constants.DUMMY_TAG, "file download: " + fileSizeDownloaded + " of " + fileSize);
-                                        }
-                                        Log.i(Constants.DUMMY_TAG, "file downloaded successfully at " + futureStudioIconFile.getAbsolutePath());
-
-                                        outputStream.flush();
-
-                                        UnzipUtil.unzipFile(new File(futureStudioIconFile.getAbsolutePath()), context, language, versionCode, versionName, unzipCallback);
-                                        return ;
-                                    } catch (IOException e) {
-                                        Toast.makeText(context, "File Error", Toast.LENGTH_SHORT).show();
-                                        Log.e(Constants.DUMMY_TAG, e.toString());
-                                        return ;
-                                    } finally {
-                                        if (inputStream != null) {
-                                            inputStream.close();
-                                        }
-
-                                        if (outputStream != null) {
-                                            outputStream.close();
-                                        }
-                                    }
-                                } else {
-                                    // TODO ask for permission to write to storage
-                                    Toast.makeText(context, "Storage Permission Error", Toast.LENGTH_SHORT).show();
-                                    Log.e(Constants.DUMMY_TAG, "sd cannot write");
-                                }
-                            } catch (IOException e) {
-                                Toast.makeText(context, "File write Error", Toast.LENGTH_SHORT).show();
-                                Log.e(Constants.DUMMY_TAG, e.toString());
-                                return;
-                            }
-                        } else {
-                            Toast.makeText(context, "Server Error", Toast.LENGTH_SHORT).show();
-                            Log.d(Constants.DUMMY_TAG, "server contact failed");
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Toast.makeText(context, "Network Error", Toast.LENGTH_SHORT).show();
-                        Log.e(Constants.DUMMY_TAG, "error");
-                    }
-                });
-                return null;
-            }
-        }.execute();
-    }
-
 }

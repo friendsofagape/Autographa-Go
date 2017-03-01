@@ -1,10 +1,20 @@
 package com.bridgeconn.autographago.ui.activities;
 
+import android.Manifest;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +31,6 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,7 +53,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     private TextView mTvDownload;
     private ImageView mDayMode, mNightMode;
-    private ProgressBar mProgress;
     private LinearLayout mInflateLayout;
     private AppCompatSeekBar mSeekBarTextSize;
     private Constants.ReadingMode mReadingMode;
@@ -77,13 +85,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         mTvDownload = (TextView) findViewById(R.id.download_bible);
         mDayMode = (ImageView) findViewById(R.id.iv_day_mode);
         mNightMode = (ImageView) findViewById(R.id.iv_night_mode);
-        mProgress = (ProgressBar) findViewById(R.id.progress);
         mInflateLayout = (LinearLayout) findViewById(R.id.inflate_layout);
         mSeekBarTextSize = (AppCompatSeekBar) findViewById(R.id.seekbar_text_size);
 
         mTvDownload.setOnClickListener(this);
         mDayMode.setOnClickListener(this);
         mNightMode.setOnClickListener(this);
+        findViewById(R.id.tv_about_us).setOnClickListener(this);
 
         mFontSize = SharedPrefs.getFontSize();
         mReadingMode = SharedPrefs.getReadingMode();
@@ -104,6 +112,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 break;
             }
         }
+
+        downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+
+        registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
     @Override
@@ -180,6 +192,11 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 mReadingMode = Constants.ReadingMode.Night;
                 mDayMode.setColorFilter(ContextCompat.getColor(this, R.color.black_40));
                 mNightMode.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
+                break;
+            }
+            case R.id.tv_about_us: {
+                Intent intent = new Intent(this, AboutPageActivity.class);
+                startActivity(intent);
                 break;
             }
         }
@@ -296,9 +313,115 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        unregisterReceiver(onComplete);
+    }
+
+    private long lastDownload=-1L;
+    private long enqueue;
+    private DownloadManager downloadManager;
+
+    String filePath = "";
+
+    public void startDownload(String url) {
+        Uri uri=Uri.parse(url);
+
+        File root = Environment.getExternalStorageDirectory();
+
+        if (root.canWrite()) {
+            String backupDBPath = Constants.STORAGE_DIRECTORY + Constants.USFM_ZIP_FILE_NAME;
+            File dir = new File(root, Constants.STORAGE_DIRECTORY);
+            if (dir.mkdir()) {
+            }
+            File f = new File (root, backupDBPath);
+            filePath = f.getAbsolutePath();
+        }
+
+        lastDownload = downloadManager.enqueue(new DownloadManager.Request(uri)
+                .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI |
+                        DownloadManager.Request.NETWORK_MOBILE)
+                .setAllowedOverRoaming(false)
+                .setTitle("Downloading Bible")
+                .setDescription("Downloading...")
+                .setDestinationInExternalPublicDir(Constants.STORAGE_DIRECTORY, Constants.USFM_ZIP_FILE_NAME)
+        );
+    }
+
+    private String language, versionCode, versionName;
+
+    BroadcastReceiver onComplete=new BroadcastReceiver() {
+        public void onReceive(final Context ctxt, Intent intent) {
+            UnzipUtil.unzipFile(new File(filePath),
+                    ctxt, language, versionCode, versionName,
+                    new UnzipUtil.FileUnzipCallback() {
+
+                        @Override
+                        public void onSuccess(final File zipFile, String directoryName) {
+
+                            new AsyncTask<Void, Long, Void>() {
+
+                                @Override
+                                protected void onPostExecute(Void aVoid) {
+                                    super.onPostExecute(aVoid);
+
+                                    Log.i(Constants.DUMMY_TAG, "Parsing DONE");
+                                }
+
+                                @Override
+                                protected Void doInBackground(Void... voids) {
+                                    final File zipFile1 = zipFile;
+                                    String directory = zipFile1.getParent() + "/";
+                                    final File zipDirectory = new File(directory);
+
+                                    zipFile1.delete();
+                                    if (zipDirectory.exists()) {
+                                        File[] files = zipDirectory.listFiles();
+                                        for (int i = 0; i < files.length; ++i) {
+                                            File file = files[i];
+                                            if (file.isDirectory() || !file.getPath().endsWith(".usfm")) {
+                                                continue;
+                                            } else {
+                                                boolean success;
+                                                USFMParser usfmParser = new USFMParser();
+                                                success = usfmParser.parseUSFMFile(ctxt,
+                                                        file.getAbsolutePath(),
+                                                        false,
+                                                        language,
+                                                        versionCode,
+                                                        versionName);
+
+                                                if (success) {
+                                                    // delete that file
+                                                    file.delete();
+                                                }
+                                            }
+                                        }
+                                        Log.i(Constants.DUMMY_TAG, "DONE......");
+                                        // TODO refresh lish oof books on main screen
+                                    }
+                                    zipDirectory.delete();
+
+                                    return null;
+                                }
+                            }.execute();
+                        }
+
+                        @Override
+                        public void onFailure() {
+                            Log.i(Constants.DUMMY_TAG, "Unzip Error");
+                        }
+                    });
+        }
+    };
+
+    private static String downloadUrl;
+
     public void getMetaData(final String language, final String version) {
         // TODO make this a foreground service with notification
-        DownloadUtil downloadUtil = new DownloadUtil();
+        final DownloadUtil downloadUtil = new DownloadUtil();
         downloadUtil.downloadJson(language + "/" + version + "/" + Constants.META_DATA_FILE_NAME,
                 new DownloadUtil.FileDownloadCallback() {
 
@@ -317,73 +440,24 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             button.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    // TODO see why progress bar is hanging
-                                    mProgress.setVisibility(View.VISIBLE);
-                                    DownloadUtil downloadUtil = new DownloadUtil();
-                                    downloadUtil.downloadFile(
-                                            language + "/" + version + "/" + Constants.USFM_ZIP_FILE_NAME,
-                                            SettingsActivity.this,
-                                            language,
-                                            version,
-                                            model.getMetaData().getVersionName(),
-                                            new UnzipUtil.FileUnzipCallback() {
 
-                                                @Override
-                                                public void onSuccess(final File zipFile, String directoryName) {
+                                    downloadUrl = Constants.API_BASE_URL + language + "/" + version + "/" + Constants.USFM_ZIP_FILE_NAME;
 
-                                                    new AsyncTask<Void, Long, Void>() {
+                                    if (ContextCompat.checkSelfPermission(SettingsActivity.this,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                        ActivityCompat.requestPermissions(SettingsActivity.this,
+                                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                                Constants.RequestCodes.PERMISSION_STORAGE);
+                                        return;
+                                    }
+                                    startDownload(downloadUrl);
 
-                                                        @Override
-                                                        protected void onPostExecute(Void aVoid) {
-                                                            super.onPostExecute(aVoid);
-
-                                                            mProgress.setVisibility(View.GONE);
-                                                            Toast.makeText(SettingsActivity.this, "Parsing DONE", Toast.LENGTH_SHORT).show();
-                                                        }
-
-                                                        @Override
-                                                        protected Void doInBackground(Void... voids) {
-                                                            final File zipFile1 = zipFile;
-                                                            String directory = zipFile1.getParent() + "/";
-                                                            final File zipDirectory = new File(directory);
-
-                                                            zipFile1.delete();
-                                                            if (zipDirectory.exists()) {
-                                                                File[] files = zipDirectory.listFiles();
-                                                                for (int i = 0; i < files.length; ++i) {
-                                                                    File file = files[i];
-                                                                    if (file.isDirectory() || !file.getPath().endsWith(".usfm")) {
-                                                                        continue;
-                                                                    } else {
-                                                                        boolean success;
-                                                                        USFMParser usfmParser = new USFMParser();
-                                                                        success = usfmParser.parseUSFMFile(SettingsActivity.this,
-                                                                                file.getAbsolutePath(),
-                                                                                false,
-                                                                                language,
-                                                                                version,
-                                                                                model.getMetaData().getVersionName());
-
-                                                                        if (success) {
-                                                                            // delete that file
-                                                                            file.delete();
-                                                                        }
-                                                                    }
-                                                                }
-                                                                Log.i(Constants.DUMMY_TAG, "DONE......");
-                                                                // TODO refresh lish oof books on main screen
-                                                            }
-
-                                                            return null;
-                                                        }
-                                                    }.execute();
-                                                }
-
-                                                @Override
-                                                public void onFailure() {
-                                                    Toast.makeText(SettingsActivity.this, "Unzip Error", Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
+//                                    Intent startIntent = new Intent(SettingsActivity.this, FileDownloadService.class);
+//                                    startIntent.putExtra(Constants.Keys.LANGUAGE, language);
+//                                    startIntent.putExtra(Constants.Keys.VERSION, version);
+//                                    startIntent.putExtra(Constants.Keys.VERSION_NAME, model.getMetaData().getVersionName());
+//                                    startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
+//                                    startService(startIntent);
                                 }
                             });
                             mInflateLayout.addView(tv);
@@ -397,6 +471,75 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                         Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
                     }
                 });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case Constants.RequestCodes.PERMISSION_STORAGE: {
+                if (ContextCompat.checkSelfPermission(SettingsActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+
+                    startDownload(downloadUrl);
+
+                } else {
+                    String positiveButton;
+                    if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        positiveButton = getString(R.string.take_me_to_settings).toUpperCase();
+                    } else {
+                        positiveButton = getString(R.string.try_again).toUpperCase();
+                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this, R.style.DialogThemeLight);
+                    builder.setMessage(getString(R.string.storage_permission_message));
+                    builder.setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                                Intent myAppSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                        Uri.parse("package:" + SettingsActivity.this.getPackageName()));
+                                myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);
+                                startActivityForResult(myAppSettings, Constants.RequestCodes.APP_SETTINGS_STORAGE);
+                            } else {
+                                ActivityCompat.requestPermissions(SettingsActivity.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
+                            }
+                        }
+                    });
+                    builder.setNegativeButton(getString(R.string.cancel).toUpperCase(), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.show();
+                }
+                break;
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case Constants.RequestCodes.APP_SETTINGS_STORAGE: {
+
+                if (ContextCompat.checkSelfPermission(SettingsActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            Constants.RequestCodes.PERMISSION_STORAGE);
+                    return;
+                }
+
+                startDownload(downloadUrl);
+
+                break;
+            }
+        }
     }
 
     @Override

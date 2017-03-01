@@ -45,4 +45,8 @@
         partnering primarily with ministries in India, Nepal and Bhutan where 35% of the of the world’s unreached
         people groups live. \n\n http://www.autographa.com/about/ \n http://www.autographa.com/products/ \n http://www.autographa.com/contact/</string>
 
+    <string name="take_me_to_settings">Take me to settings</string>
+    <string name="try_again">Try Again</string>
+    <string name="storage_permission_message">We need to access your storage to download bibles.</string>
+
 </resources>
