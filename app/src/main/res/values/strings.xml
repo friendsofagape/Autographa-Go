@@ -49,5 +49,7 @@
     <string name="try_again">Try Again</string>
     <string name="storage_permission_message">We need to access your storage to download bibles.</string>
     <string name="insufficient_storage">Insufficient Storage Space. Please clear some space on device.</string>
+    <string name="night_mode">Night Mode</string>
+    <string name="day_mode">Day Mode</string>
 
 </resources>

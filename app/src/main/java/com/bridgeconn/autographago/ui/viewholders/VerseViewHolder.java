@@ -117,11 +117,15 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
         if (verseNumber == null) {
             return;
         }
+        boolean underLine = false;
         int verNumberOne = Integer.parseInt(verseNumber.split("-")[0]);
         for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
             VerseComponentsModel model = mChapterModel.getVerseComponentsModels().get(i);
             int verseNumberStringOne = Integer.parseInt(model.getVerseNumber().split("-")[0]);
             if (verseNumberStringOne == verNumberOne) {
+                if (model.isSelected()) {
+                    underLine = true;
+                }
                 verseComponentsModels.add(model);
             } else if (verseNumberStringOne > verNumberOne) {
                 break;
@@ -129,7 +133,8 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 continue;
             }
         }
-        addAllContent(verseComponentsModels, chapterNumber);
+
+        addAllContent(verseComponentsModels, chapterNumber, underLine);
 
         mTvChapter.setTag(position);
         mTvChapter.setOnClickListener(this);
@@ -158,6 +163,9 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
                             if (verseNumberStringOne == verNumberOne) {
                                 mChapterModel.getVerseComponentsModels().get(i).setSelected(false);
+                                if (mContext instanceof BookActivity) {
+                                    ((BookActivity) mContext).checkToHideOrNot();
+                                }
                             } else if (verseNumberStringOne > verNumberOne) {
                                 break;
                             } else {
@@ -195,7 +203,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
      * call removeAllViews() on linear layout before adding any new views
      * @param verseComponentsModels
      */
-    private void addAllContent(ArrayList<VerseComponentsModel> verseComponentsModels, int chapterNumber) {
+    private void addAllContent(ArrayList<VerseComponentsModel> verseComponentsModels, int chapterNumber, boolean underLine) {
         mTvChapter.setText("");
 
         for (int i=0; i<verseComponentsModels.size(); i++) {
@@ -300,6 +308,9 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                         break;
                     }
                 }
+            }
+            if (underLine) {
+                spannableStringBuilder.setSpan(new UnderlineSpan(), 0, spannableStringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             mTvChapter.append(spannableStringBuilder);
         }

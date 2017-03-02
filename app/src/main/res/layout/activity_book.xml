@@ -71,53 +71,99 @@
         android:orientation="horizontal"
         android:layout_gravity="bottom"
         android:weightSum="3"
-        android:padding="@dimen/activity_horizontal_margin"
         android:background="@color/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dummy_item_height">
 
-        <TextView
-            android:gravity="center"
-            android:layout_gravity="center"
+        <LinearLayout
+            android:id="@+id/view_highlights"
             android:layout_weight="1"
-            android:textSize="?attr/heading_2"
-            android:id="@+id/tv_highlight"
-            android:text="HIGHLIGHT"
-            android:textColor="@color/white"
+            android:gravity="center"
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:textSize="?attr/heading_2"
+                android:id="@+id/tv_highlight"
+                android:gravity="center_vertical"
+                android:text="HIGHLIGHT"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_border_color_white"
+                android:padding="@dimen/default_content_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
         <View
             android:background="@color/white"
             android:layout_width="1dp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
             android:layout_height="32dp"/>
 
-        <TextView
-            android:gravity="center"
-            android:layout_gravity="center"
+        <LinearLayout
+            android:id="@+id/view_notes"
             android:layout_weight="1"
-            android:textSize="?attr/heading_2"
-            android:id="@+id/tv_notes"
-            android:text="NOTES"
-            android:textColor="@color/white"
+            android:gravity="center"
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:textSize="?attr/heading_2"
+                android:gravity="center_vertical"
+                android:text="NOTES"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_note_white"
+                android:padding="@dimen/default_content_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
         <View
             android:background="@color/white"
             android:layout_width="1dp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
             android:layout_height="32dp"/>
 
-        <TextView
-            android:gravity="center"
-            android:layout_gravity="center"
+        <LinearLayout
+            android:id="@+id/view_share"
             android:layout_weight="1"
-            android:textSize="?attr/heading_2"
-            android:id="@+id/tv_share"
-            android:text="SHARE"
-            android:textColor="@color/white"
+            android:gravity="center"
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:textSize="?attr/heading_2"
+                android:gravity="center_vertical"
+                android:text="SHARE"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_share_white"
+                android:padding="@dimen/default_content_padding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

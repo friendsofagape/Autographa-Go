@@ -57,22 +57,42 @@
             android:layout_alignParentRight="true"
             android:src="@drawable/ic_brightness_high_white"
             android:tint="@color/black_40"
-            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_night_mode"
+            android:text="@string/night_mode"
+            android:layout_toLeftOf="@id/iv_night_mode"
+            android:layout_alignTop="@id/iv_night_mode"
+            android:layout_alignBottom="@id/iv_night_mode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <ImageView
             android:id="@+id/iv_day_mode"
-            android:layout_toLeftOf="@id/iv_night_mode"
+            android:layout_below="@id/iv_night_mode"
+            android:layout_alignParentRight="true"
             android:src="@drawable/ic_brightness_low_white"
             android:tint="@color/black_40"
-            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_day_mode"
+            android:text="@string/day_mode"
+            android:layout_toLeftOf="@id/iv_day_mode"
+            android:layout_alignTop="@id/iv_day_mode"
+            android:layout_alignBottom="@id/iv_day_mode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/tv_text_size"
-            android:layout_below="@id/tv_theme"
+            android:layout_below="@id/iv_day_mode"
             android:text="@string/text_text_size"
             android:textAllCaps="true"
             android:textSize="?attr/title_text"

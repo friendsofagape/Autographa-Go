@@ -21,6 +21,11 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private int mChapterPosition;
     private Constants.FontSize mFontSize;
 
+    private interface ViewTypes {
+        int VERSE = 0;
+        int DUMMY = 1;
+    }
+
     public ChapterAdapter(Activity context, ArrayList<ChapterModel> chapterModels, String verseNumber, int chapterPosition, Constants.FontSize fontSize) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
@@ -31,8 +36,26 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
+    public int getItemViewType(int position) {
+        if (position == getItemCount() - 1) {
+            return ViewTypes.DUMMY;
+        }
+        return ViewTypes.VERSE;
+
+    }
+
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new VerseViewHolder(mLayoutInflater.inflate(R.layout.item_verse, parent, false), mContext, mChapterModels, mFontSize);
+        RecyclerView.ViewHolder viewHolder = null;
+        if (viewType == ViewTypes.VERSE) {
+            viewHolder = new VerseViewHolder(mLayoutInflater.inflate
+                    (R.layout.item_verse, parent, false), mContext, mChapterModels, mFontSize);
+        } else if (viewType == ViewTypes.DUMMY) {
+            viewHolder = new RecyclerView.ViewHolder(mLayoutInflater.inflate
+                    (R.layout.item_dummy, parent, false)) {
+            };
+        }
+        return viewHolder;
     }
 
     @Override
@@ -45,7 +68,6 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public int getItemCount() {
         int size = 0;
-
         for (int k=0; k<mChapterModels.size(); k++) {
             for (int i=0; i<mChapterModels.get(k).getVerseComponentsModels().size(); i++) {
                 if (i==0) {
@@ -60,7 +82,7 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             }
         }
-        return size;
+        return size + 1;
     }
 
 }

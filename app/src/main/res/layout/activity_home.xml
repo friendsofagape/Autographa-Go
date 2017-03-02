@@ -67,7 +67,7 @@
                 app:layout_widthPercent="20%"
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
-                android:gravity="center"
+                android:gravity="center_horizontal"
                 android:orientation="vertical">
 
                 <ImageView
@@ -77,6 +77,22 @@
                     android:padding="@dimen/menu_item_margin"
                     android:tint="@color/white"
                     android:src="@drawable/ic_local_library_white" />
+
+                <ImageView
+                    android:id="@+id/iv_history"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/menu_item_margin"
+                    android:tint="@color/white"
+                    android:src="@drawable/ic_history_white" />
+
+                <ImageView
+                    android:id="@+id/iv_search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/menu_item_margin"
+                    android:tint="@color/white"
+                    android:src="@drawable/ic_search_white" />
 
                 <ImageView
                     android:id="@+id/iv_notes"
@@ -93,22 +109,6 @@
                     android:padding="@dimen/menu_item_margin"
                     android:tint="@color/white"
                     android:src="@drawable/ic_menu_white" />
-
-                <ImageView
-                    android:id="@+id/iv_search"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/menu_item_margin"
-                    android:tint="@color/white"
-                    android:src="@drawable/ic_search_white" />
-
-                <ImageView
-                    android:id="@+id/iv_history"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/menu_item_margin"
-                    android:tint="@color/white"
-                    android:src="@drawable/ic_history_white" />
 
                 <ImageView
                     android:id="@+id/iv_settings"

@@ -73,9 +73,9 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         mBottomBar = (LinearLayout) findViewById(R.id.bottom_bar);
 
         mIvBookMark.setOnClickListener(this);
-        findViewById(R.id.tv_highlight).setOnClickListener(this);
-        findViewById(R.id.tv_notes).setOnClickListener(this);
-        findViewById(R.id.tv_share).setOnClickListener(this);
+        findViewById(R.id.view_highlights).setOnClickListener(this);
+        findViewById(R.id.view_notes).setOnClickListener(this);
+        findViewById(R.id.view_share).setOnClickListener(this);
 
         for (int k = 0; k < Constants.CONTAINER.getBookModelList().size(); k++) {
             BookModel bookModel = Constants.CONTAINER.getBookModelList().get(k);
@@ -356,17 +356,17 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
             }
-            case R.id.tv_highlight: {
+            case R.id.view_highlights: {
                 findSelectedAndHighlight();
                 hideBottomBar();
                 break;
             }
-            case R.id.tv_notes: {
+            case R.id.view_notes: {
                 findSelectedAndAddNote();
                 hideBottomBar();
                 break;
             }
-            case R.id.tv_share: {
+            case R.id.view_share: {
                 findSelectedAndShare();
                 hideBottomBar();
                 break;
@@ -393,13 +393,28 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void showBottomBar() {
-        // TODO when bar visible add dummy item to end of chapters to show last text
         mBottomBar.setVisibility(View.VISIBLE);
     }
 
     public void hideBottomBar() {
-        // TODO when bar hide, remove dummy item from end of chapter
         mBottomBar.setVisibility(View.GONE);
+    }
+
+    /**
+     * called whenever a verse is unselected. Then checked for all verses, if none is selected, then hide the bottom bar
+     */
+    public void checkToHideOrNot() {
+        boolean hide = true;
+        for (int i=0;  i<mChapterModels.size(); i++) {
+            for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
+                if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {
+                    hide = false;
+                }
+            }
+        }
+        if (hide) {
+            hideBottomBar();
+        }
     }
 
     @Override
