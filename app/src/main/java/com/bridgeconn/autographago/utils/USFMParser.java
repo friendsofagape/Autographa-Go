@@ -38,7 +38,6 @@ public class USFMParser {
     private RealmList<ChapterModel> chapterModelList;
     private RealmList<VerseComponentsModel> verseComponentsModelList;
 
-    // TODO add hifen logic of verse number to parser also
     public USFMParser() {
         allLanguagesModel = new AllLanguagesModel();
         languageModelList = new ArrayList<>();
@@ -167,6 +166,8 @@ public class USFMParser {
     private void addBook(Context context, String [] splitString) {
         bookModel.setBookId(splitString[1]);
         bookModel.setBookName(UtilFunctions.getBookNameFromMapping(context, splitString[1]));
+        bookModel.setSection(UtilFunctions.getBookSectionFromMapping(context, splitString[1]));
+        bookModel.setBookNumber(UtilFunctions.getBookNumberFromMapping(context, splitString[1]));
     }
 
     /**

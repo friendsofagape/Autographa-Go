@@ -60,6 +60,7 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
 
                     model.setBookId(mBookId);
                     model.setBookName(UtilFunctions.getBookNameFromMapping(mFragment.getContext(), mBookId));
+                    model.setSection(UtilFunctions.getBookSectionFromMapping(mFragment.getContext(), mBookId));
                     model.setTimeStamp(System.currentTimeMillis());
                     model.setSearchId(mBookId + "_" + model.getChapterNumber() + "_" + verseNumber);
 

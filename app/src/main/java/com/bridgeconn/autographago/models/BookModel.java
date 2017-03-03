@@ -14,6 +14,8 @@ public class BookModel extends RealmObject {
     @Ignore
     private boolean selected;
     private int bookmarkChapterNumber;
+    private String section;
+    private int bookNumber;
 
     public BookModel(BookModel model) {
         bookId = model.getBookId();
@@ -21,6 +23,8 @@ public class BookModel extends RealmObject {
         chapterModels = model.getChapterModels();
         selected = model.isSelected();
         bookmarkChapterNumber = model.getBookmarkChapterNumber();
+        section = model.getSection();
+        bookNumber = model.getBookNumber();
     }
 
     public BookModel() {
@@ -64,5 +68,21 @@ public class BookModel extends RealmObject {
 
     public void setBookmarkChapterNumber(int bookmarkChapterNumber) {
         this.bookmarkChapterNumber = bookmarkChapterNumber;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
+    }
+
+    public int getBookNumber() {
+        return bookNumber;
+    }
+
+    public void setBookNumber(int bookNumber) {
+        this.bookNumber = bookNumber;
     }
 }

@@ -16,6 +16,8 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
     private long timeStamp;
     @PrimaryKey
     private String searchId;
+    private String section;
+    private int bookNumber;
 
     public SearchModel() {
     }
@@ -28,6 +30,8 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
         text = searchModel.getText();
         timeStamp = searchModel.getTimeStamp();
         searchId = searchModel.getSearchId();
+        section = searchModel.getSection();
+        bookNumber = searchModel.getBookNumber();
     }
 
     public String getBookId() {
@@ -86,6 +90,22 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
         this.searchId = searchId;
     }
 
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
+    }
+
+    public int getBookNumber() {
+        return bookNumber;
+    }
+
+    public void setBookNumber(int bookNumber) {
+        this.bookNumber = bookNumber;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -100,6 +120,8 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
         dest.writeString(this.text);
         dest.writeLong(this.timeStamp);
         dest.writeString(this.searchId);
+        dest.writeString(this.section);
+        dest.writeInt(this.bookNumber);
     }
 
     protected SearchModel(Parcel in) {
@@ -110,6 +132,8 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
         this.text = in.readString();
         this.timeStamp = in.readLong();
         this.searchId = in.readString();
+        this.section = in.readString();
+        this.bookNumber = in.readInt();
     }
 
     public static final Creator<SearchModel> CREATOR = new Creator<SearchModel>() {

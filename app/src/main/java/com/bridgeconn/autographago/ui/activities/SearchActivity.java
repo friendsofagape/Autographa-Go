@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
@@ -32,12 +34,13 @@ import java.util.List;
 
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
 
-    //    private EditText mEtSearch;
     private AutoCompleteTextView mAutoCompleteTextView;
     private ImageView mIvClose;
     private ArrayList<SearchModel> mSearchResultModels = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private SearchAdapter mAdapter;
+    private ProgressBar mProgressBar;
+    private LinearLayout noResultsFound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +60,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mAutoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.auto_complete_search);
-//        mEtSearch = (EditText) findViewById(R.id.et_search);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        noResultsFound = (LinearLayout) findViewById(R.id.no_results_found);
 
         mIvClose = (ImageView) findViewById(R.id.iv_close);
 
@@ -105,7 +109,10 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     private void doSearch(String searchText) {
 
+        noResultsFound.setVisibility(View.GONE);
         mSearchResultModels.clear();
+        mAdapter.notifyDataSetChanged();
+        mProgressBar.setVisibility(View.VISIBLE);
 
         searchInBookName(searchText);
         searchInVerseText(searchText);
@@ -138,7 +145,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         for (VerseComponentsModel verseComponentsModel : chapterModel.getVerseComponentsModels()) {
             String [] verseNumberSplit = verseComponentsModel.getVerseNumber().split("-");
             if (Integer.parseInt(verseNumberSplit[0]) > 1) {
-//            if (verseComponentsModel.getVerseNumber() > 1) {
                 break;
             }
             switch (verseComponentsModel.getType()) {
@@ -165,13 +171,20 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 if (splitString.length > 1) {
                     searchModel.setBookId(splitString[0]);
                     searchModel.setBookName(UtilFunctions.getBookNameFromMapping(this, splitString[0]));
+                    searchModel.setSection(UtilFunctions.getBookSectionFromMapping(this, splitString[0]));
                     searchModel.setChapterNumber(Integer.parseInt(splitString[1]));
                 }
                 searchModel.setVerseNumber(verseComponentsModel.getVerseNumber());
                 searchModel.setText(verseComponentsModel.getText());
                 mSearchResultModels.add(searchModel);
             }
+            mProgressBar.setVisibility(View.GONE);
             mAdapter.notifyDataSetChanged();
+            if (mSearchResultModels.size() == 0) {
+                noResultsFound.setVisibility(View.VISIBLE);
+            } else {
+
+            }
         }
     }
 

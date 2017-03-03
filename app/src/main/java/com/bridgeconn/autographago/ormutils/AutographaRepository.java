@@ -161,6 +161,8 @@ public class AutographaRepository<T extends RealmObject> implements Repository<T
             BookModel bookModel = new BookModel();
             bookModel.setBookId(resultsToReturn.get(i).getBookId());
             bookModel.setBookName(resultsToReturn.get(i).getBookName());
+            bookModel.setSection(resultsToReturn.get(i).getSection());
+            bookModel.setBookNumber(resultsToReturn.get(i).getBookNumber());
             bookModel.setBookmarkChapterNumber(resultsToReturn.get(i).getBookmarkChapterNumber());
             for (int j=0; j<resultsToReturn.get(i).getChapterModels().size(); j++) {
                 ChapterModel chapterModel = new ChapterModel();

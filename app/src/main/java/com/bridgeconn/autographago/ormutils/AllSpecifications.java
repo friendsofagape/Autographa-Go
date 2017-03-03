@@ -63,7 +63,7 @@ public class AllSpecifications {
     public static class AllBooks implements Specification<BookModel> {
         @Override
         public RealmResults<BookModel> generateResults(Realm realm) {
-            return realm.where(BookModel.class).findAll().sort("bookName");
+            return realm.where(BookModel.class).findAll().sort("bookNumber");
         }
     }
 

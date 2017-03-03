@@ -79,6 +79,7 @@ public class UtilFunctions {
         imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
     }
 
+    /*
     public static String getBookNameFromMapping(Context context, String bookId) {
         String json = null;
         try {
@@ -97,6 +98,76 @@ public class UtilFunctions {
             JSONObject idObject = jsonObject.getJSONObject("id_name_map");
             return idObject.getString(bookId);
         } catch (JSONException je) {
+            return null;
+        }
+    }
+    */
+
+    public static String getBookNameFromMapping(Context context, String bookId) {
+        String json = null;
+        try {
+            InputStream is = context.getAssets().open("newmappings.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            JSONObject idObject = jsonObject.getJSONObject("id_name_map");
+            JSONObject valueObject = idObject.getJSONObject(bookId);
+            return valueObject.getString("book_name");
+        } catch (JSONException je) {
+            je.printStackTrace();
+            return null;
+        }
+    }
+
+    public static int getBookNumberFromMapping(Context context, String bookId) {
+        String json = null;
+        try {
+            InputStream is = context.getAssets().open("newmappings.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            JSONObject idObject = jsonObject.getJSONObject("id_name_map");
+            JSONObject valueObject = idObject.getJSONObject(bookId);
+            return valueObject.getInt("number");
+        } catch (JSONException je) {
+            je.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static String getBookSectionFromMapping(Context context, String bookId) {
+        String json = null;
+        try {
+            InputStream is = context.getAssets().open("newmappings.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            JSONObject idObject = jsonObject.getJSONObject("id_name_map");
+            JSONObject valueObject = idObject.getJSONObject(bookId);
+            return valueObject.getString("section");
+        } catch (JSONException je) {
+            je.printStackTrace();
             return null;
         }
     }
