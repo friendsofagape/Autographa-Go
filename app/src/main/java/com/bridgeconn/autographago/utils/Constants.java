@@ -69,10 +69,142 @@ public class Constants {
         String UNDERLINE = "UNDERLINE";
     }
 
+    public static String [] UsfmFileNames = {
+            "01-GEN.usfm",
+            "02-EXO.usfm",
+            "03-LEV.usfm",
+            "04-NUM.usfm",
+            "05-DEU.usfm",
+            "06-JOS.usfm",
+            "07-JDG.usfm",
+            "08-RUT.usfm",
+            "09-1SA.usfm",
+            "10-2SA.usfm",
+            "11-1KI.usfm",
+            "12-2KI.usfm",
+            "13-1CH.usfm",
+            "14-2CH.usfm",
+            "15-EZR.usfm",
+            "16-NEH.usfm",
+            "17-EST.usfm",
+            "18-JOB.usfm",
+            "19-PSA.usfm",
+            "20-PRO.usfm",
+            "21-ECC.usfm",
+            "22-SNG.usfm",
+            "23-ISA.usfm",
+            "24-JER.usfm",
+            "25-LAM.usfm",
+            "26-EZK.usfm",
+            "27-DAN.usfm",
+            "28-HOS.usfm",
+            "29-JOL.usfm",
+            "30-AMO.usfm",
+            "31-OBA.usfm",
+            "32-JON.usfm",
+            "33-MIC.usfm",
+            "34-NAM.usfm",
+            "35-HAB.usfm",
+            "36-ZEP.usfm",
+            "37-HAG.usfm",
+            "38-ZEC.usfm",
+            "39-MAL.usfm",
+            "41-MAT.usfm",
+            "42-MRK.usfm",
+            "43-LUK.usfm",
+            "44-JHN.usfm",
+            "45-ACT.usfm",
+            "46-ROM.usfm",
+            "47-1CO.usfm",
+            "48-2CO.usfm",
+            "49-GAL.usfm",
+            "50-EPH.usfm",
+            "51-PHP.usfm",
+            "52-COL.usfm",
+            "53-1TH.usfm",
+            "54-2TH.usfm",
+            "55-1TI.usfm",
+            "56-2TI.usfm",
+            "57-TIT.usfm",
+            "58-PHM.usfm",
+            "59-HEB.usfm",
+            "60-JAS.usfm",
+            "61-1PE.usfm",
+            "62-2PE.usfm",
+            "63-1JN.usfm",
+            "64-2JN.usfm",
+            "65-3JN.usfm",
+            "66-JUD.usfm",
+            "67-REV.usfm"
+    };
+
     public interface USFMFiles {
+        String GENESIS = "01-GEN.usfm";
+        String EXODUS = "02-EXO.usfm";
+        String LEVITICUS = "03-LEV.usfm";
+        String NUMBERS = "04-NUM.usfm";
+        String DEUTERONOMY = "05-DEU.usfm";
+        String JOSHUA = "06-JOS.usfm";
+        String JUDGES = "07-JDG.usfm";
+        String RUTH = "08-RUT.usfm";
+        String _1_SAMUEL = "09-1SA.usfm";
+        String _2_SAMUEL = "10-2SA.usfm";
+        String _1_KINGS = "11-1KI.usfm";
+        String _2_KINGS = "12-2KI.usfm";
+        String _1_CHRONICLES = "13-1CH.usfm";
+        String _2_CHRONICLES = "14-2CH.usfm";
+        String EZRA = "15-EZR.usfm";
+        String NEHEMIAH = "16-NEH.usfm";
+        String ESTHER = "17-EST.usfm";
+        String JOB = "18-JOB.usfm";
+        String PSALMS = "19-PSA.usfm";
+        String PROVERBS = "20-PRO.usfm";
+        String ECCLESIASTES = "21-ECC.usfm";
+        String SONG_OF_SOLOMON = "22-SNG.usfm";
+        String ISAIAH = "23-ISA.usfm";
+        String JEREMIAH = "24-JER.usfm";
+        String LAMENTATIONS = "25-LAM.usfm";
+        String EZEKIEL = "26-EZK.usfm";
+        String DANIEL = "27-DAN.usfm";
         String HOSEA = "28-HOS.usfm";
-        String _3_JOHN = "65-3JN.usfm";
+        String JOEL = "29-JOL.usfm";
+        String AMOS = "30-AMO.usfm";
+        String OBADIAH = "31-OBA.usfm";
+        String JONAH = "32-JON.usfm";
+        String MICAH = "33-MIC.usfm";
+        String NAHUM = "34-NAM.usfm";
+        String HABAKKUK = "35-HAB.usfm";
         String ZEPHANIAH = "36-ZEP.usfm";
+        String HAGGAI = "37-HAG.usfm";
+        String ZECHARIAH = "38-ZEC.usfm";
+        String MALACHI = "39-MAL.usfm";
+        String MATTHEW_S_GOSPEL = "41-MAT.usfm";
+        String MARK_S_GOSPEL = "42-MRK.usfm";
+        String LUKE_S_GOSPEL = "43-LUK.usfm";
+        String JOHN_S_GOSPEL = "44-JHN.usfm";
+        String ACTS = "45-ACT.usfm";
+        String ROMANS = "46-ROM.usfm";
+        String _1_CORINTHIANS = "47-1CO.usfm";
+        String _2_CORINTHIANS = "48-2CO.usfm";
+        String GALATIANS = "49-GAL.usfm";
+        String EPHESIANS = "50-EPH.usfm";
+        String PHILIPPIANS = "51-PHP.usfm";
+        String COLOSSIANS = "52-COL.usfm";
+        String _1_THESSALONIANS = "53-1TH.usfm";
+        String _2_THESSALONIANS = "54-2TH.usfm";
+        String _1_TIMOTHY = "55-1TI.usfm";
+        String _2_TIMOTHY = "56-2TI.usfm";
+        String TITUS = "57-TIT.usfm";
+        String PHILEMON = "58-PHM.usfm";
+        String HEBREWS = "59-HEB.usfm";
+        String JAMES = "60-JAS.usfm";
+        String _1_PETER = "61-1PE.usfm";
+        String _2_PETER = "62-2PE.usfm";
+        String _1_JOHN = "63-1JN.usfm";
+        String _2_JOHN = "64-2JN.usfm";
+        String _3_JOHN = "65-3JN.usfm";
+        String JUDE = "66-JUD.usfm";
+        String REVELATION = "67-REV.usfm";
     }
 
     public interface MarkerTypes {
@@ -120,8 +252,13 @@ public class Constants {
         String LAST_READ_CHAPTER = "last_read_chapter";
         String LAST_READ_VERSE = "last_read_verse";
 
+        String LAST_READ = "last_read";
+
         String FONT_SIZE = "font_size";
         String READING_MODE = "reading_mode";
+
+        String LAST_OPEN_LANGUAGE_CODE = "last_open_language_code";
+        String LAST_OPEN_VERSION_CODE = "last_open_version_code";
     }
 
     public enum ReadingMode {

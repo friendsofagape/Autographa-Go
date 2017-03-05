@@ -2,10 +2,12 @@ package com.bridgeconn.autographago.models;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class VersionModel extends RealmObject {
 
     private String versionName;
+    @PrimaryKey
     private String versionCode;
     private RealmList<BookModel> bookModels = new RealmList<>();
 

@@ -56,7 +56,9 @@ public class AllSpecifications {
         @Override
         public RealmResults<BookModel> generateResults(Realm realm) {
             RealmQuery<BookModel> query = realm.where(BookModel.class);
-            return query.findAll();
+            query = query.equalTo("languageCode", language);
+            query = query.equalTo("versionCode", version);
+            return query.findAll().sort("bookNumber");
         }
     }
 
@@ -83,30 +85,38 @@ public class AllSpecifications {
     }
 
     public static class SearchInBookName implements Specification<BookModel> {
-        private String text;
+        private String text, language, version;
 
-        public SearchInBookName(String text) {
+        public SearchInBookName(String text, String language, String version) {
             this.text = text;
+            this.language = language;
+            this.version = version;
         }
 
         @Override
         public RealmResults<BookModel> generateResults(Realm realm) {
             RealmQuery<BookModel> query = realm.where(BookModel.class);
+            query = query.equalTo("languageCode", language);
+            query = query.equalTo("versionCode", version);
             query = query.contains("bookName", text, Case.INSENSITIVE);
             return query.findAll();
         }
     }
 
     public static class SearchInVerseComponentsText implements Specification<VerseComponentsModel> {
-        private String text;
+        private String text, language, version;
 
-        public SearchInVerseComponentsText(String text) {
+        public SearchInVerseComponentsText(String text, String language, String version) {
             this.text = text;
+            this.language = language;
+            this.version = version;
         }
 
         @Override
         public RealmResults<VerseComponentsModel> generateResults(Realm realm) {
             RealmQuery<VerseComponentsModel> query = realm.where(VerseComponentsModel.class);
+            query = query.equalTo("languageCode", language);
+            query = query.equalTo("versionCode", version);
             query = query.contains("text", text, Case.INSENSITIVE);
             return query.findAll().distinct("chapterId", "verseNumber");
         }
@@ -135,9 +145,18 @@ public class AllSpecifications {
     }
 
     public static class AllBookmarks implements Specification<BookModel> {
+        private String language, version;
+
+        public AllBookmarks(String language, String version) {
+            this.language = language;
+            this.version = version;
+        }
+
         @Override
         public RealmResults<BookModel> generateResults(Realm realm) {
             RealmQuery<BookModel> query = realm.where(BookModel.class);
+            query = query.equalTo("languageCode", language);
+            query = query.equalTo("versionCode", version);
             query = query.greaterThan("bookmarkChapterNumber", 0);
             return query.findAll();
         }
@@ -166,16 +185,35 @@ public class AllSpecifications {
     }
 
     public static class AllHistory implements Specification<SearchModel> {
+        private String language, version;
+
+        public AllHistory(String language, String version) {
+            this.language = language;
+            this.version = version;
+        }
+
         @Override
         public RealmResults<SearchModel> generateResults(Realm realm) {
-            return realm.where(SearchModel.class).findAll().sort("timeStamp", Sort.DESCENDING);
+            RealmQuery<SearchModel> query = realm.where(SearchModel.class);
+            query = query.equalTo("languageCode", language);
+            query = query.equalTo("versionCode", version);
+            return query.findAll().sort("timeStamp", Sort.DESCENDING);
         }
     }
 
     public static class AllHighlights implements Specification<VerseComponentsModel> {
+        private String language, version;
+
+        public AllHighlights(String language, String version) {
+            this.language = language;
+            this.version = version;
+        }
+
         @Override
         public RealmResults<VerseComponentsModel> generateResults(Realm realm) {
             RealmQuery<VerseComponentsModel> query = realm.where(VerseComponentsModel.class);
+            query = query.equalTo("languageCode", language);
+            query = query.equalTo("versionCode", version);
             query = query.equalTo("highlighted", true);
             return query.findAll().distinct("chapterId", "verseNumber");
         }

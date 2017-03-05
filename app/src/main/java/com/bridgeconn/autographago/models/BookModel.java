@@ -9,6 +9,8 @@ public class BookModel extends RealmObject {
 
     @PrimaryKey
     private String bookId;
+    private String languageCode;
+    private String versionCode;
     private String bookName;
     private RealmList<ChapterModel> chapterModels = new RealmList<>();
     @Ignore
@@ -19,6 +21,8 @@ public class BookModel extends RealmObject {
 
     public BookModel(BookModel model) {
         bookId = model.getBookId();
+        languageCode = model.getLanguageCode();
+        versionCode = model.getVersionCode();
         bookName = model.getBookName();
         chapterModels = model.getChapterModels();
         selected = model.isSelected();
@@ -36,6 +40,22 @@ public class BookModel extends RealmObject {
 
     public void setBookId(String bookId) {
         this.bookId = bookId;
+    }
+
+    public String getLanguageCode() {
+        return languageCode;
+    }
+
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
+
+    public String getVersionCode() {
+        return versionCode;
+    }
+
+    public void setVersionCode(String versionCode) {
+        this.versionCode = versionCode;
     }
 
     public String getBookName() {

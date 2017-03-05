@@ -25,6 +25,8 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
     @Ignore
     private boolean selected;
     private boolean highlighted;
+    private String languageCode;
+    private String versionCode;
 
     public VerseComponentsModel(VerseComponentsModel model) {
         chapterId = model.getChapterId();
@@ -35,6 +37,8 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
         marker = model.getMarker();
         selected = model.isSelected();
         highlighted = model.isHighlighted();
+        languageCode = model.getLanguageCode();
+        versionCode = model.getVersionCode();
     }
 
     public VerseComponentsModel() {
@@ -102,6 +106,22 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
 
     public void setHighlighted(boolean highlighted) {
         this.highlighted = highlighted;
+    }
+
+    public String getLanguageCode() {
+        return languageCode;
+    }
+
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
+
+    public String getVersionCode() {
+        return versionCode;
+    }
+
+    public void setVersionCode(String versionCode) {
+        this.versionCode = versionCode;
     }
 
     @Override

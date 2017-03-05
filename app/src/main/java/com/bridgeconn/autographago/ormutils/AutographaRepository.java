@@ -5,6 +5,7 @@ import android.support.annotation.WorkerThread;
 
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
+import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.utils.Constants;
 
@@ -144,44 +145,57 @@ public class AutographaRepository<T extends RealmObject> implements Repository<T
     }
 
     @Override
-    public void addToContainer() {
+    public void addToNewContainer(String language, String version) {
 
         Constants.CONTAINER.getBookModelList().clear();
 
         final Realm realm = Realm.getDefaultInstance();
-        final RealmResults<BookModel> realmResults = new AllSpecifications.AllBooks().generateResults(realm);
+        final RealmResults<LanguageModel> realmResults = new AllSpecifications.AllLanguages().generateResults(realm);
 
-        ArrayList<BookModel> resultsToReturn = new ArrayList<>();
+        ArrayList<LanguageModel> resultsToReturn = new ArrayList<>();
 
-        for (BookModel result : realmResults) {
-            resultsToReturn.add(new AllMappers.BookMapper().map(result));
+        for (LanguageModel languageModel : realmResults) {
+            resultsToReturn.add(new AllMappers.LanguageMapper().map(languageModel));
         }
 
         for (int i=0; i<resultsToReturn.size(); i++) {
-            BookModel bookModel = new BookModel();
-            bookModel.setBookId(resultsToReturn.get(i).getBookId());
-            bookModel.setBookName(resultsToReturn.get(i).getBookName());
-            bookModel.setSection(resultsToReturn.get(i).getSection());
-            bookModel.setBookNumber(resultsToReturn.get(i).getBookNumber());
-            bookModel.setBookmarkChapterNumber(resultsToReturn.get(i).getBookmarkChapterNumber());
-            for (int j=0; j<resultsToReturn.get(i).getChapterModels().size(); j++) {
-                ChapterModel chapterModel = new ChapterModel();
-                chapterModel.setChapterId(resultsToReturn.get(i).getChapterModels().get(j).getChapterId());
-                chapterModel.setChapterNumber(resultsToReturn.get(i).getChapterModels().get(j).getChapterNumber());
-                for (int k=0; k<resultsToReturn.get(i).getChapterModels().get(j).getVerseComponentsModels().size(); k++) {
-                    VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
-                    verseComponentsModel.setChapterId(resultsToReturn.get(i).getChapterModels().get(j).getChapterId());
-                    verseComponentsModel.setType(resultsToReturn.get(i).getChapterModels().get(j).getVerseComponentsModels().get(k).getType());
-                    verseComponentsModel.setVerseNumber(resultsToReturn.get(i).getChapterModels().get(j).getVerseComponentsModels().get(k).getVerseNumber());
-                    verseComponentsModel.setText(resultsToReturn.get(i).getChapterModels().get(j).getVerseComponentsModels().get(k).getText());
-                    verseComponentsModel.setHighlighted(resultsToReturn.get(i).getChapterModels().get(j).getVerseComponentsModels().get(k).isHighlighted());
-                    chapterModel.getVerseComponentsModels().add(verseComponentsModel);
+            if (resultsToReturn.get(i).getLanguageCode().equals(language)) {
+                for (int j = 0; j < resultsToReturn.get(i).getVersionModels().size(); j++) {
+                    if (resultsToReturn.get(i).getVersionModels().get(j).getVersionCode().equals(version)) {
+                        for (int k = 0; k < resultsToReturn.get(i).getVersionModels().get(j).getBookModels().size(); k++) {
+                            BookModel bookModel = new BookModel();
+                            bookModel.setBookNumber(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getBookNumber());
+                            bookModel.setSection(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getSection());
+                            bookModel.setBookmarkChapterNumber(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getBookmarkChapterNumber());
+                            bookModel.setBookId(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getBookId());
+                            bookModel.setBookName(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getBookName());
+                            bookModel.setLanguageCode(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getLanguageCode());
+                            bookModel.setVersionCode(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getVersionCode());
+                            for (int l = 0; l < resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().size(); l++) {
+                                ChapterModel chapterModel = new ChapterModel();
+                                chapterModel.setChapterId(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getChapterId());
+                                chapterModel.setChapterNumber(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getChapterNumber());
+                                chapterModel.setLanguageCode(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getLanguageCode());
+                                chapterModel.setVersionCode(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getVersionCode());
+                                for (int m = 0; m < resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getVerseComponentsModels().size(); m++) {
+                                    VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
+                                    verseComponentsModel.setLanguageCode(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getVerseComponentsModels().get(m).getLanguageCode());
+                                    verseComponentsModel.setVersionCode(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getVerseComponentsModels().get(m).getVersionCode());
+                                    verseComponentsModel.setChapterId(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getVerseComponentsModels().get(m).getChapterId());
+                                    verseComponentsModel.setType(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getVerseComponentsModels().get(m).getType());
+                                    verseComponentsModel.setHighlighted(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getVerseComponentsModels().get(m).isHighlighted());
+                                    verseComponentsModel.setText(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getVerseComponentsModels().get(m).getText());
+                                    verseComponentsModel.setVerseNumber(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getVerseComponentsModels().get(m).getVerseNumber());
+                                    chapterModel.getVerseComponentsModels().add(verseComponentsModel);
+                                }
+                                bookModel.getChapterModels().add(chapterModel);
+                            }
+                            Constants.CONTAINER.getBookModelList().add(bookModel);
+                        }
+                    }
                 }
-                bookModel.getChapterModels().add(chapterModel);
             }
-            Constants.CONTAINER.getBookModelList().add(bookModel);
         }
-
         realm.close();
     }
 }

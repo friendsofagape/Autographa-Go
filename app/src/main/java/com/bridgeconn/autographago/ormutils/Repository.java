@@ -26,5 +26,5 @@ public interface Repository<T extends RealmObject> {
 
     int count(Specification<T> specification);
 
-    void addToContainer();
+    void addToNewContainer(String language, String version);
 }

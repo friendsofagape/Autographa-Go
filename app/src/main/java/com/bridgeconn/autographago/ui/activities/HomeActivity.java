@@ -15,13 +15,26 @@ import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
+import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.VersionModel;
+import com.bridgeconn.autographago.ormutils.AllMappers;
+import com.bridgeconn.autographago.ormutils.AllSpecifications;
+import com.bridgeconn.autographago.ormutils.AutographaRepository;
+import com.bridgeconn.autographago.ormutils.Mapper;
+import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.adapters.BookAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -37,6 +50,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<BookModel> mBookModelArrayList = new ArrayList<>();
     private AppCompatSpinner mSpinner;
 
+    private String languageCode, versionCode;
+    private Realm realm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
@@ -44,6 +60,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_home);
 
         UtilFunctions.applyReadingMode();
+
+        languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+        versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
+
+        realm = Realm.getDefaultInstance();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setContentInsetStartWithNavigation(0);
@@ -75,34 +96,62 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mHistoryView.setOnClickListener(this);
         mSettingsView.setOnClickListener(this);
 
-        List<String> categories = new ArrayList<>();
-        categories.add("English ULB");
-//        categories.add("English UDB");
+        List<String> categories = getCategories();
 
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, R.layout.item_spinner, categories);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinner.setAdapter(spinnerAdapter);
 
+        String compareValue = languageCode + "  " + versionCode;
+
+        if (!compareValue.equals(null)) {
+            int spinnerPosition = spinnerAdapter.getPosition(compareValue);
+            mSpinner.setSelection(spinnerPosition);
+        }
+
         getAllBooks();
     }
 
-//    private void getBooksByLanguageAndVersion(String language, String version) {
-//        new AutographaRepository<BookModel>().addToContainer();
-//
-//        for (BookModel bookModel : Constants.CONTAINER.getBookModelList()) {
-//            mBookModelArrayList.add(bookModel);
-//        }
-//
-////        mAdapter.notifyDataSetChanged();
-//    }
+    private List<String> getCategories() {
+        List<String> categories = new ArrayList<>();
+        ArrayList<LanguageModel> languageModels = query(new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
+        for (LanguageModel languageModel : languageModels) {
+            for (VersionModel versionModel : languageModel.getVersionModels()) {
+                categories.add(languageModel.getLanguageName() + "  " + versionModel.getVersionCode());
+            }
+        }
+        return categories;
+    }
+
+    public ArrayList<LanguageModel> query(Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
+        RealmResults<LanguageModel> realmResults = specification.generateResults(realm);
+
+        ArrayList<LanguageModel> resultsToReturn = new ArrayList<>();
+
+        for (LanguageModel result : realmResults) {
+            resultsToReturn.add(mapper.map(result));
+        }
+        return resultsToReturn;
+    }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String item = parent.getItemAtPosition(position).toString();
 //        Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
 
-        String[] arr = item.split(" ");
-//        getBooksByLanguageAndVersion(arr[0], arr[1]);
+        String[] arr = item.split("  ");
+
+        if (arr[0].equals(languageCode) && arr[1].equals(versionCode)) {
+            // do nothing, same element seletced again
+        } else {
+            // save to shared prefs
+            languageCode = arr[0];
+            versionCode = arr[1];
+            SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, languageCode);
+            SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
+            new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
+            getAllBooks();
+        }
     }
 
     @Override
@@ -110,7 +159,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getAllBooks() {
-
+        mBookModelArrayList.clear();
         for (BookModel bookModel : Constants.CONTAINER.getBookModelList()) {
             mBookModelArrayList.add(bookModel);
         }
@@ -126,9 +175,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case R.id.iv_continue_reading: {
-                String bookId = SharedPrefs.getString(Constants.PrefKeys.LAST_READ_BOOK_ID, null);
-                int chapter = SharedPrefs.getInt(Constants.PrefKeys.LAST_READ_CHAPTER, 1);
-                String verse = SharedPrefs.getString(Constants.PrefKeys.LAST_READ_VERSE, null);
+                String bookId = null, verse = null;
+                int chapter = 1;
+                String value = SharedPrefs.getString(Constants.PrefKeys.LAST_READ + "_" + UtilFunctions.getLanguageCodeFromName(languageCode) + "_" + versionCode, null);
+                try {
+                    JSONObject object = new JSONObject(value);
+                    bookId = object.getString(Constants.PrefKeys.LAST_READ_BOOK_ID);
+                    chapter = object.getInt(Constants.PrefKeys.LAST_READ_CHAPTER);
+                    verse = object.getString(Constants.PrefKeys.LAST_READ_VERSE);
+                } catch (JSONException je) {
+                }
                 if (bookId == null) {
                     break;
                 }
@@ -192,6 +248,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        realm.close();
     }
 
 }

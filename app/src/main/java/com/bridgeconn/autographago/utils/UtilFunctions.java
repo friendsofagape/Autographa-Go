@@ -79,34 +79,10 @@ public class UtilFunctions {
         imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
     }
 
-    /*
     public static String getBookNameFromMapping(Context context, String bookId) {
         String json = null;
         try {
             InputStream is = context.getAssets().open("mappings.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            JSONObject idObject = jsonObject.getJSONObject("id_name_map");
-            return idObject.getString(bookId);
-        } catch (JSONException je) {
-            return null;
-        }
-    }
-    */
-
-    public static String getBookNameFromMapping(Context context, String bookId) {
-        String json = null;
-        try {
-            InputStream is = context.getAssets().open("newmappings.json");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -129,7 +105,7 @@ public class UtilFunctions {
     public static int getBookNumberFromMapping(Context context, String bookId) {
         String json = null;
         try {
-            InputStream is = context.getAssets().open("newmappings.json");
+            InputStream is = context.getAssets().open("mappings.json");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -152,7 +128,7 @@ public class UtilFunctions {
     public static String getBookSectionFromMapping(Context context, String bookId) {
         String json = null;
         try {
-            InputStream is = context.getAssets().open("newmappings.json");
+            InputStream is = context.getAssets().open("mappings.json");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);

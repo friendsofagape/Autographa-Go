@@ -13,6 +13,7 @@ import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.HistoryAdapter;
+import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
 
@@ -23,6 +24,7 @@ public class HistoryActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private HistoryAdapter mAdapter;
     private ArrayList<SearchModel> mHistoryModels = new ArrayList<>();
+    private String languageCode, versionCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,9 @@ public class HistoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_history);
 
         UtilFunctions.applyReadingMode();
+
+        languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+        versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
@@ -52,7 +57,7 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private void getAllHistory() {
-        ArrayList<SearchModel> models = new AutographaRepository<SearchModel>().query(new AllSpecifications.AllHistory(), new AllMappers.HistoryMapper());
+        ArrayList<SearchModel> models = new AutographaRepository<SearchModel>().query(new AllSpecifications.AllHistory(languageCode, versionCode), new AllMappers.HistoryMapper());
         for (SearchModel model : models) {
             mHistoryModels.add(model);
         }

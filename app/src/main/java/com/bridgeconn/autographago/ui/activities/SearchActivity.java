@@ -41,6 +41,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private SearchAdapter mAdapter;
     private ProgressBar mProgressBar;
     private LinearLayout noResultsFound;
+    private String languageCode, versionCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_search);
 
         UtilFunctions.applyReadingMode();
+
+        languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+        versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
@@ -121,7 +125,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private void searchInBookName(String searchText) {
         if (!searchText.trim().equals("")) {
             List<BookModel> resultList = new AutographaRepository<BookModel>().query(
-                    new AllSpecifications.SearchInBookName(searchText), new AllMappers.BookMapper());
+                    new AllSpecifications.SearchInBookName(searchText, languageCode, versionCode), new AllMappers.BookMapper());
 
             for (BookModel bookModel : resultList) {
                 for (BookModel model : Constants.CONTAINER.getBookModelList()) {
@@ -164,7 +168,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         if (!searchText.trim().equals("")) {
             List<VerseComponentsModel> resultList = new AutographaRepository<VerseComponentsModel>().query(
-                    new AllSpecifications.SearchInVerseComponentsText(searchText), new AllMappers.VerseComponentsMapper());
+                    new AllSpecifications.SearchInVerseComponentsText(searchText, languageCode, versionCode), new AllMappers.VerseComponentsMapper());
             for (VerseComponentsModel verseComponentsModel : resultList) {
                 SearchModel searchModel = new SearchModel();
                 String [] splitString = verseComponentsModel.getChapterId().split("_");

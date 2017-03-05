@@ -16,6 +16,7 @@ import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.BookmarkAdapter;
 import com.bridgeconn.autographago.ui.adapters.HighlightAdapter;
+import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
 
@@ -34,6 +35,7 @@ public class MenuActivity extends AppCompatActivity {
 
     private ArrayList<BookModel> mBookmarkModels = new ArrayList<>();
     private  ArrayList<VerseComponentsModel> mHighlightModels = new ArrayList<>();
+    private String languageCode, versionCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,9 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         UtilFunctions.applyReadingMode();
+
+        languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+        versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
@@ -74,7 +79,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void getBookmarks() {
-        List<BookModel> results = new AutographaRepository<BookModel>().query(new AllSpecifications.AllBookmarks(), new AllMappers.BookMapper());
+        List<BookModel> results = new AutographaRepository<BookModel>().query(new AllSpecifications.AllBookmarks(languageCode, versionCode), new AllMappers.BookMapper());
         for (BookModel model : results) {
             mBookmarkModels.add(model);
         }
@@ -82,7 +87,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void getHighlights() {
-        List<VerseComponentsModel> results = new AutographaRepository<VerseComponentsModel>().query(new AllSpecifications.AllHighlights(), new AllMappers.VerseComponentsMapper());
+        List<VerseComponentsModel> results = new AutographaRepository<VerseComponentsModel>().query(new AllSpecifications.AllHighlights(languageCode, versionCode), new AllMappers.VerseComponentsMapper());
         for (VerseComponentsModel model : results) {
             mHighlightModels.add(model);
         }

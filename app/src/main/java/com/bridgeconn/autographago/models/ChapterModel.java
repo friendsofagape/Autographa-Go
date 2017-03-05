@@ -10,14 +10,19 @@ public class ChapterModel extends RealmObject {
     private int chapterNumber;
     @PrimaryKey
     private String chapterId;
+    private String languageCode;
+    private String versionCode;
     private RealmList<VerseComponentsModel> verseComponentsModels = new RealmList<>();
     @Ignore
     private boolean selected;
+    @Ignore
     private RealmList<RealmString> selectedPositions = new RealmList<>();
 
     public ChapterModel(ChapterModel model) {
         chapterNumber = model.getChapterNumber();
         chapterId = model.getChapterId();
+        languageCode = model.getLanguageCode();
+        versionCode = model.getVersionCode();
         verseComponentsModels = model.getVerseComponentsModels();
         selected = model.isSelected();
         selectedPositions = model.getSelectedPositions();
@@ -40,6 +45,22 @@ public class ChapterModel extends RealmObject {
 
     public void setChapterId(String chapterId) {
         this.chapterId = chapterId;
+    }
+
+    public String getLanguageCode() {
+        return languageCode;
+    }
+
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
+
+    public String getVersionCode() {
+        return versionCode;
+    }
+
+    public void setVersionCode(String versionCode) {
+        this.versionCode = versionCode;
     }
 
     public RealmList<VerseComponentsModel> getVerseComponentsModels() {

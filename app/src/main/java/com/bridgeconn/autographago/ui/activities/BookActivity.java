@@ -27,6 +27,9 @@ import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -424,8 +427,16 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
         int chapterNum = findChapterNumber(firstVisibleItem);
         String verseNum = findVerseNumber(firstVisibleItem);
-        SharedPrefs.putString(Constants.PrefKeys.LAST_READ_BOOK_ID, mBookId);
-        SharedPrefs.putInt(Constants.PrefKeys.LAST_READ_CHAPTER, chapterNum);
-        SharedPrefs.putString(Constants.PrefKeys.LAST_READ_VERSE, verseNum);
+
+        String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+        String version = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(Constants.PrefKeys.LAST_READ_BOOK_ID, mBookId);
+            jsonObject.put(Constants.PrefKeys.LAST_READ_CHAPTER, chapterNum);
+            jsonObject.put(Constants.PrefKeys.LAST_READ_VERSE, verseNum);
+            SharedPrefs.putString(Constants.PrefKeys.LAST_READ + "_" + languageCode + "_" + version, jsonObject.toString());
+        } catch (JSONException je) {
+        }
     }
 }

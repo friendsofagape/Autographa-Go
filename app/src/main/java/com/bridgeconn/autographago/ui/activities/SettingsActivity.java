@@ -37,7 +37,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
+import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.models.ResponseModel;
+import com.bridgeconn.autographago.models.VersionModel;
+import com.bridgeconn.autographago.ormutils.AllMappers;
+import com.bridgeconn.autographago.ormutils.AllSpecifications;
+import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.adapters.DownloadDialogAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.DownloadUtil;
@@ -47,6 +52,8 @@ import com.bridgeconn.autographago.utils.UnzipUtil;
 import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener,
@@ -204,6 +211,18 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void showLanguageDialog(List<String> languages) {
+        ArrayList<LanguageModel> languageModels = new AutographaRepository<LanguageModel>().query(new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
+        for (Iterator<String> iterator = languages.iterator(); iterator.hasNext(); ) {
+            String lan = iterator.next();
+            for (LanguageModel languageModel : languageModels) {
+                if (languageModel.getLanguageName().equals(lan)) {
+                    if (languageModel.getVersionModels().size() == 2) {
+                        iterator.remove();
+                    }
+                }
+            }
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.DialogThemeLight);
         final View view = LayoutInflater.from(this).inflate(R.layout.dialog_languages, (ViewGroup) findViewById(android.R.id.content), false);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_items);
@@ -238,6 +257,21 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void showVersionDialog(List<String> versions, String language) {
+
+        ArrayList<LanguageModel> languageModels = new AutographaRepository<LanguageModel>().query(new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
+        for (Iterator<String> iterator = versions.iterator(); iterator.hasNext(); ) {
+            String ver = iterator.next();
+            for (LanguageModel languageModel : languageModels) {
+                if (languageModel.getLanguageName().equals(language)) {
+                    for (VersionModel versionModel : languageModel.getVersionModels()) {
+                        if (versionModel.getVersionCode().equals(ver)) {
+                            iterator.remove();
+                        }
+                    }
+                }
+            }
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.DialogThemeLight);
         final View view = LayoutInflater.from(this).inflate(R.layout.dialog_languages, (ViewGroup) findViewById(android.R.id.content), false);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_items);

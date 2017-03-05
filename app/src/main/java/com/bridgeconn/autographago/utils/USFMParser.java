@@ -12,6 +12,8 @@ import com.bridgeconn.autographago.models.VersionModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
+import com.bridgeconn.autographago.ormutils.Mapper;
+import com.bridgeconn.autographago.ormutils.Specification;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,7 +24,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class USFMParser {
 
@@ -37,6 +41,10 @@ public class USFMParser {
     private BookModel bookModel;
     private RealmList<ChapterModel> chapterModelList;
     private RealmList<VerseComponentsModel> verseComponentsModelList;
+
+    private boolean languageExist = false, versionExist = false, bookExist = false;
+    private ArrayList<LanguageModel> languageResults;
+    private int versionPosition, bookPosition;
 
     public USFMParser() {
         allLanguagesModel = new AllLanguagesModel();
@@ -68,7 +76,9 @@ public class USFMParser {
             String mLine;
 //            try {
                 while ((mLine = reader.readLine()) != null) {
-                    processLine(context, mLine);
+                    if (!processLine(context, mLine, languageName, versionCode, versionName)) {
+                        return true;
+                    }
                 }
                 addComponentsToChapter();
                 addChaptersToBook();
@@ -97,51 +107,54 @@ public class USFMParser {
      * Parse the line with corresponding marker at the first position
      * @param line each line in the file
      */
-    private void processLine(Context context, String line) {
+    private boolean processLine(Context context, String line, String languageName, String versionCode, String versionName) {
 //        line = line.trim();
         String[] splitString = line.split(Constants.Styling.SPLIT_SPACE);
         if (splitString.length == 0) {
-            return;
+            return true;
         }
         switch (splitString[0]) {
             case Constants.Markers.MARKER_BOOK_NAME: {
-                addBook(context, splitString);
+                if (!addBook(context, splitString, languageName, versionCode, versionName)) {
+                    Log.i(Constants.DUMMY_TAG, "SKIP BOOK");
+                    return false;
+                }
                 break;
             }
             case Constants.Markers.MARKER_CHAPTER_NUMBER: {
-                addChapter(splitString[1]);
+                addChapter(splitString[1], languageName, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_NEW_PARAGRAPH: {
-                addParagraph(splitString);
+                addParagraph(splitString, languageName, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_VERSE_NUMBER: {
-                addVerse(splitString);
+                addVerse(splitString, languageName, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_SECTION_HEADING: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, Constants.ParagraphMarker.S1, splitString);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, Constants.ParagraphMarker.S1, splitString, languageName, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_SECTION_HEADING_ONE: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, Constants.ParagraphMarker.S1, splitString);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, Constants.ParagraphMarker.S1, splitString, languageName, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_SECTION_HEADING_TWO: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_TWO, Constants.ParagraphMarker.S2, splitString);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_TWO, Constants.ParagraphMarker.S2, splitString, languageName, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_SECTION_HEADING_THREE: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_THREE, Constants.ParagraphMarker.S3, splitString);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_THREE, Constants.ParagraphMarker.S3, splitString, languageName, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_SECTION_HEADING_FOUR: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_FOUR, Constants.ParagraphMarker.S4, splitString);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_FOUR, Constants.ParagraphMarker.S4, splitString, languageName, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_CHUNK: {
-                addChunk();
+                addChunk(languageName, versionCode);
                 break;
             }
             case "": {
@@ -157,39 +170,71 @@ public class USFMParser {
                 }
             }
         }
+        return true;
     }
 
     /**
      * This adds the book name and book abbreviation to the model
      * @param splitString the line containing book marker
      */
-    private void addBook(Context context, String [] splitString) {
+    private boolean addBook(Context context, String [] splitString, String languageName, String versionCode, String versionName) {
+
         bookModel.setBookId(splitString[1]);
         bookModel.setBookName(UtilFunctions.getBookNameFromMapping(context, splitString[1]));
         bookModel.setSection(UtilFunctions.getBookSectionFromMapping(context, splitString[1]));
         bookModel.setBookNumber(UtilFunctions.getBookNumberFromMapping(context, splitString[1]));
+        bookModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+        bookModel.setVersionCode(versionCode);
+
+        languageResults = query(new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
+        for (int i=0; i<languageResults.size(); i++) {
+            if (languageResults.get(i).getLanguageName().equals(languageName)) {
+                languageExist = true;
+                versionPosition = i;
+                for (int j=0; j<languageResults.get(i).getVersionModels().size(); j++) {
+                    if (languageResults.get(i).getVersionModels().get(j).getVersionCode().equals(versionCode)) {
+                        versionExist = true;
+                        bookPosition = j;
+                        for (int k=0; k<languageResults.get(i).getVersionModels().get(j).getBookModels().size(); k++) {
+                            if (languageResults.get(i).getVersionModels().get(j).getBookModels().get(k)
+                                    .getBookId().equals(bookModel.getBookId())) {
+                                bookExist = true;
+                                // book already present in db, do nothing
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
      * This adds the chapter number and id (bookName_chapterNumber) to the model
      * @param chapterNumber the number of the chapter parsed from the line
      */
-    private void addChapter(String chapterNumber) {
+    private void addChapter(String chapterNumber, String languageName, String versionCode) {
         addComponentsToChapter();
         ChapterModel chapterModel = new ChapterModel();
         chapterModel.setChapterNumber(Integer.parseInt(chapterNumber));
         chapterModel.setChapterId(bookModel.getBookId() + "_" + chapterNumber);
+        chapterModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+        chapterModel.setVersionCode(versionCode);
         chapterModelList.add(chapterModel);
     }
 
     /**
      * This adds the chunk \\s5 marker of the line to the component model and add it to the list of component models
      */
-    private void addChunk() {
+    private void addChunk(String languageName, String versionCode) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         verseComponentsModel.setType(Constants.MarkerTypes.CHUNK);
         verseComponentsModel.setAdded(true);
         verseComponentsModel.setMarker(Constants.ParagraphMarker.S5);
+        verseComponentsModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+        verseComponentsModel.setVersionCode(versionCode);
         verseComponentsModelList.add(verseComponentsModel);
     }
 
@@ -198,7 +243,7 @@ public class USFMParser {
      * @param type the section marker type
      * @param splitString the line for section heading text
      */
-    private void addSection(String type, Constants.ParagraphMarker marker, String [] splitString) {
+    private void addSection(String type, Constants.ParagraphMarker marker, String [] splitString, String languageName, String versionCode) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         verseComponentsModel.setType(type);
         StringBuilder stringBuilder = new StringBuilder("");
@@ -208,6 +253,8 @@ public class USFMParser {
         verseComponentsModel.setText(stringBuilder.toString());
         verseComponentsModel.setAdded(true);
         verseComponentsModel.setMarker(marker);
+        verseComponentsModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+        verseComponentsModel.setVersionCode(versionCode);
         verseComponentsModelList.add(verseComponentsModel);
     }
 
@@ -215,7 +262,7 @@ public class USFMParser {
      * This adds the new paragraph marker of the line to the component model and add it to the list of component models
      * @param splitString the string for any text that is in the line
      */
-    private void addParagraph(String [] splitString) {
+    private void addParagraph(String [] splitString, String languageName, String versionCode) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         verseComponentsModel.setType(Constants.MarkerTypes.PARAGRAPH);
         StringBuilder stringBuilder = new StringBuilder("");
@@ -225,6 +272,8 @@ public class USFMParser {
         verseComponentsModel.setText(stringBuilder.toString());
         verseComponentsModel.setAdded(true);
         verseComponentsModel.setMarker(Constants.ParagraphMarker.P);
+        verseComponentsModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+        verseComponentsModel.setVersionCode(versionCode);
         verseComponentsModelList.add(verseComponentsModel);
     }
 
@@ -233,7 +282,7 @@ public class USFMParser {
      * This also adds this verse's number to all previous models that do not have a verse number
      * @param splitString the line for text of the verse
      */
-    private void addVerse(String [] splitString) {
+    private void addVerse(String [] splitString, String languageName, String versionCode) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         if (chapterModelList.size() > 0) { // dont really need this check, but still
             verseComponentsModel.setChapterId(bookModel.getBookId() + "_" + chapterModelList.get(chapterModelList.size() - 1).getChapterNumber());
@@ -272,6 +321,8 @@ public class USFMParser {
         }
         verseComponentsModel.setAdded(true);
         verseComponentsModel.setMarker(Constants.ParagraphMarker.V);
+        verseComponentsModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+        verseComponentsModel.setVersionCode(versionCode);
         verseComponentsModelList.add(verseComponentsModel);
     }
 
@@ -304,38 +355,103 @@ public class USFMParser {
         bookModel.setChapterModels(chapterModelList);
     }
 
-    /**
-     * At the end, add the book to the CONTAINER
-     */
-    private void addBookToContainer(String languageName, String versionCode, String versionName) {
-        bookModelList.add(bookModel);
-        versionModel.setVersionCode(versionCode);
-        versionModel.setVersionName(versionName);
-        versionModel.setBookModels(bookModelList);
-        versionModelList.add(versionModel);
-        languageModel.setVersionModels(versionModelList);
-        languageModel.setLanguageName(languageName);
-        languageModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+    private Realm realm;
 
-        // check if book already exists, then do not add or else it will overwrite bookmarks and highlights etc
-        ArrayList<BookModel> results = new AutographaRepository<BookModel>().query(new AllSpecifications.BookModelById(bookModel.getBookId()), new AllMappers.BookMapper());
-        if (results.size() == 0) {
-            new AutographaRepository<BookModel>().add(bookModel);
+    private ArrayList<LanguageModel> query(Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
+
+        realm = Realm.getDefaultInstance();
+
+        RealmResults<LanguageModel> realmResults = specification.generateResults(realm);
+        ArrayList<LanguageModel> resultsToReturn = new ArrayList<>();
+        for (LanguageModel result : realmResults) {
+            resultsToReturn.add(mapper.map(result));
         }
 
-//        new AutographaRepository<LanguageModel>().add(languageModel);
+        ArrayList<LanguageModel> languageResults = new ArrayList<>();
+        for (LanguageModel languageModel1 : resultsToReturn) {
+            LanguageModel lModel = new LanguageModel();
+            lModel.setLanguageCode(languageModel1.getLanguageCode());
+            lModel.setLanguageName(languageModel1.getLanguageName());
+            for (VersionModel versionModel1 : languageModel1.getVersionModels()) {
+                VersionModel vModel = new VersionModel();
+                vModel.setVersionCode(versionModel1.getVersionCode());
+                vModel.setVersionName(versionModel1.getVersionName());
+                for (BookModel bookModel1 : versionModel1.getBookModels()) {
+                    BookModel bModel = new BookModel();
+                    bModel.setBookId(bookModel1.getBookId());
+                    bModel.setBookmarkChapterNumber(bookModel1.getBookmarkChapterNumber());
+                    bModel.setBookName(bookModel1.getBookName());
+                    bModel.setBookNumber(bookModel1.getBookNumber());
+                    bModel.setSection(bookModel1.getSection());
+                    bModel.setLanguageCode(bookModel1.getLanguageCode());
+                    bModel.setVersionCode(bookModel1.getVersionCode());
+                    for (ChapterModel chapterModel1 : bookModel1.getChapterModels()) {
+                        ChapterModel cModel = new ChapterModel();
+                        cModel.setChapterNumber(chapterModel1.getChapterNumber());
+                        cModel.setChapterId(chapterModel1.getChapterId());
+                        cModel.setLanguageCode(chapterModel1.getLanguageCode());
+                        cModel.setVersionCode(chapterModel1.getVersionCode());
+                        for (VerseComponentsModel verseComponentsModel1 : chapterModel1.getVerseComponentsModels()) {
+                            VerseComponentsModel vcModel = new VerseComponentsModel();
+                            vcModel.setLanguageCode(verseComponentsModel1.getLanguageCode());
+                            vcModel.setVersionCode(verseComponentsModel1.getVersionCode());
+                            vcModel.setText(verseComponentsModel1.getText());
+                            vcModel.setVerseNumber(verseComponentsModel1.getVerseNumber());
+                            vcModel.setChapterId(verseComponentsModel1.getChapterId());
+                            vcModel.setType(verseComponentsModel1.getType());
+                            vcModel.setHighlighted(verseComponentsModel1.isHighlighted());
+                            cModel.getVerseComponentsModels().add(vcModel);
+                        }
+                        bModel.getChapterModels().add(cModel);
+                    }
+                    vModel.getBookModels().add(bModel);
+                }
+                lModel.getVersionModels().add(vModel);
+            }
+            languageResults.add(lModel);
+        }
+
+        realm.close();
+
+        return languageResults;
     }
 
-    private void someExtraWork(String languageCode) {
-        List<LanguageModel> languageModelList = new AutographaRepository<LanguageModel>().query(
-                new AllSpecifications.LanguageModelByCode(languageCode), new AllMappers.LanguageMapper());
+    /**
+     * At the end, add the book to the database
+     */
+    private void addBookToContainer(String languageName, String versionCode, String versionName) {
 
-        if (languageModelList.size() > 0) {
-            // Append to this list
-        } else {
-            // create new list
+        versionModel.setVersionCode(versionCode);
+        versionModel.setVersionName(versionName);
+        versionModel.getBookModels().add(bookModel);
+
+        if (!languageExist) {
+            // add new all
+            Log.i(Constants.DUMMY_TAG, "adding new language - " + languageName);
+            languageModel.getVersionModels().add(versionModel);
+            languageModel.setLanguageName(languageName);
+            languageModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+            new AutographaRepository<LanguageModel>().add(languageModel);
+            return;
         }
-        new AutographaRepository<LanguageModel>().add(languageModel);
+
+        if (!versionExist) {
+            // add new version in same language
+            Log.i(Constants.DUMMY_TAG, "adding new version - " + versionModel.getVersionCode());
+            LanguageModel newLanguageModel = new LanguageModel(languageResults.get(versionPosition));
+            newLanguageModel.getVersionModels().add(versionModel);
+            new AutographaRepository<LanguageModel>().update(newLanguageModel);
+            return;
+        }
+
+        if (!bookExist) {
+            // add new book in same version and language
+            Log.i(Constants.DUMMY_TAG, "adding new book - " + bookModel.getBookId());
+            LanguageModel newLanguageModel = new LanguageModel(languageResults.get(versionPosition));
+            newLanguageModel.getVersionModels().get(bookPosition).getBookModels().add(bookModel);
+            new AutographaRepository<LanguageModel>().update(newLanguageModel);
+            return;
+        }
     }
 
     /**
