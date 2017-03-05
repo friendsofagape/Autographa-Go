@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
+import com.bridgeconn.autographago.models.NotesModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
@@ -103,6 +104,20 @@ public class MenuActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void refreshBookMarkList(int position) {
+        mBookmarkModels.get(position).setBookmarkChapterNumber(0);
+        new AutographaRepository<BookModel>().update(mBookmarkModels.get(position));
+        mBookmarkModels.remove(position);
+        mBookmarkAdapter.notifyItemRemoved(position);
+    }
+
+    public void refreshHighlightList(int position) {
+        mHighlightModels.get(position).setHighlighted(false);
+        new AutographaRepository<VerseComponentsModel>().update(mHighlightModels.get(position));
+        mHighlightModels.remove(position);
+        mHighlightAdapter.notifyItemRemoved(position);
     }
 
 }

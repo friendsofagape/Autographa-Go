@@ -25,7 +25,7 @@ public class HighlightAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new HighlightViewHolder(mLayoutInflater.inflate(R.layout.item_book, parent, false), mContext, mHighlightModels);
+        return new HighlightViewHolder(mLayoutInflater.inflate(R.layout.item_bookmark, parent, false), mContext, mHighlightModels);
     }
 
     @Override

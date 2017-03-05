@@ -25,7 +25,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new BookmarkItemViewHolder(mLayoutInflater.inflate(R.layout.item_book, parent, false), mContext, mBookmarkModels);
+        return new BookmarkItemViewHolder(mLayoutInflater.inflate(R.layout.item_bookmark, parent, false), mContext, mBookmarkModels);
     }
 
     @Override
