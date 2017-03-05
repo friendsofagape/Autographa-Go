@@ -155,4 +155,9 @@ public class UtilFunctions {
     public static String getLanguageCodeFromName(String languageName) {
         return "ENG";
     }
+
+    public static String getLanguageNameFromCode(String languageCode) {
+        return "English";
+    }
+
 }

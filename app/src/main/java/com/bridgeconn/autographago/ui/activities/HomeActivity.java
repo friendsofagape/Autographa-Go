@@ -102,7 +102,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinner.setAdapter(spinnerAdapter);
 
-        String compareValue = languageCode + "  " + versionCode;
+        String compareValue = UtilFunctions.getLanguageNameFromCode(languageCode) + "  " + versionCode;
 
         if (!compareValue.equals(null)) {
             int spinnerPosition = spinnerAdapter.getPosition(compareValue);
@@ -141,11 +141,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         String[] arr = item.split("  ");
 
-        if (arr[0].equals(languageCode) && arr[1].equals(versionCode)) {
+        if (arr[0].equals(UtilFunctions.getLanguageNameFromCode(languageCode)) && arr[1].equals(versionCode)) {
             // do nothing, same element seletced again
         } else {
             // save to shared prefs
-            languageCode = arr[0];
+            languageCode = UtilFunctions.getLanguageCodeFromName(arr[0]);
             versionCode = arr[1];
             SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, languageCode);
             SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
@@ -177,7 +177,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.iv_continue_reading: {
                 String bookId = null, verse = null;
                 int chapter = 1;
-                String value = SharedPrefs.getString(Constants.PrefKeys.LAST_READ + "_" + UtilFunctions.getLanguageCodeFromName(languageCode) + "_" + versionCode, null);
+                String value = SharedPrefs.getString(Constants.PrefKeys.LAST_READ + "_" + languageCode + "_" + versionCode, null);
+                if (value == null) {
+                    break;
+                }
                 try {
                     JSONObject object = new JSONObject(value);
                     bookId = object.getString(Constants.PrefKeys.LAST_READ_BOOK_ID);

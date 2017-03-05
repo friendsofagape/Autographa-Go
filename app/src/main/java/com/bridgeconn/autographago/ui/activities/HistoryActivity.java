@@ -6,6 +6,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.SearchModel;
@@ -19,7 +21,7 @@ import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 
-public class HistoryActivity extends AppCompatActivity {
+public class HistoryActivity extends AppCompatActivity implements View.OnClickListener {
 
     private RecyclerView mRecyclerView;
     private HistoryAdapter mAdapter;
@@ -53,6 +55,8 @@ public class HistoryActivity extends AppCompatActivity {
         mAdapter = new HistoryAdapter(this, mHistoryModels);
         mRecyclerView.setAdapter(mAdapter);
 
+        findViewById(R.id.clear_history).setOnClickListener(this);
+
         getAllHistory();
     }
 
@@ -75,4 +79,15 @@ public class HistoryActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.clear_history: {
+                new AutographaRepository<SearchModel>().remove(new AllSpecifications.AllHistory(languageCode, versionCode));
+                mHistoryModels.clear();
+                mAdapter.notifyDataSetChanged();
+                break;
+            }
+        }
+    }
 }

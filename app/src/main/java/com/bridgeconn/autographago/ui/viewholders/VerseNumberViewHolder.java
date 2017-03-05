@@ -42,7 +42,7 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
 
     public void onBind(int position) {
         mTvVerseNumber.setText(mVerseComponentsModels.get(position).getVerseNumber() + "");
-        mTvVerseNumber.setTag(mVerseComponentsModels.get(position).getVerseNumber());
+        mTvVerseNumber.setTag(position);
         mTvVerseNumber.setOnClickListener(this);
     }
 
@@ -50,7 +50,8 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_number: {
-                String verseNumber = (String) v.getTag();
+                int position = (int) v.getTag();
+                String verseNumber = mVerseComponentsModels.get(position).getVerseNumber();
 
                 if (mOpenBook) {
 
@@ -58,6 +59,8 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
                     model.setVerseNumber(verseNumber);
                     model.setChapterNumber(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
 
+                    model.setLanguageCode(mVerseComponentsModels.get(position).getLanguageCode());
+                    model.setVersionCode(mVerseComponentsModels.get(position).getVersionCode());
                     model.setBookId(mBookId);
                     model.setBookName(UtilFunctions.getBookNameFromMapping(mFragment.getContext(), mBookId));
                     model.setSection(UtilFunctions.getBookSectionFromMapping(mFragment.getContext(), mBookId));
