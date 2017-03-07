@@ -70,15 +70,19 @@ public class AllSpecifications {
     }
 
     public static class BookModelById implements Specification<BookModel> {
-        private String bookId;
+        private String bookId, language, version;
 
-        public BookModelById(String bookId) {
+        public BookModelById(String language, String version, String bookId) {
             this.bookId = bookId;
+            this.language = language;
+            this.version = version;
         }
 
         @Override
         public RealmResults<BookModel> generateResults(Realm realm) {
             RealmQuery<BookModel> query = realm.where(BookModel.class);
+            query = query.equalTo("languageCode", language);
+            query = query.equalTo("versionCode", version);
             query = query.equalTo("bookId", bookId);
             return query.findAll();
         }
