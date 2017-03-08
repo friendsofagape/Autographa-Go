@@ -14,7 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.BookModel;
+import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.models.VersionModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
@@ -47,7 +47,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mSettingsView;
     private RecyclerView mRecyclerView;
     private BookAdapter mAdapter;
-    private ArrayList<BookModel> mBookModelArrayList = new ArrayList<>();
+    private ArrayList<BookIdModel> mBookModelArrayList = new ArrayList<>();
     private AppCompatSpinner mSpinner;
 
     private String languageCode, versionCode;
@@ -160,7 +160,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void getAllBooks() {
         mBookModelArrayList.clear();
-        for (BookModel bookModel : Constants.CONTAINER.getBookModelList()) {
+        for (BookIdModel bookModel : Constants.CONTAINER_BOOKS_LIST) {
             mBookModelArrayList.add(bookModel);
         }
         mAdapter.notifyDataSetChanged();

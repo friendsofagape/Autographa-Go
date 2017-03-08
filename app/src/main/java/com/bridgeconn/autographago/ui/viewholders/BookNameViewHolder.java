@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.BookModel;
+import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.ui.activities.SelectChapterAndVerseActivity;
 import com.bridgeconn.autographago.ui.fragments.BookFragment;
 
@@ -16,9 +16,9 @@ public class BookNameViewHolder extends RecyclerView.ViewHolder implements View.
 
     private TextView mTvChapterNumber;
     private Fragment mFragment;
-    private ArrayList<BookModel> mBookModelArrayList;
+    private ArrayList<BookIdModel> mBookModelArrayList;
 
-    public BookNameViewHolder(View itemView, Fragment fragment, ArrayList<BookModel> bookModelArrayList) {
+    public BookNameViewHolder(View itemView, Fragment fragment, ArrayList<BookIdModel> bookModelArrayList) {
         super(itemView);
         mTvChapterNumber = (TextView) itemView.findViewById(R.id.tv_book_name);
 
@@ -27,7 +27,7 @@ public class BookNameViewHolder extends RecyclerView.ViewHolder implements View.
     }
 
     public void onBind(final int position) {
-        BookModel bookModel = mBookModelArrayList.get(position);
+        BookIdModel bookModel = mBookModelArrayList.get(position);
         if (bookModel.isSelected()) {
             mTvChapterNumber.setBackgroundColor(mFragment.getResources().getColor(R.color.black_40));
         } else {

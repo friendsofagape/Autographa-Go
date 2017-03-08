@@ -1,5 +1,6 @@
 package com.bridgeconn.autographago.ui.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -12,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.ui.customviews.TabLayoutHelper;
 import com.bridgeconn.autographago.ui.fragments.BookFragment;
 import com.bridgeconn.autographago.ui.fragments.ChapterFragment;
@@ -72,7 +72,7 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
 
         if (bookId != null) {
 
-            String bookName = getBookName(bookId);
+            String bookName = getBookName(this, bookId);
             if (bookName != null) {
                 getSupportActionBar().setTitle(bookName);
             }
@@ -88,13 +88,8 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
         }
     }
 
-    private String getBookName(String bookId) {
-        for (BookModel bookModel : Constants.CONTAINER.getBookModelList()) {
-            if (bookModel.getBookId().equals(bookId)) {
-                return bookModel.getBookName();
-            }
-        }
-        return null;
+    private String getBookName(Context context, String bookId) {
+        return UtilFunctions.getBookNameFromMapping(context, bookId);
     }
 
     @Override

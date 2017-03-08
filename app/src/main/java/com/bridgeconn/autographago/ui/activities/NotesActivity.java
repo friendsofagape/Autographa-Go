@@ -137,8 +137,6 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     public void refreshList(int position) {
         new AutographaRepository<NotesModel>().remove(new AllSpecifications.NotesById(mNotesModels.get(position).getTimestamp()));
         mNotesModels.remove(position);
-//        mAdapter.notifyDataSetChanged();
         mAdapter.notifyItemRemoved(position);
-        // TODO fix this, item deleted but not from display
     }
 }

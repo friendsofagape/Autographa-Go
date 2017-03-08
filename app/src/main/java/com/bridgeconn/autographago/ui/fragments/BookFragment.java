@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bridgeconn.autographago.R;
+import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.ui.activities.SelectChapterAndVerseActivity;
 import com.bridgeconn.autographago.ui.adapters.NumberAdapter;
@@ -23,7 +24,7 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
     private int mNumberOfBlocks;
     private BookModel mBookModel;
     private String mBookId;
-    private ArrayList<BookModel> mBookModelArrayList = new ArrayList<>();
+    private ArrayList<BookIdModel> mBookModelArrayList = new ArrayList<>();
     private boolean mOpenBook;
 
     @Override
@@ -39,7 +40,7 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
 
         mOpenBook = getArguments().getBoolean(Constants.Keys.OPEN_BOOK);
 
-        for (BookModel bookModel : Constants.CONTAINER.getBookModelList()) {
+        for (BookIdModel bookModel : Constants.CONTAINER_BOOKS_LIST) {
             mBookModelArrayList.add(bookModel);
         }
         if (mBookModelArrayList.size() > 0) {

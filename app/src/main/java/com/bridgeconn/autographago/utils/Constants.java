@@ -2,6 +2,9 @@ package com.bridgeconn.autographago.utils;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.AllBooksModel;
+import com.bridgeconn.autographago.models.BookIdModel;
+
+import java.util.ArrayList;
 
 public class Constants {
 
@@ -52,6 +55,8 @@ public class Constants {
     public static final String SHARE_TEXT_TYPE = "text/plain";
 
     public static final AllBooksModel CONTAINER = new AllBooksModel();
+
+    public static final ArrayList<BookIdModel> CONTAINER_BOOKS_LIST = new ArrayList<>();
 
     public enum ParagraphMarker implements Comparable<ParagraphMarker> {
         V, P, S5, S4, S3, S2, S1;

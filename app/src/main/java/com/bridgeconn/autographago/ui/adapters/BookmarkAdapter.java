@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.BookModel;
+import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.ui.viewholders.BookmarkItemViewHolder;
 
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ public class BookmarkAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private Context mContext;
     private LayoutInflater mLayoutInflater;
-    private ArrayList<BookModel> mBookmarkModels;
+    private ArrayList<BookIdModel> mBookmarkModels;
 
-    public BookmarkAdapter(Context context, ArrayList<BookModel> bookmarkModels) {
+    public BookmarkAdapter(Context context, ArrayList<BookIdModel> bookmarkModels) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         mBookmarkModels = bookmarkModels;

@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.BookModel;
+import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.ui.activities.SelectChapterAndVerseActivity;
 import com.bridgeconn.autographago.utils.Constants;
 
@@ -17,9 +17,9 @@ public class BookItemViewHolder extends RecyclerView.ViewHolder implements View.
 
     private TextView mTvBookName;
     private Context mContext;
-    private ArrayList<BookModel> mBookModels;
+    private ArrayList<BookIdModel> mBookModels;
 
-    public BookItemViewHolder(View itemView, Context context, ArrayList<BookModel> bookModels) {
+    public BookItemViewHolder(View itemView, Context context, ArrayList<BookIdModel> bookModels) {
         super(itemView);
         mTvBookName = (TextView) itemView.findViewById(R.id.tv_book_name);
 
@@ -28,7 +28,7 @@ public class BookItemViewHolder extends RecyclerView.ViewHolder implements View.
     }
 
     public void onBind(final int position) {
-        BookModel bookModel = mBookModels.get(position);
+        BookIdModel bookModel = mBookModels.get(position);
         mTvBookName.setText(bookModel.getBookName());
         mTvBookName.setOnClickListener(this);
         mTvBookName.setTag(position);

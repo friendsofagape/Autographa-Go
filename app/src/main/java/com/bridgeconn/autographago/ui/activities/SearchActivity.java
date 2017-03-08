@@ -112,7 +112,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void doSearch(String searchText) {
-
+        // TODO fix, progress bar not showing, and ui gets hanged
         noResultsFound.setVisibility(View.GONE);
         mSearchResultModels.clear();
         mAdapter.notifyDataSetChanged();
@@ -128,18 +128,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     new AllSpecifications.SearchInBookName(searchText, languageCode, versionCode), new AllMappers.BookMapper());
 
             for (BookModel bookModel : resultList) {
-                for (BookModel model : Constants.CONTAINER.getBookModelList()) {
-                    if (model.getBookId().equals(bookModel.getBookId())) {
+//                for (BookModel model : Constants.CONTAINER.getBookModelList()) {
+//                    if (model.getBookId().equals(bookModel.getBookId())) {
                         SearchModel searchModel = new SearchModel();
-                        searchModel.setBookId(model.getBookId());
-                        searchModel.setBookName(model.getBookName());
+                        searchModel.setBookId(bookModel.getBookId());
+                        searchModel.setBookName(bookModel.getBookName());
                         searchModel.setChapterNumber(1);
                         searchModel.setVerseNumber("1");
-                        searchModel.setText(getVerseText(model.getChapterModels().get(0)));
+                        searchModel.setText(getVerseText(bookModel.getChapterModels().get(0)));
                         mSearchResultModels.add(searchModel);
                         break;
-                    }
-                }
+//                    }
+//                }
             }
         }
     }

@@ -42,28 +42,37 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
     }
 
     private int findChapterNumber(int position) {
+        // TODO here use numberOfVerses in chapter to reduce time complexity
         int size = 0;
         for (int i=0; i<mChapterModels.size(); i++) {
-            for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
-                if (j==0) {
-                    if (size == position) {
-                        return i+1;
-                    }
-                    size++;
-                } else {
-                    if (mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber().equals(
-                            mChapterModels.get(i).getVerseComponentsModels().get(j-1).getVerseNumber())) {
-                        continue;
-                    } else {
-                        if (size == position) {
-                            return i+1;
-                        }
-                        size++;
-                    }
-                }
+            size = size + mChapterModels.get(i).getNumberOfVerses();
+            if (position > size - 1) {
+                continue;
+            } else { // pos <= num
+                return mChapterModels.get(i).getChapterNumber();
             }
         }
-        return 0;
+//        for (int i=0; i<mChapterModels.size(); i++) {
+//            for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
+//                if (j==0) {
+//                    if (size == position) {
+//                        return i+1;
+//                    }
+//                    size++;
+//                } else {
+//                    if (mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber().equals(
+//                            mChapterModels.get(i).getVerseComponentsModels().get(j-1).getVerseNumber())) {
+//                        continue;
+//                    } else {
+//                        if (size == position) {
+//                            return i+1;
+//                        }
+//                        size++;
+//                    }
+//                }
+//            }
+//        }
+        return 1;
     }
 
     private String findVerseNumber(int position) {

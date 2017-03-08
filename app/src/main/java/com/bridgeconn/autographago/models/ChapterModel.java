@@ -17,6 +17,7 @@ public class ChapterModel extends RealmObject {
     private boolean selected;
     @Ignore
     private RealmList<RealmString> selectedPositions = new RealmList<>();
+    private int numberOfVerses;
 
     public ChapterModel(ChapterModel model) {
         chapterNumber = model.getChapterNumber();
@@ -26,6 +27,7 @@ public class ChapterModel extends RealmObject {
         verseComponentsModels = model.getVerseComponentsModels();
         selected = model.isSelected();
         selectedPositions = model.getSelectedPositions();
+        numberOfVerses = model.getNumberOfVerses();
     }
 
     public ChapterModel() {
@@ -85,5 +87,13 @@ public class ChapterModel extends RealmObject {
 
     public void setSelectedPositions(RealmList<RealmString> selectedPositions) {
         this.selectedPositions = selectedPositions;
+    }
+
+    public int getNumberOfVerses() {
+        return numberOfVerses;
+    }
+
+    public void setNumberOfVerses(int numberOfVerses) {
+        this.numberOfVerses = numberOfVerses;
     }
 }

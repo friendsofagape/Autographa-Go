@@ -338,6 +338,24 @@ public class USFMParser {
                         chapterModelList.get(chapterModelList.size() - 1).getVerseComponentsModels().add(model);
                     }
                 }
+                int size = 0;
+                for (int i=0; i<verseComponentsModelList.size(); i++) {
+                    if (i==0) {
+                        if (verseComponentsModelList.get(i).getVerseNumber() != null) {
+                            size++;
+                        }
+                    } else {
+                        if (verseComponentsModelList.get(i).getVerseNumber().equals(
+                                verseComponentsModelList.get(i-1).getVerseNumber())) {
+                            continue;
+                        } else {
+                            if (verseComponentsModelList.get(i).getVerseNumber() != null) {
+                                size++;
+                            }
+                        }
+                    }
+                }
+                chapterModelList.get(chapterModelList.size() - 1).setNumberOfVerses(size);
                 for (Iterator<VerseComponentsModel> iterator = verseComponentsModelList.iterator(); iterator.hasNext(); ) {
                     VerseComponentsModel model = iterator.next();
                     if (model.getVerseNumber() != null) {//.equals("")) {

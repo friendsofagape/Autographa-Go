@@ -276,10 +276,10 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                 break;
             }
             case R.id.iv_add_verse: {
-                if (Constants.CONTAINER.getBookModelList().size() > 0) {
+                if (Constants.CONTAINER_BOOKS_LIST.size() > 0) {
                     Intent intent = new Intent(this, SelectChapterAndVerseActivity.class);
                     intent.putExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, true);
-                    intent.putExtra(Constants.Keys.BOOK_ID, Constants.CONTAINER.getBookModelList().get(0).getBookId());
+                    intent.putExtra(Constants.Keys.BOOK_ID, Constants.CONTAINER_BOOKS_LIST.get(0).getBookId());
                     startActivityForResult(intent, Constants.RequestCodes.EDIT_NOTES);
                 }
                 break;

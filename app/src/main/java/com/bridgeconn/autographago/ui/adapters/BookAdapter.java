@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.BookModel;
+import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.ui.viewholders.BookItemViewHolder;
 
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ public class BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
     private LayoutInflater mLayoutInflater;
-    private ArrayList<BookModel> mBookModels;
+    private ArrayList<BookIdModel> mBookModels;
 
-    public BookAdapter(Context context, ArrayList<BookModel> bookModels) {
+    public BookAdapter(Context context, ArrayList<BookIdModel> bookModels) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         mBookModels = bookModels;

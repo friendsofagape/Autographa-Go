@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.BookModel;
+import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ui.activities.SelectChapterAndVerseActivity;
@@ -21,7 +21,7 @@ public class NumberAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private Fragment mFragment;
     private LayoutInflater mLayoutInflater;
     private ArrayList<ChapterModel> mChapterModels;
-    private ArrayList<BookModel> mBookModelArrayList;
+    private ArrayList<BookIdModel> mBookModelArrayList;
     private ArrayList<VerseComponentsModel> mVerseComponentsModels;
     private int mChapterNumber;
     private String mBookId;
@@ -33,7 +33,7 @@ public class NumberAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         int VERSE = 2;
     }
 
-    public NumberAdapter(Fragment fragment, ArrayList<ChapterModel> chapterModels, ArrayList<BookModel> bookModelArrayList, ArrayList<VerseComponentsModel> verseComponentsModels, int chapterNumber, String bookId, boolean openBook) {
+    public NumberAdapter(Fragment fragment, ArrayList<ChapterModel> chapterModels, ArrayList<BookIdModel> bookModelArrayList, ArrayList<VerseComponentsModel> verseComponentsModels, int chapterNumber, String bookId, boolean openBook) {
         mFragment = fragment;
         mLayoutInflater = LayoutInflater.from(mFragment.getContext());
         mChapterModels = chapterModels;

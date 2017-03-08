@@ -8,13 +8,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.BookModel;
-import com.bridgeconn.autographago.ormutils.AutographaRepository;
+import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.ui.activities.BookActivity;
 import com.bridgeconn.autographago.ui.activities.MenuActivity;
-import com.bridgeconn.autographago.ui.activities.NotesActivity;
 import com.bridgeconn.autographago.utils.Constants;
-import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 
@@ -23,9 +20,9 @@ public class BookmarkItemViewHolder extends RecyclerView.ViewHolder implements V
     private TextView mTvBookName;
     private ImageView mIvDelete;
     private Context mContext;
-    private ArrayList<BookModel> mBookmarkModels;
+    private ArrayList<BookIdModel> mBookmarkModels;
 
-    public BookmarkItemViewHolder(View itemView, Context context, ArrayList<BookModel> bookmarkModels) {
+    public BookmarkItemViewHolder(View itemView, Context context, ArrayList<BookIdModel> bookmarkModels) {
         super(itemView);
         mTvBookName = (TextView) itemView.findViewById(R.id.tv_book_name);
         mIvDelete = (ImageView) itemView.findViewById(R.id.delete);
@@ -35,8 +32,8 @@ public class BookmarkItemViewHolder extends RecyclerView.ViewHolder implements V
     }
 
     public void onBind(final int position) {
-        BookModel model = mBookmarkModels.get(position);
-        mTvBookName.setText(UtilFunctions.getBookNameFromMapping(mContext, model.getBookId()) + "    " + model.getBookmarkChapterNumber());
+        BookIdModel model = mBookmarkModels.get(position);
+        mTvBookName.setText(model.getBookName() + "    " + model.getBookmarkChapterNumber());
         mTvBookName.setCompoundDrawables(null, null, null, null);
         mTvBookName.setAllCaps(false);
         mTvBookName.setOnClickListener(this);
@@ -51,7 +48,7 @@ public class BookmarkItemViewHolder extends RecyclerView.ViewHolder implements V
         switch (v.getId()) {
             case R.id.tv_book_name: {
                 int position = (int) v.getTag();
-                BookModel model = mBookmarkModels.get(position);
+                BookIdModel model = mBookmarkModels.get(position);
 
                 Intent intent = new Intent(mContext, BookActivity.class);
                 intent.putExtra(Constants.Keys.BOOK_ID, model.getBookId());
