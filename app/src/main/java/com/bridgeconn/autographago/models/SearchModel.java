@@ -3,6 +3,8 @@ package com.bridgeconn.autographago.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Comparator;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -184,5 +186,17 @@ public class SearchModel extends RealmObject implements Parcelable {//}, Seriali
     @Override
     public int hashCode() {
         return (this.getBookId()+ " " + this.getChapterNumber()+ " " + this.getVerseNumber()).hashCode();
+    }
+
+    public static class BookNumberComparator implements Comparator<SearchModel> {
+
+        @Override
+        public int compare(SearchModel obj1, SearchModel obj2) {
+            return (obj1.getBookNumber() < obj2.getBookNumber()) ? -1
+                    : (obj1.getBookNumber() > obj2.getBookNumber()) ? 1
+                    : (obj1.getChapterNumber() < obj2.getChapterNumber()) ? -1
+                    : (obj1.getChapterNumber() >  obj2.getChapterNumber()) ? 1
+                    : 0;
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Environment;
 import android.support.v7.app.AppCompatDelegate;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -160,4 +161,44 @@ public class UtilFunctions {
         return "English";
     }
 
+    public static String getPlainVerseText(String verseText) {
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder("");
+        if (verseText != null) {
+            if (!verseText.trim().equals("")) {
+                String[] splitString = verseText.split(Constants.Styling.SPLIT_SPACE);
+                for (int n = 0; n < splitString.length; n++) {
+                    switch (splitString[n]) {
+                        case Constants.Markers.MARKER_NEW_PARAGRAPH: {
+                            break;
+                        }
+                        case Constants.Styling.MARKER_Q: {
+                            spannableStringBuilder.append(Constants.Styling.NEW_LINE_WITH_TAB_SPACE);
+                            break;
+                        }
+                        default: {
+                            if (splitString[n].startsWith(Constants.Styling.MARKER_Q)) {
+                                String str = splitString[n];
+                                String intString = str.replaceAll(Constants.Styling.REGEX_NUMBERS, "");
+                                int number;
+                                if (intString.equals("")) {
+                                    number = 1;
+                                } else {
+                                    number = Integer.parseInt(intString);
+                                }
+                                spannableStringBuilder.append(Constants.Styling.NEW_LINE);
+                                for (int o = 0; o < number; o++) {
+                                    spannableStringBuilder.append(Constants.Styling.TAB_SPACE);
+                                }
+                            } else if (splitString[n].startsWith(Constants.Styling.REGEX_ESCAPE)) {
+                            } else {
+                                spannableStringBuilder.append(splitString[n] + " ");
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return spannableStringBuilder.toString();
+    }
 }

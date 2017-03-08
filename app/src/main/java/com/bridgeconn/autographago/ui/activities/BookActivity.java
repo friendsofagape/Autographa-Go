@@ -298,44 +298,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {
                     mChapterModels.get(i).getVerseComponentsModels().get(j).setSelected(false);
                     VerseComponentsModel verseComponentsModel = mChapterModels.get(i).getVerseComponentsModels().get(j);
-                    if (verseComponentsModel.getText() != null){
-                        if (!verseComponentsModel.getText().trim().equals("")) {
-                            String[] splitString = verseComponentsModel.getText().split(Constants.Styling.SPLIT_SPACE);
-                            for (int n = 0; n < splitString.length; n++) {
-                                switch (splitString[n]) {
-                                    case Constants.Markers.MARKER_NEW_PARAGRAPH: {
-                                        shareBody.append(Constants.Styling.NEW_LINE);
-                                        break;
-                                    }
-                                    case Constants.Styling.MARKER_Q: {
-                                        shareBody.append(Constants.Styling.NEW_LINE_WITH_TAB_SPACE);
-                                        break;
-                                    }
-                                    default: {
-                                        if (splitString[n].startsWith(Constants.Styling.MARKER_Q)) {
-                                            String str = splitString[n];
-                                            String intString = str.replaceAll(Constants.Styling.REGEX_NUMBERS, "");
-                                            int number;
-                                            if (intString.equals("")) {
-                                                number = 1;
-                                            } else {
-                                                number = Integer.parseInt(intString);
-                                            }
-                                            shareBody.append(Constants.Styling.NEW_LINE);
-                                            for (int o = 0; o < number; o++) {
-                                                shareBody.append(Constants.Styling.TAB_SPACE);
-                                            }
-                                        } else if (splitString[n].startsWith(Constants.Styling.REGEX_ESCAPE)) {
-                                            break;
-                                        } else {
-                                            shareBody.append(splitString[n] + " ");
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    shareBody.append(UtilFunctions.getPlainVerseText(verseComponentsModel.getText()));
                 }
             }
         }

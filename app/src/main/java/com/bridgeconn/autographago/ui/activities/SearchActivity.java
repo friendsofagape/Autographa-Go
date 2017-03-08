@@ -14,6 +14,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
@@ -33,22 +34,26 @@ import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
+public class SearchActivity extends AppCompatActivity implements View.OnClickListener,
+        RadioGroup.OnCheckedChangeListener, TextView.OnEditorActionListener {
 
     private AutoCompleteTextView mAutoCompleteTextView;
     private ImageView mIvClose;
     private ArrayList<SearchModel> mSearchResultModels = new ArrayList<>();
+    private ArrayList<SearchModel> mShowSearchResultModels = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private SearchAdapter mAdapter;
     private ProgressBar mProgressBar;
     private LinearLayout noResultsFound;
     private String languageCode, versionCode;
     private Realm realm;
+    private RadioGroup sectionGroupView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,49 +78,86 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         mAutoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.auto_complete_search);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         noResultsFound = (LinearLayout) findViewById(R.id.no_results_found);
-
         mIvClose = (ImageView) findViewById(R.id.iv_close);
+        mRecyclerView = (RecyclerView) findViewById(R.id.list_results);
+        sectionGroupView = (RadioGroup) findViewById(R.id.section_group);
+
+        sectionGroupView.setOnCheckedChangeListener(this);
+
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new SearchAdapter(this, mShowSearchResultModels);
+        mRecyclerView.setAdapter(mAdapter);
 
         mIvClose.setOnClickListener(this);
         mAutoCompleteTextView.setOnClickListener(this);
 
-        mAutoCompleteTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    String text = mAutoCompleteTextView.getText().toString();
-                    if (!text.equals("")) {
-                        UtilFunctions.hideKeyboard(SearchActivity.this, mAutoCompleteTextView);
+        mAutoCompleteTextView.setOnEditorActionListener(this);
+    }
 
-                        realm = Realm.getDefaultInstance();
-                        ArrayList<SearchHistoryModel> resultList = querySearchHistory(new AllSpecifications.SearchHistoryModelByText(text), new AllMappers.SearchHistoryMapper());
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+            String text = mAutoCompleteTextView.getText().toString();
+            if (!text.equals("")) {
+                UtilFunctions.hideKeyboard(SearchActivity.this, mAutoCompleteTextView);
 
-                        SearchHistoryModel model = new SearchHistoryModel();
-                        model.setLastSearchTime(System.currentTimeMillis());
-                        model.setSearchText(text);
+                realm = Realm.getDefaultInstance();
+                ArrayList<SearchHistoryModel> resultList = querySearchHistory(new AllSpecifications.SearchHistoryModelByText(text), new AllMappers.SearchHistoryMapper());
 
-                        if (resultList.size() > 0) {
-                            model.setSearchCount(resultList.get(0).getSearchCount() + 1);
-                            new AutographaRepository<SearchHistoryModel>().update(model);
-                        } else {
-                            model.setSearchCount(1);
-                            new AutographaRepository<SearchHistoryModel>().add(model);
+                SearchHistoryModel model = new SearchHistoryModel();
+                model.setLastSearchTime(System.currentTimeMillis());
+                model.setSearchText(text);
+
+                if (resultList.size() > 0) {
+                    model.setSearchCount(resultList.get(0).getSearchCount() + 1);
+                    new AutographaRepository<SearchHistoryModel>().update(model);
+                } else {
+                    model.setSearchCount(1);
+                    new AutographaRepository<SearchHistoryModel>().add(model);
+                }
+                realm.close();
+                doSearch(text, languageCode, versionCode);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        switch (group.getId()) {
+            case R.id.section_group: {
+                mShowSearchResultModels.clear();
+                switch (checkedId) {
+                    case R.id.allSection: {
+                        mShowSearchResultModels.addAll(mSearchResultModels);
+                        break;
+                    }
+                    case R.id.oldSection: {
+                        for (SearchModel searchModel : mSearchResultModels) {
+                            if (searchModel.getBookNumber() < 40) {
+                                mShowSearchResultModels.add(searchModel);
+                            }
                         }
-                        realm.close();
-                        doSearch(text, languageCode, versionCode);
-                        return true;
+                        break;
+                    }
+                    case R.id.newSection: {
+                        for (SearchModel searchModel : mSearchResultModels) {
+                            if (searchModel.getBookNumber() > 40) {
+                                mShowSearchResultModels.add(searchModel);
+                            }
+                        }
+                        break;
                     }
                 }
-                return false;
+                mAdapter.notifyDataSetChanged();
+                if (mShowSearchResultModels.size() == 0) {
+                    noResultsFound.setVisibility(View.VISIBLE);
+                }
+                break;
             }
-        });
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.list_results);
-
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new SearchAdapter(this, mSearchResultModels);
-        mRecyclerView.setAdapter(mAdapter);
+        }
     }
 
     private void doSearch(String searchText, String languageCode, String versionCode) {
@@ -136,6 +178,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 searchModel.setChapterNumber(1);
                 searchModel.setVerseNumber("1");
                 searchModel.setText(getVerseText(bookModel.getChapterModels().get(0)));
+                searchModel.setSection(bookModel.getSection());
+                searchModel.setBookNumber(bookModel.getBookNumber());
                 searchResults.add(searchModel);
             }
         }
@@ -179,6 +223,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     searchModel.setChapterNumber(Integer.parseInt(splitString[1]));
                     searchModel.setVerseNumber(verseComponentsModel.getVerseNumber());
                     searchModel.setText(verseComponentsModel.getText());
+                    searchModel.setSection(UtilFunctions.getBookSectionFromMapping(SearchActivity.this, splitString[0]));
+                    searchModel.setBookNumber(UtilFunctions.getBookNumberFromMapping(SearchActivity.this, splitString[0]));
                     searchResults.add(searchModel);
                 }
             }
@@ -262,19 +308,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             super.onPreExecute();
 
             noResultsFound.setVisibility(View.GONE);
+            sectionGroupView.setVisibility(View.GONE);
             mSearchResultModels.clear();
+            mShowSearchResultModels.clear();
             mAdapter.notifyDataSetChanged();
             mProgressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected ArrayList<SearchModel> doInBackground(String... params) {
-            mSearchResultModels.addAll(searchInBookName(params[0], params[1], params[2]));
-            mAdapter.notifyItemRangeInserted(0, mSearchResultModels.size());
-
             ArrayList<SearchModel> resultList = new ArrayList<>();
+            resultList.addAll(searchInBookName(params[0], params[1], params[2]));
             resultList.addAll(searchInVerseText(params[0], params[1], params[2]));
-
             return resultList;
         }
 
@@ -283,11 +328,34 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             super.onPostExecute(resultList);
 
             mProgressBar.setVisibility(View.GONE);
-            int position = mSearchResultModels.size();
+            sectionGroupView.setVisibility(View.VISIBLE);
             mSearchResultModels.addAll(resultList);
-            mAdapter.notifyItemRangeInserted(position, resultList.size());
-
-            if (mSearchResultModels.size() == 0) {
+            // sort by book number
+            Collections.sort(mSearchResultModels, new SearchModel.BookNumberComparator());
+            switch (sectionGroupView.getCheckedRadioButtonId()) {
+                case R.id.allSection: {
+                    mShowSearchResultModels.addAll(mSearchResultModels);
+                    break;
+                }
+                case R.id.oldSection: {
+                    for (SearchModel searchModel : mSearchResultModels) {
+                        if (searchModel.getBookNumber() < 40) {
+                            mShowSearchResultModels.add(searchModel);
+                        }
+                    }
+                    break;
+                }
+                case R.id.newSection: {
+                    for (SearchModel searchModel : mSearchResultModels) {
+                        if (searchModel.getBookNumber() > 40) {
+                            mShowSearchResultModels.add(searchModel);
+                        }
+                    }
+                    break;
+                }
+            }
+            mAdapter.notifyDataSetChanged();
+            if (mShowSearchResultModels.size() == 0) {
                 noResultsFound.setVisibility(View.VISIBLE);
             }
         }

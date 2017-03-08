@@ -4,12 +4,11 @@ import android.support.annotation.NonNull;
 
 import com.bridgeconn.autographago.utils.Constants;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.Index;
 
-public class VerseComponentsModel extends RealmObject implements Comparable<VerseComponentsModel> {
+public class VerseComponentsModel extends RealmObject {
 
     @Index
     @NonNull
@@ -122,16 +121,6 @@ public class VerseComponentsModel extends RealmObject implements Comparable<Vers
 
     public void setVersionCode(String versionCode) {
         this.versionCode = versionCode;
-    }
-
-    @Override
-    public int compareTo(VerseComponentsModel model) {
-        if (verseNumber.compareTo(model.verseNumber) > 0) {
-            return 1;
-        } else if (verseNumber.compareTo(model.verseNumber) == 0) {
-            return marker.compareTo(model.marker);
-        }
-        return -1;
     }
 
 }
