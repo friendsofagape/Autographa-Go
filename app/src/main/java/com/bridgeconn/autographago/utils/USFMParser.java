@@ -75,17 +75,17 @@ public class USFMParser {
             }
             String mLine;
 //            try {
-                while ((mLine = reader.readLine()) != null) {
-                    if (!processLine(context, mLine, languageName, versionCode, versionName)) {
-                        return true;
-                    }
+            while ((mLine = reader.readLine()) != null) {
+                if (!processLine(context, mLine, languageName, versionCode, versionName)) {
+                    return true;
                 }
-                addComponentsToChapter();
-                addChaptersToBook();
+            }
+            addComponentsToChapter();
+            addChaptersToBook();
 
-                addBookToContainer(languageName, versionCode, versionName);
+            addBookToContainer(languageName, versionCode, versionName);
 
-                return true;
+            return true;
 //            } catch (Exception e) {
 //                Log.e(Constants.TAG, "Exception in processing lines. So skipping this file" + e.toString());
 //            }
@@ -340,18 +340,12 @@ public class USFMParser {
                 }
                 int size = 0;
                 for (int i=0; i<verseComponentsModelList.size(); i++) {
-                    if (i==0) {
-                        if (verseComponentsModelList.get(i).getVerseNumber() != null) {
+                    if (verseComponentsModelList.get(i).getVerseNumber() != null) {
+                        if (i == 0 || !verseComponentsModelList.get(i).getVerseNumber().equals(
+                                verseComponentsModelList.get(i - 1).getVerseNumber())) {
                             size++;
-                        }
-                    } else {
-                        if (verseComponentsModelList.get(i).getVerseNumber().equals(
-                                verseComponentsModelList.get(i-1).getVerseNumber())) {
-                            continue;
                         } else {
-                            if (verseComponentsModelList.get(i).getVerseNumber() != null) {
-                                size++;
-                            }
+                            continue;
                         }
                     }
                 }
@@ -409,6 +403,7 @@ public class USFMParser {
                         cModel.setChapterId(chapterModel1.getChapterId());
                         cModel.setLanguageCode(chapterModel1.getLanguageCode());
                         cModel.setVersionCode(chapterModel1.getVersionCode());
+                        cModel.setNumberOfVerses(chapterModel1.getNumberOfVerses());
                         for (VerseComponentsModel verseComponentsModel1 : chapterModel1.getVerseComponentsModels()) {
                             VerseComponentsModel vcModel = new VerseComponentsModel();
                             vcModel.setLanguageCode(verseComponentsModel1.getLanguageCode());

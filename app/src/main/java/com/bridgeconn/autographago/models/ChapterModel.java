@@ -12,12 +12,12 @@ public class ChapterModel extends RealmObject {
     private String chapterId;
     private String languageCode;
     private String versionCode;
+    private int numberOfVerses;
     private RealmList<VerseComponentsModel> verseComponentsModels = new RealmList<>();
     @Ignore
     private boolean selected;
     @Ignore
     private RealmList<RealmString> selectedPositions = new RealmList<>();
-    private int numberOfVerses;
 
     public ChapterModel(ChapterModel model) {
         chapterNumber = model.getChapterNumber();

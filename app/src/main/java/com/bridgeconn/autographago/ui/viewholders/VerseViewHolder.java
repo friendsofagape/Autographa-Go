@@ -42,7 +42,6 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
     }
 
     private int findChapterNumber(int position) {
-        // TODO here use numberOfVerses in chapter to reduce time complexity
         int size = 0;
         for (int i=0; i<mChapterModels.size(); i++) {
             size = size + mChapterModels.get(i).getNumberOfVerses();
@@ -52,26 +51,6 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 return mChapterModels.get(i).getChapterNumber();
             }
         }
-//        for (int i=0; i<mChapterModels.size(); i++) {
-//            for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
-//                if (j==0) {
-//                    if (size == position) {
-//                        return i+1;
-//                    }
-//                    size++;
-//                } else {
-//                    if (mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber().equals(
-//                            mChapterModels.get(i).getVerseComponentsModels().get(j-1).getVerseNumber())) {
-//                        continue;
-//                    } else {
-//                        if (size == position) {
-//                            return i+1;
-//                        }
-//                        size++;
-//                    }
-//                }
-//            }
-//        }
         return 1;
     }
 
@@ -283,14 +262,14 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                         String [] verseNumberSplit = verseComponentsModel.getVerseNumber().split("-");
                                         if (Integer.parseInt(verseNumberSplit[0]) == 1) {
                                             int chapterSize = (int)(22 * mContext.getResources().getDisplayMetrics().scaledDensity);
-                                            SpannableString chapterNumberString = new SpannableString(chapterNumber + "");
+                                            SpannableString chapterNumberString = new SpannableString(chapterNumber + " ");
                                             chapterNumberString.setSpan(new AbsoluteSizeSpan(chapterSize), 0, chapterNumberString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                                             mTvChapter.append(chapterNumberString);
                                         } else {
                                             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                                                spannableStringBuilder.append(Html.fromHtml("<sup>" + verseComponentsModel.getVerseNumber() + "</sup>"));
+                                                spannableStringBuilder.append(Html.fromHtml("<sup>" + verseComponentsModel.getVerseNumber()+" " + "</sup>"));
                                             } else {
-                                                spannableStringBuilder.append(verseComponentsModel.getVerseNumber() + "", new SuperscriptSpan(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                                spannableStringBuilder.append(verseComponentsModel.getVerseNumber() + " ", new SuperscriptSpan(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                             }
                                         }
                                         appendNumber = false;
