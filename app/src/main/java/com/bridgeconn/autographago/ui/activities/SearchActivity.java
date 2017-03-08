@@ -1,5 +1,6 @@
 package com.bridgeconn.autographago.ui.activities;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,6 +25,8 @@ import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
+import com.bridgeconn.autographago.ormutils.Mapper;
+import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.adapters.SearchAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
@@ -31,6 +34,9 @@ import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class SearchActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -42,6 +48,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private ProgressBar mProgressBar;
     private LinearLayout noResultsFound;
     private String languageCode, versionCode;
+    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +87,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     if (!text.equals("")) {
                         UtilFunctions.hideKeyboard(SearchActivity.this, mAutoCompleteTextView);
 
-                        ArrayList<SearchHistoryModel> resultList = new AutographaRepository<SearchHistoryModel>().query(new AllSpecifications.SearchHistoryModelByText(text), new AllMappers.SearchHistoryMapper());
+                        realm = Realm.getDefaultInstance();
+                        ArrayList<SearchHistoryModel> resultList = querySearchHistory(new AllSpecifications.SearchHistoryModelByText(text), new AllMappers.SearchHistoryMapper());
 
                         SearchHistoryModel model = new SearchHistoryModel();
                         model.setLastSearchTime(System.currentTimeMillis());
@@ -93,9 +101,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                             model.setSearchCount(1);
                             new AutographaRepository<SearchHistoryModel>().add(model);
                         }
-                        // clear any previous results
-                        doSearch(text);
-                        // show search results
+                        realm.close();
+                        doSearch(text, languageCode, versionCode);
                         return true;
                     }
                 }
@@ -111,37 +118,29 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    private void doSearch(String searchText) {
-        // TODO fix, progress bar not showing, and ui gets hanged
-        noResultsFound.setVisibility(View.GONE);
-        mSearchResultModels.clear();
-        mAdapter.notifyDataSetChanged();
-        mProgressBar.setVisibility(View.VISIBLE);
-
-        searchInBookName(searchText);
-        searchInVerseText(searchText);
+    private void doSearch(String searchText, String languageCode, String versionCode) {
+        new PerformSearch().execute(new String[] { searchText, languageCode, versionCode });
     }
 
-    private void searchInBookName(String searchText) {
+    private ArrayList<SearchModel> searchInBookName(String searchText, String languageCode, String versionCode) {
+        ArrayList<SearchModel> searchResults = new ArrayList<>();
+        realm = Realm.getDefaultInstance();
         if (!searchText.trim().equals("")) {
-            List<BookModel> resultList = new AutographaRepository<BookModel>().query(
+            List<BookModel> resultList = queryBook(
                     new AllSpecifications.SearchInBookName(searchText, languageCode, versionCode), new AllMappers.BookMapper());
 
             for (BookModel bookModel : resultList) {
-//                for (BookModel model : Constants.CONTAINER.getBookModelList()) {
-//                    if (model.getBookId().equals(bookModel.getBookId())) {
-                        SearchModel searchModel = new SearchModel();
-                        searchModel.setBookId(bookModel.getBookId());
-                        searchModel.setBookName(bookModel.getBookName());
-                        searchModel.setChapterNumber(1);
-                        searchModel.setVerseNumber("1");
-                        searchModel.setText(getVerseText(bookModel.getChapterModels().get(0)));
-                        mSearchResultModels.add(searchModel);
-                        break;
-//                    }
-//                }
+                SearchModel searchModel = new SearchModel();
+                searchModel.setBookId(bookModel.getBookId());
+                searchModel.setBookName(bookModel.getBookName());
+                searchModel.setChapterNumber(1);
+                searchModel.setVerseNumber("1");
+                searchModel.setText(getVerseText(bookModel.getChapterModels().get(0)));
+                searchResults.add(searchModel);
             }
         }
+        realm.close();
+        return searchResults;
     }
 
     private String getVerseText(ChapterModel chapterModel) {
@@ -164,10 +163,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         return text;
     }
 
-    private void searchInVerseText(String searchText) {
-
+    private ArrayList<SearchModel> searchInVerseText(String searchText, String languageCode, String versionCode) {
+        ArrayList<SearchModel> searchResults = new ArrayList<>();
+        realm = Realm.getDefaultInstance();
         if (!searchText.trim().equals("")) {
-            List<VerseComponentsModel> resultList = new AutographaRepository<VerseComponentsModel>().query(
+            List<VerseComponentsModel> resultList = queryVerse(
                     new AllSpecifications.SearchInVerseComponentsText(searchText, languageCode, versionCode), new AllMappers.VerseComponentsMapper());
             for (VerseComponentsModel verseComponentsModel : resultList) {
                 SearchModel searchModel = new SearchModel();
@@ -177,19 +177,41 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     searchModel.setBookName(UtilFunctions.getBookNameFromMapping(this, splitString[0]));
                     searchModel.setSection(UtilFunctions.getBookSectionFromMapping(this, splitString[0]));
                     searchModel.setChapterNumber(Integer.parseInt(splitString[1]));
+                    searchModel.setVerseNumber(verseComponentsModel.getVerseNumber());
+                    searchModel.setText(verseComponentsModel.getText());
+                    searchResults.add(searchModel);
                 }
-                searchModel.setVerseNumber(verseComponentsModel.getVerseNumber());
-                searchModel.setText(verseComponentsModel.getText());
-                mSearchResultModels.add(searchModel);
-            }
-            mProgressBar.setVisibility(View.GONE);
-            mAdapter.notifyDataSetChanged();
-            if (mSearchResultModels.size() == 0) {
-                noResultsFound.setVisibility(View.VISIBLE);
-            } else {
-
             }
         }
+        realm.close();
+        return searchResults;
+    }
+
+    public ArrayList<SearchHistoryModel> querySearchHistory(Specification<SearchHistoryModel> specification, Mapper<SearchHistoryModel, SearchHistoryModel> mapper) {
+        RealmResults<SearchHistoryModel> realmResults = specification.generateResults(realm);
+        ArrayList<SearchHistoryModel> resultsToReturn = new ArrayList<>();
+        for (SearchHistoryModel result : realmResults) {
+            resultsToReturn.add(mapper.map(result));
+        }
+        return resultsToReturn;
+    }
+
+    public ArrayList<BookModel> queryBook(Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
+        RealmResults<BookModel> realmResults = specification.generateResults(realm);
+        ArrayList<BookModel> resultsToReturn = new ArrayList<>();
+        for (BookModel result : realmResults) {
+            resultsToReturn.add(mapper.map(result));
+        }
+        return resultsToReturn;
+    }
+
+    public ArrayList<VerseComponentsModel> queryVerse(Specification<VerseComponentsModel> specification, Mapper<VerseComponentsModel, VerseComponentsModel> mapper) {
+        RealmResults<VerseComponentsModel> realmResults = specification.generateResults(realm);
+        ArrayList<VerseComponentsModel> resultsToReturn = new ArrayList<>();
+        for (VerseComponentsModel result : realmResults) {
+            resultsToReturn.add(mapper.map(result));
+        }
+        return resultsToReturn;
     }
 
     @Override
@@ -229,6 +251,44 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.auto_complete_search: {
                 mAutoCompleteTextView.setCursorVisible(true);
                 break;
+            }
+        }
+    }
+
+    private class PerformSearch extends AsyncTask<String, Void, ArrayList<SearchModel>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            noResultsFound.setVisibility(View.GONE);
+            mSearchResultModels.clear();
+            mAdapter.notifyDataSetChanged();
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected ArrayList<SearchModel> doInBackground(String... params) {
+            mSearchResultModels.addAll(searchInBookName(params[0], params[1], params[2]));
+            mAdapter.notifyItemRangeInserted(0, mSearchResultModels.size());
+
+            ArrayList<SearchModel> resultList = new ArrayList<>();
+            resultList.addAll(searchInVerseText(params[0], params[1], params[2]));
+
+            return resultList;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<SearchModel> resultList) {
+            super.onPostExecute(resultList);
+
+            mProgressBar.setVisibility(View.GONE);
+            int position = mSearchResultModels.size();
+            mSearchResultModels.addAll(resultList);
+            mAdapter.notifyItemRangeInserted(position, resultList.size());
+
+            if (mSearchResultModels.size() == 0) {
+                noResultsFound.setVisibility(View.VISIBLE);
             }
         }
     }

@@ -314,7 +314,13 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                                     default: {
                                         if (splitString[n].startsWith(Constants.Styling.MARKER_Q)) {
                                             String str = splitString[n];
-                                            int number = Integer.parseInt(str.replaceAll(Constants.Styling.REGEX_NUMBERS, ""));
+                                            String intString = str.replaceAll(Constants.Styling.REGEX_NUMBERS, "");
+                                            int number;
+                                            if (intString.equals("")) {
+                                                number = 1;
+                                            } else {
+                                                number = Integer.parseInt(intString);
+                                            }
                                             shareBody.append(Constants.Styling.NEW_LINE);
                                             for (int o = 0; o < number; o++) {
                                                 shareBody.append(Constants.Styling.TAB_SPACE);

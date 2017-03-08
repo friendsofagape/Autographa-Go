@@ -58,7 +58,13 @@ public class SearchItemViewHolder extends RecyclerView.ViewHolder implements Vie
                         default: {
                             if (splitString[n].startsWith(Constants.Styling.MARKER_Q)) {
                                 String str = splitString[n];
-                                int number = Integer.parseInt(str.replaceAll(Constants.Styling.REGEX_NUMBERS, ""));
+                                String intString = str.replaceAll(Constants.Styling.REGEX_NUMBERS, "");
+                                int number;
+                                if (intString.equals("")) {
+                                    number = 1;
+                                } else {
+                                    number = Integer.parseInt(intString);
+                                }
                                 mTvText.append(Constants.Styling.NEW_LINE);
                                 for (int o = 0; o < number; o++) {
                                     mTvText.append(Constants.Styling.TAB_SPACE);
