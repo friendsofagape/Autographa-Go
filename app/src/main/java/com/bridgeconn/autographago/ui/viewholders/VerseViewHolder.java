@@ -109,6 +109,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
         int verNumberOne = Integer.parseInt(verseNumber.split("-")[0]);
         for (int i=0; i<mChapterModel.getVerseComponentsModels().size(); i++) {
             VerseComponentsModel model = mChapterModel.getVerseComponentsModels().get(i);
+            // TODO fix crash here, instead of number, text is there
             int verseNumberStringOne = Integer.parseInt(model.getVerseNumber().split("-")[0]);
             if (verseNumberStringOne == verNumberOne) {
                 if (model.isSelected()) {

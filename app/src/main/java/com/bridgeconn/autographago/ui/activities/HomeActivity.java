@@ -56,6 +56,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private String languageCode, languageName, versionCode;
     private Realm realm;
 
+    //TODO HANDLE IF NEW VERSION PARSING DONE, THEN UPDATE SPINNER
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
@@ -114,6 +116,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mSpinner.setSelection(spinnerPosition);
 
         getAllBooks();
+    }
+
+    public int getSelectedSpinnerPosition() {
+        return mSpinner.getSelectedItemPosition();
     }
 
     public int findIndex(SpinnerModel model) {

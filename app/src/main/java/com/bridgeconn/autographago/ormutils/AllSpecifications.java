@@ -6,6 +6,7 @@ import com.bridgeconn.autographago.models.NotesModel;
 import com.bridgeconn.autographago.models.SearchHistoryModel;
 import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
+import com.bridgeconn.autographago.models.VersionModel;
 
 import io.realm.Case;
 import io.realm.Realm;
@@ -33,6 +34,23 @@ public class AllSpecifications {
         public RealmResults<LanguageModel> generateResults(Realm realm) {
             RealmQuery<LanguageModel> query = realm.where(LanguageModel.class);
             query = query.equalTo("languageCode", code);
+            return query.findAll();
+        }
+    }
+
+    public static class VersionModelByCode implements Specification<VersionModel> {
+        private String languageCode, versionCode;
+
+        public VersionModelByCode(String language, String version) {
+            this.languageCode = language;
+            this.versionCode = version;
+        }
+
+        @Override
+        public RealmResults<VersionModel> generateResults(Realm realm) {
+            RealmQuery<VersionModel> query = realm.where(VersionModel.class);
+            query = query.equalTo("languageCode", languageCode);
+            query = query.equalTo("versionCode", versionCode);
             return query.findAll();
         }
     }
