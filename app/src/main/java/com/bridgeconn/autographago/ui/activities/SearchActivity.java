@@ -180,6 +180,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 searchModel.setText(getVerseText(bookModel.getChapterModels().get(0)));
                 searchModel.setSection(bookModel.getSection());
                 searchModel.setBookNumber(bookModel.getBookNumber());
+                searchModel.setLanguageCode(languageCode);
+                searchModel.setVersionCode(versionCode);
                 searchResults.add(searchModel);
             }
         }
@@ -225,6 +227,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     searchModel.setText(verseComponentsModel.getText());
                     searchModel.setSection(UtilFunctions.getBookSectionFromMapping(SearchActivity.this, splitString[0]));
                     searchModel.setBookNumber(UtilFunctions.getBookNumberFromMapping(SearchActivity.this, splitString[0]));
+                    searchModel.setLanguageCode(languageCode);
+                    searchModel.setVersionCode(versionCode);
                     searchResults.add(searchModel);
                 }
             }

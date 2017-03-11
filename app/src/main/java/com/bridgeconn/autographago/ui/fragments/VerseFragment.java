@@ -114,6 +114,7 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
             bookModel.setVersionCode(bModel.getVersionCode());
             bookModel.setLanguageCode(bModel.getLanguageCode());
             bookModel.setBookId(bModel.getBookId());
+            bookModel.setBookPrimaryId(bModel.getBookPrimaryId());
             bookModel.setBookName(bModel.getBookName());
             for (ChapterModel cModel : bModel.getChapterModels()) {
                 ChapterModel chapterModel = new ChapterModel();

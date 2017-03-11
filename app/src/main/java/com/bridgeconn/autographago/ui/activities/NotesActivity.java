@@ -35,17 +35,21 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     private RecyclerView mRecyclerView;
     private NotesAdapter mAdapter;
     private ArrayList<NotesModel> mNotesModels = new ArrayList<>();
+    private String languageCode, versionCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
         super.onCreate(savedInstanceState);
 
-        realm = Realm.getDefaultInstance();
-
         setContentView(R.layout.activity_notes);
 
         UtilFunctions.applyReadingMode();
+
+        realm = Realm.getDefaultInstance();
+
+        languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+        versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
@@ -71,7 +75,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
 
     private void getNotesFromDB() {
         mNotesModels.clear();
-        ArrayList<NotesModel> models = query(new AllSpecifications.AllNotes(), new AllMappers.NotesMapper());
+        ArrayList<NotesModel> models = query(new AllSpecifications.AllNotes(languageCode, versionCode), new AllMappers.NotesMapper());
         for (NotesModel model : models) {
             mNotesModels.add(model);
         }
@@ -135,7 +139,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void refreshList(int position) {
-        new AutographaRepository<NotesModel>().remove(new AllSpecifications.NotesById(mNotesModels.get(position).getTimestamp()));
+        new AutographaRepository<NotesModel>().remove(new AllSpecifications.NotesById(mNotesModels.get(position).getTimestamp(), languageCode, versionCode));
         mNotesModels.remove(position);
         mAdapter.notifyItemRemoved(position);
     }

@@ -53,12 +53,12 @@ public class SplashActivity extends AppCompatActivity {
         if (addToDB) {
             for (int i = 0; i < Constants.UsfmFileNames.length; i++) {
                 USFMParser usfmParser = new USFMParser();
-                usfmParser.parseUSFMFile(this, "english_ulb/" + Constants.UsfmFileNames[i], true, "English", Constants.VersionCodes.ULB, Constants.VersionNames.ULB);
+                usfmParser.parseUSFMFile(this, "english_ulb/" + Constants.UsfmFileNames[i], true, "English", "ENG", Constants.VersionCodes.ULB);
             }
 
 //        for (int i = 0; i<Constants.UsfmFileNames.length; i++) {
 //            USFMParser usfmParser = new USFMParser();
-//            usfmParser.parseUSFMFile(this, "english_udb/"+Constants.UsfmFileNames[i], true, "English", Constants.VersionCodes.UDB, Constants.VersionNames.UDB);
+//            usfmParser.parseUSFMFile(this, "english_udb/"+Constants.UsfmFileNames[i], true, "English", "ENG", Constants.VersionCodes.UDB, Constants.VersionNames.UDB);
 //        }
         }
 

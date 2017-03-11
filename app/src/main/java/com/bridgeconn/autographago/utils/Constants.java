@@ -143,75 +143,6 @@ public class Constants {
             "67-REV.usfm"
     };
 
-    public interface USFMFiles {
-        String GENESIS = "01-GEN.usfm";
-        String EXODUS = "02-EXO.usfm";
-        String LEVITICUS = "03-LEV.usfm";
-        String NUMBERS = "04-NUM.usfm";
-        String DEUTERONOMY = "05-DEU.usfm";
-        String JOSHUA = "06-JOS.usfm";
-        String JUDGES = "07-JDG.usfm";
-        String RUTH = "08-RUT.usfm";
-        String _1_SAMUEL = "09-1SA.usfm";
-        String _2_SAMUEL = "10-2SA.usfm";
-        String _1_KINGS = "11-1KI.usfm";
-        String _2_KINGS = "12-2KI.usfm";
-        String _1_CHRONICLES = "13-1CH.usfm";
-        String _2_CHRONICLES = "14-2CH.usfm";
-        String EZRA = "15-EZR.usfm";
-        String NEHEMIAH = "16-NEH.usfm";
-        String ESTHER = "17-EST.usfm";
-        String JOB = "18-JOB.usfm";
-        String PSALMS = "19-PSA.usfm";
-        String PROVERBS = "20-PRO.usfm";
-        String ECCLESIASTES = "21-ECC.usfm";
-        String SONG_OF_SOLOMON = "22-SNG.usfm";
-        String ISAIAH = "23-ISA.usfm";
-        String JEREMIAH = "24-JER.usfm";
-        String LAMENTATIONS = "25-LAM.usfm";
-        String EZEKIEL = "26-EZK.usfm";
-        String DANIEL = "27-DAN.usfm";
-        String HOSEA = "28-HOS.usfm";
-        String JOEL = "29-JOL.usfm";
-        String AMOS = "30-AMO.usfm";
-        String OBADIAH = "31-OBA.usfm";
-        String JONAH = "32-JON.usfm";
-        String MICAH = "33-MIC.usfm";
-        String NAHUM = "34-NAM.usfm";
-        String HABAKKUK = "35-HAB.usfm";
-        String ZEPHANIAH = "36-ZEP.usfm";
-        String HAGGAI = "37-HAG.usfm";
-        String ZECHARIAH = "38-ZEC.usfm";
-        String MALACHI = "39-MAL.usfm";
-        String MATTHEW_S_GOSPEL = "41-MAT.usfm";
-        String MARK_S_GOSPEL = "42-MRK.usfm";
-        String LUKE_S_GOSPEL = "43-LUK.usfm";
-        String JOHN_S_GOSPEL = "44-JHN.usfm";
-        String ACTS = "45-ACT.usfm";
-        String ROMANS = "46-ROM.usfm";
-        String _1_CORINTHIANS = "47-1CO.usfm";
-        String _2_CORINTHIANS = "48-2CO.usfm";
-        String GALATIANS = "49-GAL.usfm";
-        String EPHESIANS = "50-EPH.usfm";
-        String PHILIPPIANS = "51-PHP.usfm";
-        String COLOSSIANS = "52-COL.usfm";
-        String _1_THESSALONIANS = "53-1TH.usfm";
-        String _2_THESSALONIANS = "54-2TH.usfm";
-        String _1_TIMOTHY = "55-1TI.usfm";
-        String _2_TIMOTHY = "56-2TI.usfm";
-        String TITUS = "57-TIT.usfm";
-        String PHILEMON = "58-PHM.usfm";
-        String HEBREWS = "59-HEB.usfm";
-        String JAMES = "60-JAS.usfm";
-        String _1_PETER = "61-1PE.usfm";
-        String _2_PETER = "62-2PE.usfm";
-        String _1_JOHN = "63-1JN.usfm";
-        String _2_JOHN = "64-2JN.usfm";
-        String _3_JOHN = "65-3JN.usfm";
-        String JUDE = "66-JUD.usfm";
-        String REVELATION = "67-REV.usfm";
-    }
-
     public interface MarkerTypes {
         String SECTION_HEADING_ONE = "s1";
         String SECTION_HEADING_TWO = "s2";
@@ -263,6 +194,7 @@ public class Constants {
         String READING_MODE = "reading_mode";
 
         String LAST_OPEN_LANGUAGE_CODE = "last_open_language_code";
+        String LAST_OPEN_LANGUAGE_NAME = "last_open_language_name";
         String LAST_OPEN_VERSION_CODE = "last_open_version_code";
     }
 
@@ -309,5 +241,18 @@ public class Constants {
             this.resId = resId;
             this.title = title;
         }
+    }
+
+    public interface ACTION {
+        String MAIN_ACTION = "com.truiton.foregroundservice.action.main";
+        String PREV_ACTION = "com.truiton.foregroundservice.action.prev";
+        String PLAY_ACTION = "com.truiton.foregroundservice.action.play";
+        String NEXT_ACTION = "com.truiton.foregroundservice.action.next";
+        String STARTFOREGROUND_ACTION = "com.truiton.foregroundservice.action.startforeground";
+        String STOPFOREGROUND_ACTION = "com.truiton.foregroundservice.action.stopforeground";
+    }
+
+    public interface NOTIFICATION_ID {
+        int FOREGROUND_SERVICE = 101;
     }
 }

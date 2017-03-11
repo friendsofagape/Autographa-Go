@@ -7,8 +7,9 @@ import io.realm.annotations.PrimaryKey;
 
 public class BookModel extends RealmObject {
 
-    @PrimaryKey
     private String bookId;
+    @PrimaryKey
+    private String bookPrimaryId;
     private String languageCode;
     private String versionCode;
     private String bookName;
@@ -21,6 +22,7 @@ public class BookModel extends RealmObject {
 
     public BookModel(BookModel model) {
         bookId = model.getBookId();
+        bookPrimaryId = model.getBookPrimaryId();
         languageCode = model.getLanguageCode();
         versionCode = model.getVersionCode();
         bookName = model.getBookName();
@@ -40,6 +42,14 @@ public class BookModel extends RealmObject {
 
     public void setBookId(String bookId) {
         this.bookId = bookId;
+    }
+
+    public String getBookPrimaryId() {
+        return bookPrimaryId;
+    }
+
+    public void setBookPrimaryId(String bookPrimaryId) {
+        this.bookPrimaryId = bookPrimaryId;
     }
 
     public String getLanguageCode() {

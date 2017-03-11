@@ -6,7 +6,6 @@ import com.bridgeconn.autographago.models.NotesModel;
 import com.bridgeconn.autographago.models.SearchHistoryModel;
 import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
-import com.bridgeconn.autographago.models.VersionModel;
 
 import io.realm.Case;
 import io.realm.Realm;
@@ -35,13 +34,6 @@ public class AllSpecifications {
             RealmQuery<LanguageModel> query = realm.where(LanguageModel.class);
             query = query.equalTo("languageCode", code);
             return query.findAll();
-        }
-    }
-
-    public static class AllVersions implements Specification<VersionModel> {
-        @Override
-        public RealmResults<VersionModel> generateResults(Realm realm) {
-            return realm.where(VersionModel.class).findAll();
         }
     }
 
@@ -81,9 +73,7 @@ public class AllSpecifications {
         @Override
         public RealmResults<BookModel> generateResults(Realm realm) {
             RealmQuery<BookModel> query = realm.where(BookModel.class);
-            query = query.equalTo("languageCode", language);
-            query = query.equalTo("versionCode", version);
-            query = query.equalTo("bookId", bookId);
+            query = query.equalTo("bookPrimaryId", language+"_"+version+"_"+bookId);
             return query.findAll();
         }
     }
@@ -167,23 +157,38 @@ public class AllSpecifications {
     }
 
     public static class AllNotes implements Specification<NotesModel> {
+        private String language, version;
+
+        public AllNotes(String language, String version) {
+            this.language = language;
+            this.version = version;
+        }
+
         @Override
         public RealmResults<NotesModel> generateResults(Realm realm) {
-            return realm.where(NotesModel.class).findAll();
+            RealmQuery<NotesModel> query = realm.where(NotesModel.class);
+            query = query.equalTo("languageCode", language);
+            query = query.equalTo("versionCode", version);
+            return query.findAll();
         }
     }
 
     public static class NotesById implements Specification<NotesModel> {
         private long id;
+        private String language, version;
 
-        public NotesById(long id) {
+        public NotesById(long id, String language, String version) {
             this.id = id;
+            this.language = language;
+            this.version = version;
         }
 
         @Override
         public RealmResults<NotesModel> generateResults(Realm realm) {
             RealmQuery<NotesModel> query = realm.where(NotesModel.class);
             query = query.equalTo("timestamp", id);
+            query = query.equalTo("languageCode", language);
+            query = query.equalTo("versionCode", version);
             return query.findAll();
         }
     }

@@ -65,7 +65,7 @@ public class USFMParser {
      * @param fileName name of the usfm file to be parsed
      * @param fromAssets true if the file is stored in bundled assets or false for device storage
      */
-    public boolean parseUSFMFile(Context context, String fileName, boolean fromAssets, String languageName, String versionCode, String versionName) {
+    public boolean parseUSFMFile(Context context, String fileName, boolean fromAssets, String languageName, String languageCode, String versionCode) {
         BufferedReader reader = null;
         try {
             if (fromAssets) {
@@ -76,14 +76,14 @@ public class USFMParser {
             String mLine;
 //            try {
             while ((mLine = reader.readLine()) != null) {
-                if (!processLine(context, mLine, languageName, versionCode, versionName)) {
+                if (!processLine(context, mLine, languageName, languageCode, versionCode)) {
                     return true;
                 }
             }
             addComponentsToChapter();
             addChaptersToBook();
 
-            addBookToContainer(languageName, versionCode, versionName);
+            addBookToContainer(languageName, languageCode, versionCode);
 
             return true;
 //            } catch (Exception e) {
@@ -107,7 +107,7 @@ public class USFMParser {
      * Parse the line with corresponding marker at the first position
      * @param line each line in the file
      */
-    private boolean processLine(Context context, String line, String languageName, String versionCode, String versionName) {
+    private boolean processLine(Context context, String line, String languageName, String languageCode, String versionCode) {
 //        line = line.trim();
         String[] splitString = line.split(Constants.Styling.SPLIT_SPACE);
         if (splitString.length == 0) {
@@ -115,46 +115,46 @@ public class USFMParser {
         }
         switch (splitString[0]) {
             case Constants.Markers.MARKER_BOOK_NAME: {
-                if (!addBook(context, splitString, languageName, versionCode, versionName)) {
+                if (!addBook(context, splitString, languageName, languageCode, versionCode)) {
                     Log.i(Constants.DUMMY_TAG, "SKIP BOOK");
                     return false;
                 }
                 break;
             }
             case Constants.Markers.MARKER_CHAPTER_NUMBER: {
-                addChapter(splitString[1], languageName, versionCode);
+                addChapter(splitString[1], languageName, languageCode, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_NEW_PARAGRAPH: {
-                addParagraph(splitString, languageName, versionCode);
+                addParagraph(splitString, languageName, languageCode, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_VERSE_NUMBER: {
-                addVerse(splitString, languageName, versionCode);
+                addVerse(splitString, languageName, languageCode, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_SECTION_HEADING: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, Constants.ParagraphMarker.S1, splitString, languageName, versionCode);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, Constants.ParagraphMarker.S1, splitString, languageName, languageCode, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_SECTION_HEADING_ONE: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, Constants.ParagraphMarker.S1, splitString, languageName, versionCode);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_ONE, Constants.ParagraphMarker.S1, splitString, languageName, languageCode, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_SECTION_HEADING_TWO: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_TWO, Constants.ParagraphMarker.S2, splitString, languageName, versionCode);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_TWO, Constants.ParagraphMarker.S2, splitString, languageName, languageCode, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_SECTION_HEADING_THREE: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_THREE, Constants.ParagraphMarker.S3, splitString, languageName, versionCode);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_THREE, Constants.ParagraphMarker.S3, splitString, languageName, languageCode, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_SECTION_HEADING_FOUR: {
-                addSection(Constants.MarkerTypes.SECTION_HEADING_FOUR, Constants.ParagraphMarker.S4, splitString, languageName, versionCode);
+                addSection(Constants.MarkerTypes.SECTION_HEADING_FOUR, Constants.ParagraphMarker.S4, splitString, languageName, languageCode, versionCode);
                 break;
             }
             case Constants.Markers.MARKER_CHUNK: {
-                addChunk(languageName, versionCode);
+                addChunk(languageName, languageCode, versionCode);
                 break;
             }
             case "": {
@@ -177,13 +177,14 @@ public class USFMParser {
      * This adds the book name and book abbreviation to the model
      * @param splitString the line containing book marker
      */
-    private boolean addBook(Context context, String [] splitString, String languageName, String versionCode, String versionName) {
+    private boolean addBook(Context context, String [] splitString, String languageName, String languageCode, String versionCode) {
 
         bookModel.setBookId(splitString[1]);
+        bookModel.setBookPrimaryId(languageCode + "_" + versionCode + "_" + splitString[1]);
         bookModel.setBookName(UtilFunctions.getBookNameFromMapping(context, splitString[1]));
         bookModel.setSection(UtilFunctions.getBookSectionFromMapping(context, splitString[1]));
         bookModel.setBookNumber(UtilFunctions.getBookNumberFromMapping(context, splitString[1]));
-        bookModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+        bookModel.setLanguageCode(languageCode);
         bookModel.setVersionCode(versionCode);
 
         languageResults = query(new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
@@ -215,12 +216,12 @@ public class USFMParser {
      * This adds the chapter number and id (bookName_chapterNumber) to the model
      * @param chapterNumber the number of the chapter parsed from the line
      */
-    private void addChapter(String chapterNumber, String languageName, String versionCode) {
+    private void addChapter(String chapterNumber, String languageName, String languageCode, String versionCode) {
         addComponentsToChapter();
         ChapterModel chapterModel = new ChapterModel();
         chapterModel.setChapterNumber(Integer.parseInt(chapterNumber));
-        chapterModel.setChapterId(bookModel.getBookId() + "_" + chapterNumber);
-        chapterModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+        chapterModel.setChapterId(languageCode + "_" + versionCode + "_" + bookModel.getBookId() + "_" + chapterNumber);
+        chapterModel.setLanguageCode(languageCode);
         chapterModel.setVersionCode(versionCode);
         chapterModelList.add(chapterModel);
     }
@@ -228,12 +229,12 @@ public class USFMParser {
     /**
      * This adds the chunk \\s5 marker of the line to the component model and add it to the list of component models
      */
-    private void addChunk(String languageName, String versionCode) {
+    private void addChunk(String languageName, String languageCode, String versionCode) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         verseComponentsModel.setType(Constants.MarkerTypes.CHUNK);
         verseComponentsModel.setAdded(true);
         verseComponentsModel.setMarker(Constants.ParagraphMarker.S5);
-        verseComponentsModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+        verseComponentsModel.setLanguageCode(languageCode);
         verseComponentsModel.setVersionCode(versionCode);
         verseComponentsModelList.add(verseComponentsModel);
     }
@@ -243,7 +244,7 @@ public class USFMParser {
      * @param type the section marker type
      * @param splitString the line for section heading text
      */
-    private void addSection(String type, Constants.ParagraphMarker marker, String [] splitString, String languageName, String versionCode) {
+    private void addSection(String type, Constants.ParagraphMarker marker, String [] splitString, String languageName, String languageCode, String versionCode) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         verseComponentsModel.setType(type);
         StringBuilder stringBuilder = new StringBuilder("");
@@ -253,7 +254,7 @@ public class USFMParser {
         verseComponentsModel.setText(stringBuilder.toString());
         verseComponentsModel.setAdded(true);
         verseComponentsModel.setMarker(marker);
-        verseComponentsModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+        verseComponentsModel.setLanguageCode(languageCode);
         verseComponentsModel.setVersionCode(versionCode);
         verseComponentsModelList.add(verseComponentsModel);
     }
@@ -262,7 +263,7 @@ public class USFMParser {
      * This adds the new paragraph marker of the line to the component model and add it to the list of component models
      * @param splitString the string for any text that is in the line
      */
-    private void addParagraph(String [] splitString, String languageName, String versionCode) {
+    private void addParagraph(String [] splitString, String languageName, String languageCode, String versionCode) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         verseComponentsModel.setType(Constants.MarkerTypes.PARAGRAPH);
         StringBuilder stringBuilder = new StringBuilder("");
@@ -272,7 +273,7 @@ public class USFMParser {
         verseComponentsModel.setText(stringBuilder.toString());
         verseComponentsModel.setAdded(true);
         verseComponentsModel.setMarker(Constants.ParagraphMarker.P);
-        verseComponentsModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+        verseComponentsModel.setLanguageCode(languageCode);
         verseComponentsModel.setVersionCode(versionCode);
         verseComponentsModelList.add(verseComponentsModel);
     }
@@ -282,7 +283,7 @@ public class USFMParser {
      * This also adds this verse's number to all previous models that do not have a verse number
      * @param splitString the line for text of the verse
      */
-    private void addVerse(String [] splitString, String languageName, String versionCode) {
+    private void addVerse(String [] splitString, String languageName, String languageCode, String versionCode) {
         VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
         if (chapterModelList.size() > 0) { // dont really need this check, but still
             verseComponentsModel.setChapterId(bookModel.getBookId() + "_" + chapterModelList.get(chapterModelList.size() - 1).getChapterNumber());
@@ -321,7 +322,7 @@ public class USFMParser {
         }
         verseComponentsModel.setAdded(true);
         verseComponentsModel.setMarker(Constants.ParagraphMarker.V);
-        verseComponentsModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+        verseComponentsModel.setLanguageCode(languageCode);
         verseComponentsModel.setVersionCode(versionCode);
         verseComponentsModelList.add(verseComponentsModel);
     }
@@ -388,9 +389,12 @@ public class USFMParser {
                 VersionModel vModel = new VersionModel();
                 vModel.setVersionCode(versionModel1.getVersionCode());
                 vModel.setVersionName(versionModel1.getVersionName());
+                vModel.setLanguageCode(versionModel1.getLanguageCode());
+                vModel.setVersionId(versionModel1.getVersionId());
                 for (BookModel bookModel1 : versionModel1.getBookModels()) {
                     BookModel bModel = new BookModel();
                     bModel.setBookId(bookModel1.getBookId());
+                    bModel.setBookPrimaryId(bookModel1.getBookPrimaryId());
                     bModel.setBookmarkChapterNumber(bookModel1.getBookmarkChapterNumber());
                     bModel.setBookName(bookModel1.getBookName());
                     bModel.setBookNumber(bookModel1.getBookNumber());
@@ -432,10 +436,12 @@ public class USFMParser {
     /**
      * At the end, add the book to the database
      */
-    private void addBookToContainer(String languageName, String versionCode, String versionName) {
+    private void addBookToContainer(String languageName, String languageCode, String versionCode) {
 
         versionModel.setVersionCode(versionCode);
-        versionModel.setVersionName(versionName);
+        versionModel.setVersionName(UtilFunctions.getVersionNameFromCode(versionCode));
+        versionModel.setLanguageCode(languageCode);
+        versionModel.setVersionId(languageCode + "_" + versionCode);
         versionModel.getBookModels().add(bookModel);
 
         if (!languageExist) {
@@ -443,7 +449,7 @@ public class USFMParser {
             Log.i(Constants.DUMMY_TAG, "adding new language - " + languageName);
             languageModel.getVersionModels().add(versionModel);
             languageModel.setLanguageName(languageName);
-            languageModel.setLanguageCode(UtilFunctions.getLanguageCodeFromName(languageName));
+            languageModel.setLanguageCode(languageCode);
             new AutographaRepository<LanguageModel>().add(languageModel);
             return;
         }

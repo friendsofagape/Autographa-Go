@@ -47,8 +47,9 @@ public class ChapterNumberViewHolder extends RecyclerView.ViewHolder implements 
                 int position = (int) v.getTag();
                 if (mFragment.getActivity() instanceof SelectChapterAndVerseActivity) {
                     ((ChapterFragment) mFragment).setSelected(position);
+                    String bookId = mChapterModels.get(position).getChapterId().split("_")[2];
                     ((SelectChapterAndVerseActivity) mFragment.getActivity()).openVersePage(position+1,
-                            mChapterModels.get(position).getChapterId().split("_")[0]);
+                            bookId);
                 }
                 break;
             }

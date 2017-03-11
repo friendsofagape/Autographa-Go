@@ -55,6 +55,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
     private ImageView mAddVerse;
     private HashSet<VerseIdModel> mVerseList = new HashSet<>();
     private long mTimeStamp = 0;
+    private String languageCode, versionCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,9 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_edit_note);
 
         UtilFunctions.applyReadingMode();
+
+        languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+        versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
@@ -308,6 +312,8 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         NotesModel notesModel = new NotesModel();
         notesModel.setTitle(mEtTitle.getText().toString());
         notesModel.setText(mEditor.getText().toString());
+        notesModel.setLanguageCode(languageCode);
+        notesModel.setVersionCode(versionCode);
         RealmList<VerseIdModel> list = new RealmList<>();
         for (VerseIdModel model : mVerseList) {
             list.add(model);
@@ -325,7 +331,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
             Log.i(Constants.DUMMY_TAG, "SAVED == " + notesModel.getVerseIds().get(i).getBookId() + " :: " + notesModel.getVerseIds().get(i).getChapterNumber() + " :: " + notesModel.getVerseIds().get(i).getVerseNumber());
         }
 
-        List<NotesModel> resultList = new AutographaRepository<NotesModel>().query(new AllSpecifications.NotesById(notesModel.getTimestamp()), new AllMappers.NotesMapper());
+        List<NotesModel> resultList = new AutographaRepository<NotesModel>().query(new AllSpecifications.NotesById(notesModel.getTimestamp(), languageCode, versionCode), new AllMappers.NotesMapper());
         for (NotesModel model : resultList) {
             for (int i=0; i<model.getVerseIds().size(); i++) {
                 Log.i(Constants.DUMMY_TAG, "RESULT == " + model.getVerseIds().get(i).getBookId() + " :: " + model.getVerseIds().get(i).getChapterNumber() + " :: " + model.getVerseIds().get(i).getVerseNumber());

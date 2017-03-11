@@ -9,13 +9,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.SpinnerModel;
 import com.bridgeconn.autographago.models.VersionModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
@@ -23,6 +23,7 @@ import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.adapters.BookAdapter;
+import com.bridgeconn.autographago.ui.adapters.SpinnerAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
@@ -49,8 +50,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private BookAdapter mAdapter;
     private ArrayList<BookIdModel> mBookModelArrayList = new ArrayList<>();
     private AppCompatSpinner mSpinner;
+    private List<SpinnerModel> categoriesList = new ArrayList<>();
+    private SpinnerAdapter spinnerAdapter;
 
-    private String languageCode, versionCode;
+    private String languageCode, languageName, versionCode;
     private Realm realm;
 
     @Override
@@ -62,6 +65,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         UtilFunctions.applyReadingMode();
 
         languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+        languageName = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, "English");
         versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
 
         realm = Realm.getDefaultInstance();
@@ -96,38 +100,39 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mHistoryView.setOnClickListener(this);
         mSettingsView.setOnClickListener(this);
 
-        List<String> categories = getCategories();
-
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, R.layout.item_spinner, categories);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAdapter = new SpinnerAdapter(this, categoriesList);
         mSpinner.setAdapter(spinnerAdapter);
 
-        String compareValue = UtilFunctions.getLanguageNameFromCode(languageCode) + "  " + versionCode;
+        getCategories();
 
-        if (!compareValue.equals(null)) {
-            int spinnerPosition = spinnerAdapter.getPosition(compareValue);
-            mSpinner.setSelection(spinnerPosition);
-        }
+        SpinnerModel compareModel = new SpinnerModel();
+        compareModel.setLanguageName(languageName);
+        compareModel.setVersionCode(versionCode);
+        compareModel.setLanguageCode(languageCode);
+
+        int spinnerPosition = categoriesList.indexOf(compareModel);
+        mSpinner.setSelection(spinnerPosition);
 
         getAllBooks();
     }
 
-    private List<String> getCategories() {
-        List<String> categories = new ArrayList<>();
+    private void getCategories() {
         ArrayList<LanguageModel> languageModels = query(new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
         for (LanguageModel languageModel : languageModels) {
             for (VersionModel versionModel : languageModel.getVersionModels()) {
-                categories.add(languageModel.getLanguageName() + "  " + versionModel.getVersionCode());
+                SpinnerModel spinnerModel = new SpinnerModel();
+                spinnerModel.setLanguageCode(languageModel.getLanguageCode());
+                spinnerModel.setVersionCode(versionModel.getVersionCode());
+                spinnerModel.setLanguageName(languageModel.getLanguageName());
+                categoriesList.add(spinnerModel);
             }
         }
-        return categories;
+        spinnerAdapter.notifyDataSetChanged();
     }
 
     public ArrayList<LanguageModel> query(Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
         RealmResults<LanguageModel> realmResults = specification.generateResults(realm);
-
         ArrayList<LanguageModel> resultsToReturn = new ArrayList<>();
-
         for (LanguageModel result : realmResults) {
             resultsToReturn.add(mapper.map(result));
         }
@@ -136,18 +141,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String item = parent.getItemAtPosition(position).toString();
-//        Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+        SpinnerModel spinnerModel = categoriesList.get(position);//(SpinnerModel) parent.getItemAtPosition(position);
 
-        String[] arr = item.split("  ");
-
-        if (arr[0].equals(UtilFunctions.getLanguageNameFromCode(languageCode)) && arr[1].equals(versionCode)) {
-            // do nothing, same element seletced again
+        if (spinnerModel.getLanguageCode().equals(languageCode) && spinnerModel.getLanguageName().equals(languageName) && spinnerModel.getVersionCode().equals(versionCode)) {
+            // do nothing, same element selected again
         } else {
             // save to shared prefs
-            languageCode = UtilFunctions.getLanguageCodeFromName(arr[0]);
-            versionCode = arr[1];
+            // TODO check if this works, if books are refreshed
+            languageCode = spinnerModel.getLanguageCode();
+            languageName = spinnerModel.getLanguageName();
+            versionCode = spinnerModel.getVersionCode();
             SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, languageCode);
+            SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, languageName);
             SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
             new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
             getAllBooks();

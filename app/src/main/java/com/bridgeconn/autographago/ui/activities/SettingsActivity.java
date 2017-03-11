@@ -373,6 +373,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             }
             File f = new File (root, backupDBPath);
             filePath = f.getAbsolutePath();
+            Log.i(Constants.DUMMY_TAG, "file path in start = " + filePath);
         }
 
         lastDownload = downloadManager.enqueue(new DownloadManager.Request(uri)
@@ -385,7 +386,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         );
     }
 
-    private String language, versionCode, versionName;
+    private String languageName, languageCode, versionCode, versionName;
 
     BroadcastReceiver onComplete=new BroadcastReceiver() {
         public void onReceive(final Context ctxt, Intent intent) {
@@ -399,6 +400,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
                     if (status == DownloadManager.STATUS_SUCCESSFUL) {
                         String file = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
+                        Log.i(Constants.DUMMY_TAG, "oncpmpleye : " + file);
                         // So something here on success
                         startUnzipping(ctxt);
                     } else {
@@ -415,7 +417,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     private void startUnzipping(final Context context) {
         UnzipUtil.unzipFile(new File(filePath),
-                context, language, versionCode, versionName,
+                context, languageName, versionCode, versionName,
                 new UnzipUtil.FileUnzipCallback() {
 
                     @Override
@@ -449,9 +451,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                             success = usfmParser.parseUSFMFile(context,
                                                     file.getAbsolutePath(),
                                                     false,
-                                                    language,
-                                                    versionCode,
-                                                    versionName);
+                                                    languageName,
+                                                    languageCode,
+                                                    versionCode);
 
                                             if (success) {
                                                 // delete that file
@@ -479,7 +481,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private static String downloadUrl;
 
     public void getMetaData(final String language, final String version) {
-        // TODO make this a foreground service with notification
         final DownloadUtil downloadUtil = new DownloadUtil();
         downloadUtil.downloadJson(language + "/" + version + "/" + Constants.META_DATA_FILE_NAME,
                 new DownloadUtil.FileDownloadCallback() {
@@ -487,6 +488,11 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onSuccess(final ResponseModel model) {
                         if (model.getMetaData() != null) {
+                            languageName = model.getMetaData().getLanguageName();
+                            languageCode = model.getMetaData().getLanguageCode();
+                            versionCode = model.getMetaData().getVersionCode();
+                            versionName = model.getMetaData().getVersionName();
+
                             TextView tv = new TextView(SettingsActivity.this);
                             tv.setText(model.getMetaData().getSource() + " :: " +
                                     model.getMetaData().getLanguageName() + " :: " +

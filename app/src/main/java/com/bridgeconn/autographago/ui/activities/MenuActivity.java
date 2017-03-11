@@ -103,10 +103,6 @@ public class MenuActivity extends AppCompatActivity {
                 mBookmarkModels.add(bookIdModel1);
             }
         }
-//        List<BookModel> results = new AutographaRepository<BookModel>().query(new AllSpecifications.AllBookmarks(languageCode, versionCode), new AllMappers.BookMapper());
-//        for (BookModel model : results) {
-//            mBookmarkModels.add(model);
-//        }
         mBookmarkAdapter.notifyDataSetChanged();
     }
 
@@ -157,7 +153,7 @@ public class MenuActivity extends AppCompatActivity {
         String [] splitString = model.getChapterId().split("_");
 
         ChapterModel chapterModel = new ChapterModel();
-        chapterModel.setChapterId(model.getChapterId());
+        chapterModel.setChapterId(languageCode + "_" + versionCode + "_" + model.getChapterId());
         chapterModel.setChapterNumber(Integer.parseInt(splitString[1]));
         chapterModel.setVersionCode(versionCode);
         chapterModel.setLanguageCode(languageCode);
@@ -169,7 +165,7 @@ public class MenuActivity extends AppCompatActivity {
 
         if (bookModel != null) {
             for (ChapterModel cModel : bookModel.getChapterModels()) {
-                if (cModel.getChapterId().equals(model.getChapterId())) {
+                if (cModel.getChapterId().equals(languageCode + "_" + versionCode + "_" + model.getChapterId())) {
                     chapterModel.setVerseComponentsModels(cModel.getVerseComponentsModels());
                     int size = 0;
                     for (int i=0; i<chapterModel.getVerseComponentsModels().size(); i++) {
@@ -214,6 +210,7 @@ public class MenuActivity extends AppCompatActivity {
             bookModel.setVersionCode(bModel.getVersionCode());
             bookModel.setLanguageCode(bModel.getLanguageCode());
             bookModel.setBookId(bModel.getBookId());
+            bookModel.setBookPrimaryId(bModel.getBookPrimaryId());
             bookModel.setBookName(bModel.getBookName());
             for (ChapterModel cModel : bModel.getChapterModels()) {
                 ChapterModel chapterModel = new ChapterModel();

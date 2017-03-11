@@ -14,12 +14,16 @@ public class NotesModel extends RealmObject implements Parcelable {
     private String title;
     private String text;
     private RealmList<VerseIdModel> verseIds = new RealmList<>();
+    private String languageCode;
+    private String versionCode;
 
     public NotesModel(NotesModel model) {
         timestamp = model.getTimestamp();
         title = model.getTitle();
         text = model.getText();
         verseIds = model.getVerseIds();
+        languageCode = model.getLanguageCode();
+        versionCode = model.getVersionCode();
     }
 
     public NotesModel() {
@@ -57,6 +61,22 @@ public class NotesModel extends RealmObject implements Parcelable {
         this.verseIds = verseIds;
     }
 
+    public String getLanguageCode() {
+        return languageCode;
+    }
+
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
+
+    public String getVersionCode() {
+        return versionCode;
+    }
+
+    public void setVersionCode(String versionCode) {
+        this.versionCode = versionCode;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -68,6 +88,8 @@ public class NotesModel extends RealmObject implements Parcelable {
         dest.writeString(this.title);
         dest.writeString(this.text);
         dest.writeList(this.verseIds);
+        dest.writeString(this.languageCode);
+        dest.writeString(this.versionCode);
     }
 
     protected NotesModel(Parcel in) {
@@ -76,6 +98,8 @@ public class NotesModel extends RealmObject implements Parcelable {
         this.text = in.readString();
         this.verseIds = new RealmList<>();
         in.readList(this.verseIds, VerseIdModel.class.getClassLoader());
+        this.languageCode = in.readString();
+        this.versionCode = in.readString();
     }
 
     public static final Creator<NotesModel> CREATOR = new Creator<NotesModel>() {
@@ -98,7 +122,9 @@ public class NotesModel extends RealmObject implements Parcelable {
                 this.timestamp == ((NotesModel) obj).timestamp &&
                 this.title.equals(((NotesModel) obj).title) &&
                 this.text.equals(((NotesModel) obj).text) &&
-                this.verseIds.equals(((NotesModel) obj).verseIds);
+                this.verseIds.equals(((NotesModel) obj).verseIds) &&
+                this.languageCode.equals(((NotesModel) obj).languageCode) &&
+                this.versionCode.equals(((NotesModel) obj).versionCode);
     }
 
 }

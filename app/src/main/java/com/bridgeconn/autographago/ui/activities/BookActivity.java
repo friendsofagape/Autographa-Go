@@ -153,6 +153,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
             bookModel.setSection(bModel.getSection());
             bookModel.setVersionCode(bModel.getVersionCode());
             bookModel.setLanguageCode(bModel.getLanguageCode());
+            bookModel.setBookPrimaryId(bModel.getBookPrimaryId());
             bookModel.setBookId(bModel.getBookId());
             bookModel.setBookName(bModel.getBookName());
             for (ChapterModel cModel : bModel.getChapterModels()) {
@@ -233,14 +234,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
     private void findSelectedAndHighlight() {
 
-//        int bookPosition = 0;
-//        for (int k = 0; k < Constants.CONTAINER_BOOKS_LIST.size(); k++) {
-//            if (Constants.CONTAINER_BOOKS_LIST.get(k).getBookId().equals(mBookId)) {
-//                bookPosition = k;
-//                break;
-//            }
-//        }
-
         BookModel bookModel = new BookModel(mBookModel);
 
         for (int i=0;  i<mChapterModels.size(); i++) {
@@ -249,11 +242,9 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     mChapterModels.get(i).getVerseComponentsModels().get(j).setSelected(false);
                     mChapterModels.get(i).getVerseComponentsModels().get(j).setHighlighted(true);
 
-//                    Constants.CONTAINER.getBookModelList().get(bookPosition).
-//                            getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(true);
+                    String [] chapterIds = bookModel.getChapterModels().get(i).getChapterId().split("_");
 
-                    bookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setChapterId(
-                            bookModel.getChapterModels().get(i).getChapterId());
+                    bookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setChapterId(chapterIds[2] + "_" + chapterIds[3]);
                     bookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(true);
                 }
             }

@@ -1,6 +1,7 @@
 package com.bridgeconn.autographago.utils;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Environment;
 import android.support.v7.app.AppCompatDelegate;
@@ -153,12 +154,16 @@ public class UtilFunctions {
         return Math.round(dp * context.getResources().getDisplayMetrics().density);
     }
 
-    public static String getLanguageCodeFromName(String languageName) {
-        return "ENG";
-    }
-
-    public static String getLanguageNameFromCode(String languageCode) {
-        return "English";
+    public static String getVersionNameFromCode(String versionCode) {
+        switch (versionCode) {
+            case Constants.VersionCodes.ULB: {
+                return Constants.VersionNames.ULB;
+            }
+            case Constants.VersionCodes.UDB: {
+                return Constants.VersionNames.UDB;
+            }
+        }
+        return Constants.VersionNames.ULB;
     }
 
     public static String getPlainVerseText(String verseText) {
@@ -201,4 +206,15 @@ public class UtilFunctions {
         }
         return spannableStringBuilder.toString();
     }
+
+    public static boolean isServiceRunning(String serviceName, Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceName.equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

@@ -7,14 +7,18 @@ import io.realm.annotations.PrimaryKey;
 public class VersionModel extends RealmObject {
 
     private String versionName;
-    @PrimaryKey
     private String versionCode;
+    private String languageCode;
+    @PrimaryKey
+    private String versionId;
     private RealmList<BookModel> bookModels = new RealmList<>();
 
     public VersionModel(VersionModel model) {
         versionName = model.getVersionName();
         versionCode = model.getVersionCode();
         bookModels = model.getBookModels();
+        languageCode = model.getLanguageCode();
+        versionId = model.getVersionId();
     }
 
     public VersionModel() {
@@ -42,5 +46,21 @@ public class VersionModel extends RealmObject {
 
     public void setBookModels(RealmList<BookModel> bookModels) {
         this.bookModels = bookModels;
+    }
+
+    public String getLanguageCode() {
+        return languageCode;
+    }
+
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
+
+    public String getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(String versionId) {
+        this.versionId = versionId;
     }
 }

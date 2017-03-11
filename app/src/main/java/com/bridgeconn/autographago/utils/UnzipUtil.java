@@ -71,7 +71,7 @@ public class UnzipUtil {
         }
 
         public void log(String log) {
-            Log.v("unzip", log);
+            Log.v(Constants.DUMMY_TAG, "unzip :: " + log);
         }
 
         @SuppressWarnings("unchecked")
