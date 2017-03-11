@@ -8,11 +8,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.VerseComponentsModel;
+import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.ui.activities.BookActivity;
 import com.bridgeconn.autographago.ui.activities.MenuActivity;
 import com.bridgeconn.autographago.utils.Constants;
-import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 
@@ -21,9 +20,9 @@ public class HighlightViewHolder extends RecyclerView.ViewHolder implements View
     private TextView mTvBookName;
     private ImageView mIvDelete;
     private Context mContext;
-    private ArrayList<VerseComponentsModel> mHighlightModels;
+    private ArrayList<VerseIdModel> mHighlightModels;
 
-    public HighlightViewHolder(View itemView, Context context, ArrayList<VerseComponentsModel> highlightModels) {
+    public HighlightViewHolder(View itemView, Context context, ArrayList<VerseIdModel> highlightModels) {
         super(itemView);
         mTvBookName = (TextView) itemView.findViewById(R.id.tv_book_name);
         mIvDelete = (ImageView) itemView.findViewById(R.id.delete);
@@ -32,13 +31,9 @@ public class HighlightViewHolder extends RecyclerView.ViewHolder implements View
     }
 
     public void onBind(int position) {
-        VerseComponentsModel model = mHighlightModels.get(position);
-        String [] splitString = model.getChapterId().split("_");
-        if (splitString.length < 2) {
-            return;
-        }
-        mTvBookName.setText(UtilFunctions.getBookNameFromMapping(mContext, splitString[0]) + " " +
-                splitString[1] + Constants.Styling.CHAR_COLON +
+        VerseIdModel model = mHighlightModels.get(position);
+        mTvBookName.setText(model.getBookName() + " " +
+                model.getChapterNumber() + Constants.Styling.CHAR_COLON +
                 model.getVerseNumber());
         mTvBookName.setCompoundDrawables(null, null, null, null);
         mTvBookName.setAllCaps(false);
@@ -55,12 +50,11 @@ public class HighlightViewHolder extends RecyclerView.ViewHolder implements View
             case R.id.tv_book_name: {
                 int position = (int) v.getTag();
 
-                VerseComponentsModel model = mHighlightModels.get(position);
-                String [] splitString = model.getChapterId().split("_");
+                VerseIdModel model = mHighlightModels.get(position);
 
                 Intent intent = new Intent(mContext, BookActivity.class);
-                intent.putExtra(Constants.Keys.BOOK_ID, splitString[0]);
-                intent.putExtra(Constants.Keys.CHAPTER_NO, Integer.parseInt(splitString[1]));
+                intent.putExtra(Constants.Keys.BOOK_ID, model.getBookId());
+                intent.putExtra(Constants.Keys.CHAPTER_NO, model.getChapterNumber());
                 intent.putExtra(Constants.Keys.VERSE_NO, model.getVerseNumber());
                 mContext.startActivity(intent);
                 break;

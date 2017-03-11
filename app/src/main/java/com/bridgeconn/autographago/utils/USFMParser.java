@@ -89,7 +89,7 @@ public class USFMParser {
 //            } catch (Exception e) {
 //                Log.e(Constants.TAG, "Exception in processing lines. So skipping this file" + e.toString());
 //            }
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e(Constants.TAG, "Exception in reading file. " + e.toString());
         } finally {
             if (reader != null) {

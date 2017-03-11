@@ -169,7 +169,7 @@ public class AllSpecifications {
             RealmQuery<NotesModel> query = realm.where(NotesModel.class);
             query = query.equalTo("languageCode", language);
             query = query.equalTo("versionCode", version);
-            return query.findAll();
+            return query.findAll().sort("timestamp", Sort.DESCENDING);
         }
     }
 

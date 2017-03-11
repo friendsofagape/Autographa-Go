@@ -110,10 +110,22 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         compareModel.setVersionCode(versionCode);
         compareModel.setLanguageCode(languageCode);
 
-        int spinnerPosition = categoriesList.indexOf(compareModel);
+        int spinnerPosition = findIndex(compareModel);
         mSpinner.setSelection(spinnerPosition);
 
         getAllBooks();
+    }
+
+    public int findIndex(SpinnerModel model) {
+        for (int i=0; i<categoriesList.size(); i++) {
+            SpinnerModel spinnerModel = categoriesList.get(i);
+            if (spinnerModel.getVersionCode().equals(model.getVersionCode()) &&
+                    spinnerModel.getLanguageName().equals(model.getLanguageName()) &&
+                    spinnerModel.getLanguageCode().equals(model.getLanguageCode())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void getCategories() {

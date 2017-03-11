@@ -142,5 +142,6 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
         new AutographaRepository<NotesModel>().remove(new AllSpecifications.NotesById(mNotesModels.get(position).getTimestamp(), languageCode, versionCode));
         mNotesModels.remove(position);
         mAdapter.notifyItemRemoved(position);
+        mAdapter.notifyItemRangeChanged(position, mNotesModels.size(), null);
     }
 }

@@ -13,6 +13,7 @@ import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
+import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
@@ -25,6 +26,7 @@ import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import io.realm.Realm;
@@ -41,7 +43,7 @@ public class MenuActivity extends AppCompatActivity {
     private HighlightAdapter mHighlightAdapter;
 
     private ArrayList<BookIdModel> mBookmarkModels = new ArrayList<>();
-    private  ArrayList<VerseComponentsModel> mHighlightModels = new ArrayList<>();
+    private  ArrayList<VerseIdModel> mHighlightModels = new ArrayList<>();
     private String languageCode, versionCode;
     private Realm realm;
 
@@ -107,17 +109,25 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void getHighlights() {
-        List<VerseComponentsModel> results = new AutographaRepository<VerseComponentsModel>().query(new AllSpecifications.AllHighlights(languageCode, versionCode), new AllMappers.VerseComponentsMapper());
-        for (VerseComponentsModel model : results) {
-            VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
-            verseComponentsModel.setChapterId(model.getChapterId());
-            verseComponentsModel.setType(model.getType());
-            verseComponentsModel.setVersionCode(model.getVersionCode());
-            verseComponentsModel.setVerseNumber(model.getVerseNumber());
-            verseComponentsModel.setHighlighted(model.isHighlighted());
-            verseComponentsModel.setLanguageCode(model.getLanguageCode());
-            verseComponentsModel.setText(model.getText());
-            mHighlightModels.add(verseComponentsModel);
+        List<BookModel> bookModels = query(
+                new AllSpecifications.BooksByLanguageAndVersion(languageCode, versionCode), new AllMappers.BookMapper());
+        HashSet<VerseIdModel> verseIdModelHashSet = new HashSet<>();
+        for (BookModel bookModel : bookModels) {
+            for (ChapterModel chapterModel : bookModel.getChapterModels()) {
+                for (VerseComponentsModel verseComponentsModel : chapterModel.getVerseComponentsModels()) {
+                    if (verseComponentsModel.isHighlighted()) {
+                        VerseIdModel verseIdModel = new VerseIdModel();
+                        verseIdModel.setBookId(bookModel.getBookId());
+                        verseIdModel.setBookName(bookModel.getBookName());
+                        verseIdModel.setChapterNumber(chapterModel.getChapterNumber());
+                        verseIdModel.setVerseNumber(verseComponentsModel.getVerseNumber());
+                        verseIdModelHashSet.add(verseIdModel);
+                    }
+                }
+            }
+        }
+        for (VerseIdModel model : verseIdModelHashSet) {
+            mHighlightModels.add(model);
         }
         mHighlightAdapter.notifyDataSetChanged();
     }
@@ -145,56 +155,36 @@ public class MenuActivity extends AppCompatActivity {
         new AutographaRepository<BookModel>().update(bookModel);
         mBookmarkModels.remove(position);
         mBookmarkAdapter.notifyItemRemoved(position);
+        mBookmarkAdapter.notifyItemRangeChanged(position, mBookmarkModels.size(), null);
     }
 
     public void refreshHighlightList(int position) {
 
-        VerseComponentsModel model = mHighlightModels.get(position);
-        String [] splitString = model.getChapterId().split("_");
+        VerseIdModel model = mHighlightModels.get(position);
+        String bookId = model.getBookId();
+        String chapterId = model.getBookId() + "_" + model.getChapterNumber();
+        String verseNumber = model.getVerseNumber();
 
-        ChapterModel chapterModel = new ChapterModel();
-        chapterModel.setChapterId(languageCode + "_" + versionCode + "_" + model.getChapterId());
-        chapterModel.setChapterNumber(Integer.parseInt(splitString[1]));
-        chapterModel.setVersionCode(versionCode);
-        chapterModel.setLanguageCode(languageCode);
+        mHighlightModels.remove(position);
+        mHighlightAdapter.notifyItemRemoved(position);
+        mHighlightAdapter.notifyItemRangeChanged(position, mHighlightModels.size(), null);
 
         BookModel bookModel = null;
-        String bookId = splitString[0];
-
         bookModel = getBookModel(bookId);
 
         if (bookModel != null) {
             for (ChapterModel cModel : bookModel.getChapterModels()) {
-                if (cModel.getChapterId().equals(languageCode + "_" + versionCode + "_" + model.getChapterId())) {
-                    chapterModel.setVerseComponentsModels(cModel.getVerseComponentsModels());
-                    int size = 0;
-                    for (int i=0; i<chapterModel.getVerseComponentsModels().size(); i++) {
-                        if (i==0) {
-                            size++;
-                        } else {
-                            if (chapterModel.getVerseComponentsModels().get(i).getVerseNumber().equals(
-                                    chapterModel.getVerseComponentsModels().get(i-1).getVerseNumber())) {
-                                continue;
-                            } else {
-                                size++;
-                            }
-                        }
-                    }
-                    chapterModel.setNumberOfVerses(size);
-                    for (VerseComponentsModel vModel : chapterModel.getVerseComponentsModels()) {
-                        if (vModel.getVerseNumber().equals(model.getVerseNumber())) {
+                if (cModel.getChapterId().equals(languageCode + "_" + versionCode + "_" + chapterId)) {
+                    for (VerseComponentsModel vModel : cModel.getVerseComponentsModels()) {
+                        if (vModel.getVerseNumber().equals(verseNumber)) {
                             vModel.setHighlighted(false);
                         }
                     }
                     break;
                 }
             }
+            new AutographaRepository<BookModel>().update(bookModel);
         }
-
-        mHighlightModels.get(position).setHighlighted(false);
-        new AutographaRepository<ChapterModel>().update(chapterModel);
-        mHighlightModels.remove(position);
-        mHighlightAdapter.notifyItemRemoved(position);
     }
 
     private BookModel getBookModel(String bookId) {

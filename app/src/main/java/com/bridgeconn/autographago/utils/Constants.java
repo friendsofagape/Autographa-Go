@@ -54,8 +54,6 @@ public class Constants {
 
     public static final String SHARE_TEXT_TYPE = "text/plain";
 
-    public static final AllBooksModel CONTAINER = new AllBooksModel();
-
     public static final ArrayList<BookIdModel> CONTAINER_BOOKS_LIST = new ArrayList<>();
 
     public enum ParagraphMarker implements Comparable<ParagraphMarker> {

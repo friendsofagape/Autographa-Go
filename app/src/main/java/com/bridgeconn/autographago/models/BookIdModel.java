@@ -1,5 +1,7 @@
 package com.bridgeconn.autographago.models;
 
+import java.util.Comparator;
+
 public class BookIdModel {
 
     private String bookId;
@@ -87,5 +89,14 @@ public class BookIdModel {
 
     public void setBookmarkChapterNumber(int bookmarkChapterNumber) {
         this.bookmarkChapterNumber = bookmarkChapterNumber;
+    }
+
+    public static class BookNumberComparator implements Comparator<BookIdModel> {
+
+        @Override
+        public int compare(BookIdModel obj1, BookIdModel obj2) {
+            return (obj1.getBookNumber() < obj2.getBookNumber()) ? -1
+                    : (obj1.getBookNumber() > obj2.getBookNumber()) ? 1 : 0;
+        }
     }
 }

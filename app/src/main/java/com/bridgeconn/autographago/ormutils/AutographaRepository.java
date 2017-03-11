@@ -8,6 +8,7 @@ import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -145,7 +146,7 @@ public class AutographaRepository<T extends RealmObject> implements Repository<T
     @Override
     public void addToNewContainer(String language, String version) {
 
-        Constants.CONTAINER.getBookModelList().clear();
+        Constants.CONTAINER_BOOKS_LIST.clear();
 
         final Realm realm = Realm.getDefaultInstance();
         final RealmResults<LanguageModel> realmResults = new AllSpecifications.AllLanguages().generateResults(realm);
@@ -175,6 +176,7 @@ public class AutographaRepository<T extends RealmObject> implements Repository<T
                 }
             }
         }
+        Collections.sort(Constants.CONTAINER_BOOKS_LIST, new BookIdModel.BookNumberComparator());
         realm.close();
     }
 }

@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.VerseComponentsModel;
+import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.ui.viewholders.HighlightViewHolder;
 
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ public class HighlightAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private Context mContext;
     private LayoutInflater mLayoutInflater;
-    private ArrayList<VerseComponentsModel> mHighlightModels;
+    private ArrayList<VerseIdModel> mHighlightModels;
 
-    public HighlightAdapter(Context context, ArrayList<VerseComponentsModel> highlightModels) {
+    public HighlightAdapter(Context context, ArrayList<VerseIdModel> highlightModels) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         mHighlightModels = highlightModels;
