@@ -1,7 +1,6 @@
 package com.bridgeconn.autographago.utils;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.AllBooksModel;
 import com.bridgeconn.autographago.models.BookIdModel;
 
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ public class Constants {
     public static final String API_BASE_URL = "https://raw.githubusercontent.com/friendsofagape/Autographa_Repo/master/Bibles/";
     public static final String META_DATA_FILE_NAME = "package.json";
     public static final String USFM_ZIP_FILE_NAME = "Archive.zip";
-    public static final String APPEND_URL_FILE = "English/ULB/01-GEN.usfm";
 
     public static final String STORAGE_DIRECTORY = "/appname-external-data-cache/";
 
@@ -152,26 +150,23 @@ public class Constants {
     }
 
     public interface Keys {
-        String POSITION = "position";
-        String TAB_NAME = "tabName";
         String BOOK_ID = "bookId";
-        String SCREEN_MODE = "screenMode";
         String CHAPTER_NO = "chapter_number";
         String VERSE_NO = "verse_number";
         String VERSE_MODELS = "verse_models";
-        String VERSE_SET = "verse_set";
         String SELECT_VERSE_FOR_NOTE = "select_verse_for_note";
         String OPEN_BOOK = "open_book";
         String VERSE_NOTE_MODEL = "verse_note_model";
-        String SAVED_NOTE_TIMESTAMP = "saved_note_timestamp";
         String NOTES_MODEL = "notes_model";
 
         String READING_MODE_CHANGE = "reading_mode_change";
         String TEXT_SIZE_CHANGED = "text_size_changed";
 
-        String LANGUAGE = "language";
-        String VERSION = "version";
+        String LANGUAGE_CODE = "language_code";
+        String LANGUAGE_NAME = "language_name";
+        String VERSION_CODE = "version_code";
         String VERSION_NAME = "version_name";
+        String FILE_PATH = "file_path";
     }
 
     public interface RequestCodes {
@@ -194,6 +189,12 @@ public class Constants {
         String LAST_OPEN_LANGUAGE_CODE = "last_open_language_code";
         String LAST_OPEN_LANGUAGE_NAME = "last_open_language_name";
         String LAST_OPEN_VERSION_CODE = "last_open_version_code";
+
+        String DOWNLOAD_ID_ = "download_id_";
+        String LANGUAGE_NAME = "language_name";
+        String LANGUAGE_CODE = "language_code";
+        String VERSION_NAME = "version_name";
+        String VERSION_CODE = "version_code";
     }
 
     public enum ReadingMode {
@@ -242,12 +243,11 @@ public class Constants {
     }
 
     public interface ACTION {
-        String MAIN_ACTION = "com.truiton.foregroundservice.action.main";
-        String PREV_ACTION = "com.truiton.foregroundservice.action.prev";
-        String PLAY_ACTION = "com.truiton.foregroundservice.action.play";
-        String NEXT_ACTION = "com.truiton.foregroundservice.action.next";
-        String STARTFOREGROUND_ACTION = "com.truiton.foregroundservice.action.startforeground";
-        String STOPFOREGROUND_ACTION = "com.truiton.foregroundservice.action.stopforeground";
+        String MAIN_ACTION = "com.bridgeconn.autographago.action.main";
+        String STARTFOREGROUND_ACTION = "com.bridgeconn.autographago.action.startforeground";
+        String STOPFOREGROUND_ACTION = "com.bridgeconn.autographago.action.stopforeground";
+
+        String PARSING_COMPLETE_ACTION = "com.bridgeconn.autographago.action.parsingdone";
     }
 
     public interface NOTIFICATION_ID {

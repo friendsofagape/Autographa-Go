@@ -2,15 +2,10 @@ package com.bridgeconn.autographago.ui.activities;
 
 import android.Manifest;
 import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -47,9 +42,10 @@ import com.bridgeconn.autographago.ui.adapters.DownloadDialogAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.DownloadUtil;
 import com.bridgeconn.autographago.utils.SharedPrefs;
-import com.bridgeconn.autographago.utils.USFMParser;
-import com.bridgeconn.autographago.utils.UnzipUtil;
 import com.bridgeconn.autographago.utils.UtilFunctions;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -65,6 +61,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private AppCompatSeekBar mSeekBarTextSize;
     private Constants.ReadingMode mReadingMode;
     private Constants.FontSize mFontSize;
+
+    private long lastDownload=-1L;
+    private DownloadManager downloadManager;
+
+    private String languageName, languageCode, versionCode, versionName;
+
+    private static String downloadUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,8 +125,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         }
 
         downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-
-        registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
     @Override
@@ -222,6 +223,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 }
             }
         }
+        if (isFinishing()) {
+            return;
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.DialogThemeLight);
         final View view = LayoutInflater.from(this).inflate(R.layout.dialog_languages, (ViewGroup) findViewById(android.R.id.content), false);
@@ -272,6 +276,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             }
         }
 
+        if (isFinishing()) {
+            return;
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.DialogThemeLight);
         final View view = LayoutInflater.from(this).inflate(R.layout.dialog_languages, (ViewGroup) findViewById(android.R.id.content), false);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_items);
@@ -348,32 +355,15 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        unregisterReceiver(onComplete);
-    }
-
-    private long lastDownload=-1L;
-    private long enqueue;
-    private DownloadManager downloadManager;
-
-    String filePath = "";
-
     public void startDownload(String url) {
         Uri uri=Uri.parse(url);
 
         File root = Environment.getExternalStorageDirectory();
 
+        String dirName = Constants.STORAGE_DIRECTORY + System.currentTimeMillis() + "/";
         if (root.canWrite()) {
-            String backupDBPath = Constants.STORAGE_DIRECTORY + Constants.USFM_ZIP_FILE_NAME;
-            File dir = new File(root, Constants.STORAGE_DIRECTORY);
-            if (dir.mkdir()) {
-            }
-            File f = new File (root, backupDBPath);
-            filePath = f.getAbsolutePath();
-            Log.i(Constants.DUMMY_TAG, "file path in start = " + filePath);
+            File dir = new File(root, dirName);
+            dir.mkdirs();
         }
 
         lastDownload = downloadManager.enqueue(new DownloadManager.Request(uri)
@@ -382,103 +372,19 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 .setAllowedOverRoaming(false)
                 .setTitle("Downloading Bible")
                 .setDescription("Downloading...")
-                .setDestinationInExternalPublicDir(Constants.STORAGE_DIRECTORY, Constants.USFM_ZIP_FILE_NAME)
+                .setDestinationInExternalPublicDir(dirName, Constants.USFM_ZIP_FILE_NAME)
         );
-    }
 
-    private String languageName, languageCode, versionCode, versionName;
-
-    BroadcastReceiver onComplete=new BroadcastReceiver() {
-        public void onReceive(final Context ctxt, Intent intent) {
-
-            DownloadManager.Query query = new DownloadManager.Query();
-            query.setFilterById(intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0));
-            DownloadManager manager = (DownloadManager) ctxt.getSystemService(Context.DOWNLOAD_SERVICE);
-            Cursor cursor = manager.query(query);
-            if (cursor.moveToFirst()) {
-                if (cursor.getCount() > 0) {
-                    int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                        String file = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
-                        Log.i(Constants.DUMMY_TAG, "oncpmpleye : " + file);
-                        // So something here on success
-                        startUnzipping(ctxt);
-                    } else {
-                        int message = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
-                        if (message == DownloadManager.ERROR_INSUFFICIENT_SPACE) {
-                            Toast.makeText(ctxt, getString(R.string.insufficient_storage), Toast.LENGTH_SHORT).show();
-                        }
-                        // So something here on failed.
-                    }
-                }
-            }
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(Constants.PrefKeys.LANGUAGE_NAME, languageName);
+            jsonObject.put(Constants.PrefKeys.LANGUAGE_CODE, languageCode);
+            jsonObject.put(Constants.PrefKeys.VERSION_NAME, versionName);
+            jsonObject.put(Constants.PrefKeys.VERSION_CODE, versionCode);
+            SharedPrefs.putString(Constants.PrefKeys.DOWNLOAD_ID_ + lastDownload, jsonObject.toString());
+        } catch (JSONException je) {
         }
-    };
-
-    private void startUnzipping(final Context context) {
-        UnzipUtil.unzipFile(new File(filePath),
-                context, languageName, versionCode, versionName,
-                new UnzipUtil.FileUnzipCallback() {
-
-                    @Override
-                    public void onSuccess(final File zipFile, String directoryName) {
-
-                        new AsyncTask<Void, Long, Void>() {
-
-                            @Override
-                            protected void onPostExecute(Void aVoid) {
-                                super.onPostExecute(aVoid);
-
-                                Log.i(Constants.DUMMY_TAG, "Parsing DONE");
-                            }
-
-                            @Override
-                            protected Void doInBackground(Void... voids) {
-                                final File zipFile1 = zipFile;
-                                String directory = zipFile1.getParent() + "/";
-                                final File zipDirectory = new File(directory);
-
-                                zipFile1.delete();
-                                if (zipDirectory.exists()) {
-                                    File[] files = zipDirectory.listFiles();
-                                    for (int i = 0; i < files.length; ++i) {
-                                        File file = files[i];
-                                        if (file.isDirectory() || !file.getPath().endsWith(".usfm")) {
-                                            continue;
-                                        } else {
-                                            boolean success;
-                                            USFMParser usfmParser = new USFMParser();
-                                            success = usfmParser.parseUSFMFile(context,
-                                                    file.getAbsolutePath(),
-                                                    false,
-                                                    languageName,
-                                                    languageCode,
-                                                    versionCode);
-
-                                            if (success) {
-                                                // delete that file
-                                                file.delete();
-                                            }
-                                        }
-                                    }
-                                    Log.i(Constants.DUMMY_TAG, "DONE......");
-                                    // TODO refresh lish oof books on main screen
-                                }
-                                zipDirectory.delete();
-
-                                return null;
-                            }
-                        }.execute();
-                    }
-
-                    @Override
-                    public void onFailure() {
-                        Log.i(Constants.DUMMY_TAG, "Unzip Error");
-                    }
-                });
     }
-
-    private static String downloadUrl;
 
     public void getMetaData(final String language, final String version) {
         final DownloadUtil downloadUtil = new DownloadUtil();
@@ -516,13 +422,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                         return;
                                     }
                                     startDownload(downloadUrl);
-
-//                                    Intent startIntent = new Intent(SettingsActivity.this, FileDownloadService.class);
-//                                    startIntent.putExtra(Constants.Keys.LANGUAGE, language);
-//                                    startIntent.putExtra(Constants.Keys.VERSION, version);
-//                                    startIntent.putExtra(Constants.Keys.VERSION_NAME, model.getMetaData().getVersionName());
-//                                    startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
-//                                    startService(startIntent);
                                 }
                             });
                             mInflateLayout.addView(tv);

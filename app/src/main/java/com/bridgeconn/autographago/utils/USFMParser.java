@@ -90,13 +90,13 @@ public class USFMParser {
 //                Log.e(Constants.TAG, "Exception in processing lines. So skipping this file" + e.toString());
 //            }
         } catch (Exception e) {
-            Log.e(Constants.TAG, "Exception in reading file. " + e.toString());
+            Log.e(Constants.DUMMY_TAG, "Exception in reading file. " + e.toString());
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "Exception in closing BufferedReader. " + e.toString());
+                    Log.e(Constants.DUMMY_TAG, "Exception in closing BufferedReader. " + e.toString());
                 }
             }
         }

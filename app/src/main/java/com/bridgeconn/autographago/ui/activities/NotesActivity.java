@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -78,12 +77,6 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
         ArrayList<NotesModel> models = query(new AllSpecifications.AllNotes(languageCode, versionCode), new AllMappers.NotesMapper());
         for (NotesModel model : models) {
             mNotesModels.add(model);
-        }
-        for (int i=0; i<mNotesModels.size(); i++) {
-            Log.i(Constants.DUMMY_TAG, "OPEN == " + mNotesModels.get(i).getTitle());
-            for (int j=0; j<mNotesModels.get(i).getVerseIds().size(); j++) {
-                Log.i(Constants.DUMMY_TAG, mNotesModels.get(i).getVerseIds().get(j).getBookId() + " :: " + mNotesModels.get(i).getVerseIds().get(j).getChapterNumber() + " :: " + mNotesModels.get(i).getVerseIds().get(j).getVerseNumber());
-            }
         }
     }
 

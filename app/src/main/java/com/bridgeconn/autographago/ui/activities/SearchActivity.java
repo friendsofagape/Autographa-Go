@@ -154,6 +154,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 mAdapter.notifyDataSetChanged();
                 if (mShowSearchResultModels.size() == 0) {
                     noResultsFound.setVisibility(View.VISIBLE);
+                } else {
+                    noResultsFound.setVisibility(View.GONE);
                 }
                 break;
             }
@@ -361,6 +363,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             mAdapter.notifyDataSetChanged();
             if (mShowSearchResultModels.size() == 0) {
                 noResultsFound.setVisibility(View.VISIBLE);
+            } else {
+                noResultsFound.setVisibility(View.GONE);
             }
         }
     }

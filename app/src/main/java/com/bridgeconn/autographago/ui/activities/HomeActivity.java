@@ -1,6 +1,9 @@
 package com.bridgeconn.autographago.ui.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
@@ -55,8 +58,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private String languageCode, languageName, versionCode;
     private Realm realm;
-
-    //TODO HANDLE IF NEW VERSION PARSING DONE, THEN UPDATE SPINNER
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +117,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mSpinner.setSelection(spinnerPosition);
 
         getAllBooks();
+
+        registerReceiver(onParsingComplete, new IntentFilter(Constants.ACTION.PARSING_COMPLETE_ACTION));
     }
 
     public int getSelectedSpinnerPosition() {
@@ -135,6 +138,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getCategories() {
+        categoriesList.clear();
         ArrayList<LanguageModel> languageModels = query(new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
         for (LanguageModel languageModel : languageModels) {
             for (VersionModel versionModel : languageModel.getVersionModels()) {
@@ -165,7 +169,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             // do nothing, same element selected again
         } else {
             // save to shared prefs
-            // TODO check if this works, if books are refreshed
             languageCode = spinnerModel.getLanguageCode();
             languageName = spinnerModel.getLanguageName();
             versionCode = spinnerModel.getVersionCode();
@@ -275,6 +278,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         realm.close();
+        unregisterReceiver(onParsingComplete);
     }
+
+
+    private BroadcastReceiver onParsingComplete = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            getCategories();
+        }
+    };
 
 }

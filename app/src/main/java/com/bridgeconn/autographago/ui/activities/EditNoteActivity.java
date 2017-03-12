@@ -13,7 +13,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,8 +26,6 @@ import android.widget.Toast;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.NotesModel;
 import com.bridgeconn.autographago.models.VerseIdModel;
-import com.bridgeconn.autographago.ormutils.AllMappers;
-import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
@@ -39,7 +36,6 @@ import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -137,13 +133,13 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         Intent intent = getIntent();
         NotesModel notesModel = intent.getParcelableExtra(Constants.Keys.NOTES_MODEL);
         if (notesModel != null) {
-                mEtTitle.setText(notesModel.getTitle());
-                mEditor.setText(notesModel.getText());
-                mTimeStamp = notesModel.getTimestamp();
-                for (final VerseIdModel model : notesModel.getVerseIds()) {
-                    mVerseList.add(model);
-                    addNoteButton(model, false);
-                }
+            mEtTitle.setText(notesModel.getTitle());
+            mEditor.setText(notesModel.getText());
+            mTimeStamp = notesModel.getTimestamp();
+            for (final VerseIdModel model : notesModel.getVerseIds()) {
+                mVerseList.add(model);
+                addNoteButton(model, false);
+            }
         } else {
             ArrayList<VerseIdModel> models = intent.getParcelableArrayListExtra(Constants.Keys.VERSE_MODELS);
             if (models != null) {
@@ -326,16 +322,6 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         } else {
             notesModel.setTimestamp(System.currentTimeMillis());
             new AutographaRepository<NotesModel>().add(notesModel);
-        }
-        for (int i=0; i<notesModel.getVerseIds().size(); i++) {
-            Log.i(Constants.DUMMY_TAG, "SAVED == " + notesModel.getVerseIds().get(i).getBookId() + " :: " + notesModel.getVerseIds().get(i).getChapterNumber() + " :: " + notesModel.getVerseIds().get(i).getVerseNumber());
-        }
-
-        List<NotesModel> resultList = new AutographaRepository<NotesModel>().query(new AllSpecifications.NotesById(notesModel.getTimestamp(), languageCode, versionCode), new AllMappers.NotesMapper());
-        for (NotesModel model : resultList) {
-            for (int i=0; i<model.getVerseIds().size(); i++) {
-                Log.i(Constants.DUMMY_TAG, "RESULT == " + model.getVerseIds().get(i).getBookId() + " :: " + model.getVerseIds().get(i).getChapterNumber() + " :: " + model.getVerseIds().get(i).getVerseNumber());
-            }
         }
 
         Toast.makeText(EditNoteActivity.this, getString(R.string.note_saved), Toast.LENGTH_SHORT).show();

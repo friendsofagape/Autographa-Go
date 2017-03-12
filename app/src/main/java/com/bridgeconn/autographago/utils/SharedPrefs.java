@@ -62,4 +62,10 @@ public class SharedPrefs {
         editor.putInt(key, value);
         editor.commit();
     }
+
+    public static void removeKey(String key) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.remove(key);
+        editor.apply();
+    }
 }
