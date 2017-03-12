@@ -93,7 +93,7 @@ public class DownloadService extends Service {
                                 final String versionCode, final String versionName, String filePath) {
 
         UnzipUtil.unzipFile(new File(filePath),
-                context, languageName, versionCode, versionName,
+                context,
                 new UnzipUtil.FileUnzipCallback() {
 
                     @Override
@@ -122,6 +122,7 @@ public class DownloadService extends Service {
                                         if (file.isDirectory() || !file.getPath().endsWith(".usfm")) {
                                             continue;
                                         } else {
+                                            Log.i(Constants.DUMMY_TAG, "now parsing = " + file.getAbsolutePath());
                                             boolean success;
                                             USFMParser usfmParser = new USFMParser();
                                             success = usfmParser.parseUSFMFile(context,
