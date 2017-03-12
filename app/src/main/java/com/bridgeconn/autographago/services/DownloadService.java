@@ -13,12 +13,15 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.bridgeconn.autographago.R;
+import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.ui.activities.HomeActivity;
+import com.bridgeconn.autographago.ui.activities.SearchActivity;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.USFMParser;
 import com.bridgeconn.autographago.utils.UnzipUtil;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class DownloadService extends Service {
 
@@ -73,6 +76,34 @@ public class DownloadService extends Service {
 
             stopForeground(true);
             stopSelf();
+        } else if (intent.getAction().equals(Constants.ACTION.PARSE_ENG_UDB_ACTION)) {
+
+            String languageName = intent.getStringExtra(Constants.Keys.LANGUAGE_NAME);
+            String versionCode = intent.getStringExtra(Constants.Keys.VERSION_CODE);
+
+            Intent notificationIntent = new Intent(this, HomeActivity.class);
+            notificationIntent.setAction(Constants.ACTION.MAIN_ACTION);
+            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                    notificationIntent, 0);
+
+            Bitmap icon = BitmapFactory.decodeResource(getResources(),
+                    R.drawable.ic_file_download_white_24dp);
+
+            Notification notification = new NotificationCompat.Builder(this)
+                    .setContentTitle("Autographa Go")
+                    .setTicker(languageName + " " + versionCode)
+                    .setContentText("Parsing")
+                    .setSmallIcon(R.drawable.ic_file_download_white)
+                    .setLargeIcon(
+                            Bitmap.createScaledBitmap(icon, 128, 128, false))
+                    .setContentIntent(pendingIntent)
+                    .setOngoing(true).build();
+            startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE,
+                    notification);
+
+            parseEngUdb(this);
         }
         return START_STICKY;
     }
@@ -89,7 +120,31 @@ public class DownloadService extends Service {
         return null;
     }
 
-    private void startUnzipping(final Context context, final String languageName, final String languageCode,
+    private void parseEngUdb(Context context) {
+        new Parse().execute();
+    }
+
+    private class Parse extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            for (int i = 0; i<Constants.UsfmFileNames.length; i++) {
+                USFMParser usfmParser = new USFMParser();
+                usfmParser.parseUSFMFile(DownloadService.this, "english_udb/"+Constants.UsfmFileNames[i], true, "English", "ENG", Constants.VersionCodes.UDB);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Intent startIntent = new Intent(DownloadService.this, DownloadService.class);
+            startIntent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
+            startService(startIntent);
+        }
+    }
+
+        private void startUnzipping(final Context context, final String languageName, final String languageCode,
                                 final String versionCode, final String versionName, String filePath) {
 
         UnzipUtil.unzipFile(new File(filePath),

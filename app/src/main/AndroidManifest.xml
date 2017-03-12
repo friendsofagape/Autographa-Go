@@ -39,7 +39,10 @@
         <activity android:name=".ui.activities.SearchActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".ui.activities.MenuActivity"
+        <activity android:name=".ui.activities.BookmarkActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".ui.activities.HighlightActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity android:name=".ui.activities.NotesActivity"
@@ -60,11 +63,6 @@
         <receiver android:name=".receivers.NotificationReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
-                <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
-
-                <action android:name="com.bridgeconn.autographago.action.main" />
-                <action android:name="com.bridgeconn.autographago.action.startforeground" />
-                <action android:name="com.bridgeconn.autographago.action.stopforeground" />
             </intent-filter>
         </receiver>
 

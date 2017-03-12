@@ -47,10 +47,10 @@ public class DownloadDialogAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         RecyclerView.ViewHolder viewHolder = null;
         if (viewType == ViewTypes.LANGUAGE) {
             viewHolder = new DownloadLanguageViewHolder(mLayoutInflater.inflate
-                    (R.layout.item_book_fragment, parent, false), mContext, mLanguages, mDialog);
+                    (R.layout.item_dialog, parent, false), mContext, mLanguages, mDialog);
         } else if (viewType == ViewTypes.VERSION) {
             viewHolder = new DownloadVersionViewHolder(mLayoutInflater.inflate
-                    (R.layout.item_book_fragment, parent, false), mContext, mVersions, mDialog, mLanguage);
+                    (R.layout.item_dialog, parent, false), mContext, mVersions, mDialog, mLanguage);
         }
         return viewHolder;
     }

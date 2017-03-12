@@ -25,6 +25,7 @@ import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
+import com.bridgeconn.autographago.services.DownloadService;
 import com.bridgeconn.autographago.ui.adapters.BookAdapter;
 import com.bridgeconn.autographago.ui.adapters.SpinnerAdapter;
 import com.bridgeconn.autographago.utils.Constants;
@@ -45,7 +46,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mToolbarTitle;
     private ImageView mContinueRead;
     private ImageView mNotesView;
-    private ImageView mMenuView;
+    private ImageView mBookmarkView;
+    private ImageView mHighlightView;
     private ImageView mSearchView;
     private ImageView mHistoryView;
     private ImageView mSettingsView;
@@ -82,7 +84,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mToolbarTitle = (TextView) findViewById(R.id.toolbar_title);
         mContinueRead = (ImageView) findViewById(R.id.iv_continue_reading);
         mNotesView = (ImageView) findViewById(R.id.iv_notes);
-        mMenuView = (ImageView) findViewById(R.id.iv_menu);
+        mBookmarkView = (ImageView) findViewById(R.id.iv_bookmark);
+        mHighlightView = (ImageView) findViewById(R.id.iv_highlight);
         mSearchView = (ImageView) findViewById(R.id.iv_search);
         mHistoryView = (ImageView) findViewById(R.id.iv_history);
         mSettingsView = (ImageView) findViewById(R.id.iv_settings);
@@ -98,7 +101,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mToolbarTitle.setOnClickListener(this);
         mContinueRead.setOnClickListener(this);
         mNotesView.setOnClickListener(this);
-        mMenuView.setOnClickListener(this);
+        mBookmarkView.setOnClickListener(this);
+        mHighlightView.setOnClickListener(this);
         mSearchView.setOnClickListener(this);
         mHistoryView.setOnClickListener(this);
         mSettingsView.setOnClickListener(this);
@@ -119,6 +123,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getAllBooks();
 
         registerReceiver(onParsingComplete, new IntentFilter(Constants.ACTION.PARSING_COMPLETE_ACTION));
+
+        if (getIntent().getBooleanExtra(Constants.Keys.START_SERVICE, false)) {
+            Intent startIntent = new Intent(this, DownloadService.class);
+            startIntent.setAction(Constants.ACTION.PARSE_ENG_UDB_ACTION);
+            startIntent.putExtra(Constants.Keys.LANGUAGE_NAME, "English");
+            startIntent.putExtra(Constants.Keys.VERSION_CODE, Constants.VersionCodes.UDB);
+            startService(startIntent);
+        }
     }
 
     public int getSelectedSpinnerPosition() {
@@ -232,8 +244,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(notesIntent);
                 break;
             }
-            case R.id.iv_menu: {
-                Intent menuIntent = new Intent(this, MenuActivity.class);
+            case R.id.iv_bookmark: {
+                Intent menuIntent = new Intent(this, BookmarkActivity.class);
+                startActivity(menuIntent);
+                break;
+            }
+            case R.id.iv_highlight: {
+                Intent menuIntent = new Intent(this, HighlightActivity.class);
                 startActivity(menuIntent);
                 break;
             }

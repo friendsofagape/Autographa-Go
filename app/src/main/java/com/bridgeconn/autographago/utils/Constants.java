@@ -167,6 +167,7 @@ public class Constants {
         String VERSION_CODE = "version_code";
         String VERSION_NAME = "version_name";
         String FILE_PATH = "file_path";
+        String START_SERVICE = "start_service";
     }
 
     public interface RequestCodes {
@@ -246,6 +247,7 @@ public class Constants {
         String MAIN_ACTION = "com.bridgeconn.autographago.action.main";
         String STARTFOREGROUND_ACTION = "com.bridgeconn.autographago.action.startforeground";
         String STOPFOREGROUND_ACTION = "com.bridgeconn.autographago.action.stopforeground";
+        String PARSE_ENG_UDB_ACTION = "com.bridgeconn.autographago.action.parseengudb";
 
         String PARSING_COMPLETE_ACTION = "com.bridgeconn.autographago.action.parsingdone";
     }

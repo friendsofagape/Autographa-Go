@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.ui.activities.BookActivity;
-import com.bridgeconn.autographago.ui.activities.MenuActivity;
+import com.bridgeconn.autographago.ui.activities.BookmarkActivity;
 import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class BookmarkItemViewHolder extends RecyclerView.ViewHolder implements V
             }
             case R.id.delete: {
                 int position = (int) v.getTag();
-                ((MenuActivity) mContext).refreshBookMarkList(position);
+                ((BookmarkActivity) mContext).refreshBookMarkList(position);
                 break;
             }
         }

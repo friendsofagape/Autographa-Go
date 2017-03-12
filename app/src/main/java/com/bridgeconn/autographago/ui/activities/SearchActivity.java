@@ -54,6 +54,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private String languageCode, versionCode;
     private Realm realm;
     private RadioGroup sectionGroupView;
+    private TextView numOfResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +82,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         mIvClose = (ImageView) findViewById(R.id.iv_close);
         mRecyclerView = (RecyclerView) findViewById(R.id.list_results);
         sectionGroupView = (RadioGroup) findViewById(R.id.section_group);
+        numOfResults = (TextView) findViewById(R.id.numResults);
 
         sectionGroupView.setOnCheckedChangeListener(this);
 
@@ -157,6 +159,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 } else {
                     noResultsFound.setVisibility(View.GONE);
                 }
+                numOfResults.setVisibility(View.VISIBLE);
+                numOfResults.setText(mShowSearchResultModels.size() + " search results found");
                 break;
             }
         }
@@ -315,6 +319,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
             noResultsFound.setVisibility(View.GONE);
             sectionGroupView.setVisibility(View.GONE);
+            numOfResults.setVisibility(View.GONE);
             mSearchResultModels.clear();
             mShowSearchResultModels.clear();
             mAdapter.notifyDataSetChanged();
@@ -366,6 +371,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             } else {
                 noResultsFound.setVisibility(View.GONE);
             }
+            numOfResults.setVisibility(View.VISIBLE);
+            numOfResults.setText(mShowSearchResultModels.size() + " search results found");
         }
     }
 

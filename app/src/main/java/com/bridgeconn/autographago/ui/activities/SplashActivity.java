@@ -3,6 +3,7 @@ package com.bridgeconn.autographago.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.models.VersionModel;
@@ -11,6 +12,7 @@ import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
+import com.bridgeconn.autographago.services.DownloadService;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.USFMParser;
@@ -35,7 +37,7 @@ public class SplashActivity extends AppCompatActivity {
 
         realm = Realm.getDefaultInstance();
 
-        boolean addToDB = true;
+        boolean addToDB = true, startService = true;
         ArrayList<LanguageModel> resultsList = query(new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
         for (LanguageModel languageModel : resultsList) {
             if (languageModel.getLanguageName().equals("English")) {
@@ -44,6 +46,11 @@ public class SplashActivity extends AppCompatActivity {
                         if (versionModel.getBookModels().size() == 66) {
                             // all books of this version and languages already in db
                             addToDB = false;
+                        }
+                    } else if (versionModel.getVersionCode().equals(Constants.VersionCodes.UDB)) {
+                        if (versionModel.getBookModels().size() == 66) {
+                            // all books of this version and languages already in db
+                            startService = false;
                         }
                     }
                 }
@@ -55,11 +62,14 @@ public class SplashActivity extends AppCompatActivity {
                 USFMParser usfmParser = new USFMParser();
                 usfmParser.parseUSFMFile(this, "english_ulb/" + Constants.UsfmFileNames[i], true, "English", "ENG", Constants.VersionCodes.ULB);
             }
+        }
 
-//        for (int i = 0; i<Constants.UsfmFileNames.length; i++) {
-//            USFMParser usfmParser = new USFMParser();
-//            usfmParser.parseUSFMFile(this, "english_udb/"+Constants.UsfmFileNames[i], true, "English", "ENG", Constants.VersionCodes.UDB, Constants.VersionNames.UDB);
-//        }
+        if (startService) {
+            Intent startIntent = new Intent(this, DownloadService.class);
+            startIntent.setAction(Constants.ACTION.PARSE_ENG_UDB_ACTION);
+            startIntent.putExtra(Constants.Keys.LANGUAGE_NAME, "English");
+            startIntent.putExtra(Constants.Keys.VERSION_CODE, Constants.VersionCodes.UDB);
+            startService(startIntent);
         }
 
         languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
@@ -68,6 +78,7 @@ public class SplashActivity extends AppCompatActivity {
         new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
 
         Intent intent = new Intent(this, HomeActivity.class);
+        intent.putExtra(Constants.Keys.START_SERVICE, startService);
         startActivity(intent);
 
         finish();

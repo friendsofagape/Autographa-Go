@@ -18,6 +18,8 @@ import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.style.BackgroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -227,7 +229,23 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             return;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.DialogThemeLight);
+        if (languages.size() == 0) {
+            Toast.makeText(this, "No new languages available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AlertDialog.Builder builder = null;
+        switch (SharedPrefs.getReadingMode()) {
+            case Day: {
+                builder = new AlertDialog.Builder(this, R.style.DialogThemeLight);
+                break;
+            }
+            case Night: {
+                builder = new AlertDialog.Builder(this, R.style.DialogThemeDark);
+                break;
+            }
+        }
+
         final View view = LayoutInflater.from(this).inflate(R.layout.dialog_languages, (ViewGroup) findViewById(android.R.id.content), false);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_items);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -279,7 +297,24 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         if (isFinishing()) {
             return;
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.DialogThemeLight);
+
+        if (versions.size() == 0) {
+            Toast.makeText(this, "No new versions available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AlertDialog.Builder builder = null;
+        switch (SharedPrefs.getReadingMode()) {
+            case Day: {
+                builder = new AlertDialog.Builder(this, R.style.DialogThemeLight);
+                break;
+            }
+            case Night: {
+                builder = new AlertDialog.Builder(this, R.style.DialogThemeDark);
+                break;
+            }
+        }
+
         final View view = LayoutInflater.from(this).inflate(R.layout.dialog_languages, (ViewGroup) findViewById(android.R.id.content), false);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_items);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -424,7 +459,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                     startDownload(downloadUrl);
                                 }
                             });
-                            mInflateLayout.addView(tv);
+//                            mInflateLayout.addView(tv);
                             mInflateLayout.addView(button);
                         }
                     }

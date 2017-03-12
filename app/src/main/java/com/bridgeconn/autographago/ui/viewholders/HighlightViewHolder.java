@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.ui.activities.BookActivity;
-import com.bridgeconn.autographago.ui.activities.MenuActivity;
+import com.bridgeconn.autographago.ui.activities.HighlightActivity;
 import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class HighlightViewHolder extends RecyclerView.ViewHolder implements View
             }
             case R.id.delete: {
                 int position = (int) v.getTag();
-                ((MenuActivity) mContext).refreshHighlightList(position);
+                ((HighlightActivity) mContext).refreshHighlightList(position);
                 break;
             }
         }

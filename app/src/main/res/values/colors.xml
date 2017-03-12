@@ -13,4 +13,6 @@
 
     <color name="yellow">#FFFFFF00</color>
 
+    <color name="black_splash">#020202</color>
+
 </resources>

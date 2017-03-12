@@ -13,8 +13,6 @@
         android:layout_height="wrap_content"
         android:textSize="?attr/title_text"
         android:maxLines="1"
-        android:background="@drawable/number_background"
-        android:textColor="@color/black"
         android:ellipsize="end"/>
 
 </LinearLayout>

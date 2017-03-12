@@ -10,7 +10,6 @@
         android:textStyle="bold"
         android:textSize="?attr/heading_2"
         android:padding="@dimen/activity_horizontal_margin"
-        android:background="@color/black_20"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

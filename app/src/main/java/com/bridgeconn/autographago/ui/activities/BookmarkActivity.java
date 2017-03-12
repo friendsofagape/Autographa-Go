@@ -13,38 +13,27 @@ import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
-import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.adapters.BookmarkAdapter;
-import com.bridgeconn.autographago.ui.adapters.HighlightAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class MenuActivity extends AppCompatActivity {
+public class BookmarkActivity extends AppCompatActivity {
 
-    private TextView mTvHighlights;
-    private RecyclerView mRecyclerViewHighlights;
-    private TextView mTvBookmarks;
+    private TextView mToolBarTitle;
     private RecyclerView mRecyclerViewBookmarks;
-
     private BookmarkAdapter mBookmarkAdapter;
-    private HighlightAdapter mHighlightAdapter;
-
     private ArrayList<BookIdModel> mBookmarkModels = new ArrayList<>();
-    private  ArrayList<VerseIdModel> mHighlightModels = new ArrayList<>();
-    private String languageCode, versionCode;
     private Realm realm;
 
     @Override
@@ -57,9 +46,6 @@ public class MenuActivity extends AppCompatActivity {
 
         realm = Realm.getDefaultInstance();
 
-        languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
-        versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
         toolbar.setContentInsetStartWithNavigation(0);
@@ -69,11 +55,11 @@ public class MenuActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
-        mTvHighlights = (TextView) findViewById(R.id.tv_highlights);
-        mTvBookmarks = (TextView) findViewById(R.id.tv_bookmarks);
+        mToolBarTitle = (TextView) findViewById(R.id.toolbar_title);
+        getSupportActionBar().setTitle("");
+        mToolBarTitle.setText("Bookmarks");
 
-        mRecyclerViewHighlights = (RecyclerView) findViewById(R.id.list_highlights);
-        mRecyclerViewBookmarks = (RecyclerView) findViewById(R.id.list_bookmarks);
+        mRecyclerViewBookmarks = (RecyclerView) findViewById(R.id.list_menu);
 
         mRecyclerViewBookmarks.setHasFixedSize(true);
         mRecyclerViewBookmarks.setLayoutManager(new LinearLayoutManager(this));
@@ -81,13 +67,6 @@ public class MenuActivity extends AppCompatActivity {
         mRecyclerViewBookmarks.setAdapter(mBookmarkAdapter);
 
         getBookmarks();
-
-        mRecyclerViewHighlights.setHasFixedSize(true);
-        mRecyclerViewHighlights.setLayoutManager(new LinearLayoutManager(this));
-        mHighlightAdapter = new HighlightAdapter(this, mHighlightModels);
-        mRecyclerViewHighlights.setAdapter(mHighlightAdapter);
-
-        getHighlights();
     }
 
     private void getBookmarks() {
@@ -106,30 +85,6 @@ public class MenuActivity extends AppCompatActivity {
             }
         }
         mBookmarkAdapter.notifyDataSetChanged();
-    }
-
-    private void getHighlights() {
-        List<BookModel> bookModels = query(
-                new AllSpecifications.BooksByLanguageAndVersion(languageCode, versionCode), new AllMappers.BookMapper());
-        HashSet<VerseIdModel> verseIdModelHashSet = new HashSet<>();
-        for (BookModel bookModel : bookModels) {
-            for (ChapterModel chapterModel : bookModel.getChapterModels()) {
-                for (VerseComponentsModel verseComponentsModel : chapterModel.getVerseComponentsModels()) {
-                    if (verseComponentsModel.isHighlighted()) {
-                        VerseIdModel verseIdModel = new VerseIdModel();
-                        verseIdModel.setBookId(bookModel.getBookId());
-                        verseIdModel.setBookName(bookModel.getBookName());
-                        verseIdModel.setChapterNumber(chapterModel.getChapterNumber());
-                        verseIdModel.setVerseNumber(verseComponentsModel.getVerseNumber());
-                        verseIdModelHashSet.add(verseIdModel);
-                    }
-                }
-            }
-        }
-        for (VerseIdModel model : verseIdModelHashSet) {
-            mHighlightModels.add(model);
-        }
-        mHighlightAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -156,35 +111,6 @@ public class MenuActivity extends AppCompatActivity {
         mBookmarkModels.remove(position);
         mBookmarkAdapter.notifyItemRemoved(position);
         mBookmarkAdapter.notifyItemRangeChanged(position, mBookmarkModels.size(), null);
-    }
-
-    public void refreshHighlightList(int position) {
-
-        VerseIdModel model = mHighlightModels.get(position);
-        String bookId = model.getBookId();
-        String chapterId = model.getBookId() + "_" + model.getChapterNumber();
-        String verseNumber = model.getVerseNumber();
-
-        mHighlightModels.remove(position);
-        mHighlightAdapter.notifyItemRemoved(position);
-        mHighlightAdapter.notifyItemRangeChanged(position, mHighlightModels.size(), null);
-
-        BookModel bookModel = null;
-        bookModel = getBookModel(bookId);
-
-        if (bookModel != null) {
-            for (ChapterModel cModel : bookModel.getChapterModels()) {
-                if (cModel.getChapterId().equals(languageCode + "_" + versionCode + "_" + chapterId)) {
-                    for (VerseComponentsModel vModel : cModel.getVerseComponentsModels()) {
-                        if (vModel.getVerseNumber().equals(verseNumber)) {
-                            vModel.setHighlighted(false);
-                        }
-                    }
-                    break;
-                }
-            }
-            new AutographaRepository<BookModel>().update(bookModel);
-        }
     }
 
     private BookModel getBookModel(String bookId) {
