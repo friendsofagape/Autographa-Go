@@ -25,7 +25,7 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
     private BookModel mBookModel;
     private String mBookId;
     private ArrayList<BookIdModel> mBookModelArrayList = new ArrayList<>();
-    private boolean mOpenBook;
+    private boolean mOpenBook, mSelectVerse;
 
     @Override
     public void onItemClick(int number, String bookId) {
@@ -39,6 +39,7 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
         super.onCreate(savedInstanceState);
 
         mOpenBook = getArguments().getBoolean(Constants.Keys.OPEN_BOOK);
+        mSelectVerse = getArguments().getBoolean(Constants.Keys.SELECT_VERSE_FOR_NOTE);
 
         for (BookIdModel bookModel : Constants.CONTAINER_BOOKS_LIST) {
             mBookModelArrayList.add(bookModel);
@@ -56,7 +57,7 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list_books);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mAdapter = new NumberAdapter(this, null, mBookModelArrayList, null, 0, mBookId, mOpenBook);
+        mAdapter = new NumberAdapter(this, null, mBookModelArrayList, null, 0, mBookId, mOpenBook, mSelectVerse);
         mRecyclerView.setAdapter(mAdapter);
 
         return view;

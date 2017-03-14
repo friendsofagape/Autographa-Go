@@ -30,7 +30,7 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
     private TabLayoutHelper mTabLayoutHelper;
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
-    private boolean mOpenBook = true;
+    private boolean mOpenBook, mSelectVerse;
 
     public interface OnItemClickListener {
         void onItemClick(int position, String bookId);
@@ -61,8 +61,9 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
 
         if (intent.getBooleanExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, false)) {
             Tabs.add(Constants.Tabs.BOOK);
-            mOpenBook = false;
         }
+        mSelectVerse = intent.getBooleanExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, false);
+        mOpenBook = intent.getBooleanExtra(Constants.Keys.OPEN_BOOK, false);
 
         Tabs.add(Constants.Tabs.CHAPTER);
         Tabs.add(Constants.Tabs.VERSE);
@@ -80,7 +81,7 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle(getString(R.string.title_books));
             }
 
-            mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), Tabs, bookId, mOpenBook);
+            mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), Tabs, bookId, mOpenBook, mSelectVerse);
             mViewPager.setAdapter(mAdapter);
 
             mTabLayoutHelper = new TabLayoutHelper(mTabLayout, mViewPager);
@@ -139,18 +140,21 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
         private ArrayList<String> TabsList;
         private String mBookId;
         private boolean mOpenBook;
+        private boolean mSelectVerse;
 
-        public ViewPagerAdapter(FragmentManager fragmentManager, ArrayList<String> tabs, String bookId, boolean openBook) {
+        public ViewPagerAdapter(FragmentManager fragmentManager, ArrayList<String> tabs, String bookId, boolean openBook, boolean selectVerse) {
             super(fragmentManager);
             TabsList = tabs;
             mBookId = bookId;
             mOpenBook = openBook;
+            mSelectVerse = selectVerse;
         }
 
         @Override
         public Fragment getItem(int position) {
             Bundle bundle = new Bundle();
             bundle.putBoolean(Constants.Keys.OPEN_BOOK, mOpenBook);
+            bundle.putBoolean(Constants.Keys.SELECT_VERSE_FOR_NOTE, mSelectVerse);
             if (getPageTitle(position).equals(Constants.Tabs.BOOK)) {
                 bookFragment = new BookFragment();
                 bookFragment.setArguments(bundle);

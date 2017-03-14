@@ -175,6 +175,7 @@ public class Constants {
         int SETTINGS = 1;
         int PERMISSION_STORAGE = 2;
         int APP_SETTINGS_STORAGE = 3;
+        int CHANGE_BOOK = 4;
     }
 
     public interface PrefKeys {

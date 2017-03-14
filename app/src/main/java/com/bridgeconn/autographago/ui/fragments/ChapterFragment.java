@@ -33,7 +33,7 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
     private BookModel mBookModel;
     private ArrayList<ChapterModel> mChapterModels = new ArrayList<>();
     private String mBookId;
-    private boolean mOpenBook;
+    private boolean mOpenBook, mSelectVerse;
     private Realm realm;
 
     @Override
@@ -55,6 +55,7 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
 
         mBookId = getArguments().getString(Constants.Keys.BOOK_ID);
         mOpenBook = getArguments().getBoolean(Constants.Keys.OPEN_BOOK);
+        mSelectVerse = getArguments().getBoolean(Constants.Keys.SELECT_VERSE_FOR_NOTE);
 
         realm = Realm.getDefaultInstance();
 
@@ -133,7 +134,7 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
         });
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
-        mAdapter = new NumberAdapter(this, mChapterModels, null, null, 0, mBookId, mOpenBook);
+        mAdapter = new NumberAdapter(this, mChapterModels, null, null, 0, mBookId, mOpenBook, mSelectVerse);
         mRecyclerView.setAdapter(mAdapter);
 
         return view;

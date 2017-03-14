@@ -26,6 +26,7 @@ public class NumberAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private int mChapterNumber;
     private String mBookId;
     private boolean mOpenBook;
+    private boolean mSelectVerse;
 
     private interface ViewTypes {
         int BOOK = 0;
@@ -33,7 +34,7 @@ public class NumberAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         int VERSE = 2;
     }
 
-    public NumberAdapter(Fragment fragment, ArrayList<ChapterModel> chapterModels, ArrayList<BookIdModel> bookModelArrayList, ArrayList<VerseComponentsModel> verseComponentsModels, int chapterNumber, String bookId, boolean openBook) {
+    public NumberAdapter(Fragment fragment, ArrayList<ChapterModel> chapterModels, ArrayList<BookIdModel> bookModelArrayList, ArrayList<VerseComponentsModel> verseComponentsModels, int chapterNumber, String bookId, boolean openBook, boolean selectVerse) {
         mFragment = fragment;
         mLayoutInflater = LayoutInflater.from(mFragment.getContext());
         mChapterModels = chapterModels;
@@ -42,6 +43,7 @@ public class NumberAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         mChapterNumber = chapterNumber;
         mBookId = bookId;
         mOpenBook = openBook;
+        mSelectVerse = selectVerse;
     }
 
     @Override
@@ -66,7 +68,7 @@ public class NumberAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     R.layout.item_grid_chapter_verse, parent, false), mFragment, mChapterModels, mBookId);
         } else if (viewType == ViewTypes.VERSE) {
             viewHolder = new VerseNumberViewHolder(mLayoutInflater.inflate(
-                    R.layout.item_grid_chapter_verse, parent, false), mFragment, mVerseComponentsModels, mChapterNumber, mBookId, mOpenBook);
+                    R.layout.item_grid_chapter_verse, parent, false), mFragment, mVerseComponentsModels, mChapterNumber, mBookId, mOpenBook, mSelectVerse);
         }
         return viewHolder;
     }

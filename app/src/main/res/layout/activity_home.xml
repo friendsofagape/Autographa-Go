@@ -77,58 +77,59 @@
 
                     <ImageView
                         android:id="@+id/iv_continue_reading"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/menu_item_margin"
+                        android:layout_width="?attr/button_dimen"
+                        android:layout_height="?attr/button_dimen"
                         android:tint="@color/white"
+                        android:layout_marginTop="@dimen/activity_horizontal_margin"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
                         android:src="@drawable/ic_local_library_white" />
 
                     <ImageView
                         android:id="@+id/iv_history"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/menu_item_margin"
+                        android:layout_width="?attr/button_dimen"
+                        android:layout_height="?attr/button_dimen"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
                         android:tint="@color/white"
                         android:src="@drawable/ic_history_white" />
 
                     <ImageView
                         android:id="@+id/iv_search"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/menu_item_margin"
+                        android:layout_width="?attr/button_dimen"
+                        android:layout_height="?attr/button_dimen"
                         android:tint="@color/white"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
                         android:src="@drawable/ic_search_white" />
 
                     <ImageView
                         android:id="@+id/iv_notes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/menu_item_margin"
+                        android:layout_width="?attr/button_dimen"
+                        android:layout_height="?attr/button_dimen"
                         android:tint="@color/white"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
                         android:src="@drawable/ic_note_white" />
 
                     <ImageView
                         android:id="@+id/iv_bookmark"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/menu_item_margin"
+                        android:layout_width="?attr/button_dimen"
+                        android:layout_height="?attr/button_dimen"
                         android:tint="@color/white"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
                         android:src="@drawable/ic_bookmark_white" />
 
                     <ImageView
                         android:id="@+id/iv_highlight"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/menu_item_margin"
+                        android:layout_width="?attr/button_dimen"
+                        android:layout_height="?attr/button_dimen"
                         android:tint="@color/white"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
                         android:src="@drawable/ic_border_color_white" />
 
                     <ImageView
                         android:id="@+id/iv_settings"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/menu_item_margin"
+                        android:layout_width="?attr/button_dimen"
+                        android:layout_height="?attr/button_dimen"
                         android:tint="@color/white"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
                         android:src="@drawable/ic_settings_white" />
 
                 </LinearLayout>

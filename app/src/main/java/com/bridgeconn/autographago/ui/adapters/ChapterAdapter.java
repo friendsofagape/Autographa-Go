@@ -17,8 +17,6 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Activity mContext;
     private LayoutInflater mLayoutInflater;
     private ArrayList<ChapterModel> mChapterModels;
-    private String mVerseNumber;
-    private int mChapterPosition;
     private Constants.FontSize mFontSize;
 
     private interface ViewTypes {
@@ -26,12 +24,10 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         int DUMMY = 1;
     }
 
-    public ChapterAdapter(Activity context, ArrayList<ChapterModel> chapterModels, String verseNumber, int chapterPosition, Constants.FontSize fontSize) {
+    public ChapterAdapter(Activity context, ArrayList<ChapterModel> chapterModels, Constants.FontSize fontSize) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         mChapterModels = chapterModels;
-        mVerseNumber = verseNumber;
-        mChapterPosition = chapterPosition;
         mFontSize = fontSize;
     }
 

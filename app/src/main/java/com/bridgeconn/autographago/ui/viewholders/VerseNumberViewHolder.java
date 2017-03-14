@@ -28,8 +28,9 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
     private int mChapterNumber;
     private String mBookId;
     private boolean mOpenBook;
+    private boolean mSelectVerse;
 
-    public VerseNumberViewHolder(View itemView, Fragment fragment, ArrayList<VerseComponentsModel> verseComponentsModels, int chapterNumber, String bookId, boolean openBook) {
+    public VerseNumberViewHolder(View itemView, Fragment fragment, ArrayList<VerseComponentsModel> verseComponentsModels, int chapterNumber, String bookId, boolean openBook, boolean selectVerse) {
         super(itemView);
         mTvVerseNumber = (TextView) itemView.findViewById(R.id.tv_number);
 
@@ -38,6 +39,7 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
         mBookId = bookId;
         mVerseComponentsModels = verseComponentsModels;
         mOpenBook = openBook;
+        mSelectVerse = selectVerse;
     }
 
     public void onBind(int position) {
@@ -52,13 +54,35 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
             case R.id.tv_number: {
                 int position = (int) v.getTag();
                 String verseNumber = mVerseComponentsModels.get(position).getVerseNumber();
+                if (mSelectVerse) {
+                    if (mOpenBook) {
+                        SearchModel model = new SearchModel();
+                        model.setVerseNumber(verseNumber);
+                        model.setChapterNumber(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
+                        model.setLanguageCode(mVerseComponentsModels.get(position).getLanguageCode());
+                        model.setVersionCode(mVerseComponentsModels.get(position).getVersionCode());
+                        model.setBookId(mBookId);
+                        model.setBookName(UtilFunctions.getBookNameFromMapping(mFragment.getContext(), mBookId));
+                        model.setSection(UtilFunctions.getBookSectionFromMapping(mFragment.getContext(), mBookId));
+                        model.setTimeStamp(System.currentTimeMillis());
+                        model.setSearchId(mBookId + "_" + model.getChapterNumber() + "_" + verseNumber);
+                        new AutographaRepository<SearchModel>().add(model);
+                    }
+                    VerseIdModel model = new VerseIdModel();
+                    model.setVerseNumber(verseNumber);
+                    model.setChapterNumber(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
+                    model.setBookId(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedBook());
+                    model.setBookName(UtilFunctions.getBookNameFromMapping(mFragment.getContext(), ((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedBook()));
 
-                if (mOpenBook) {
+                    Intent output = new Intent();
+                    output.putExtra(Constants.Keys.VERSE_NOTE_MODEL, model);
 
+                    mFragment.getActivity().setResult(RESULT_OK, output);
+                    mFragment.getActivity().finish();
+                } else {
                     SearchModel model = new SearchModel();
                     model.setVerseNumber(verseNumber);
                     model.setChapterNumber(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
-
                     model.setLanguageCode(mVerseComponentsModels.get(position).getLanguageCode());
                     model.setVersionCode(mVerseComponentsModels.get(position).getVersionCode());
                     model.setBookId(mBookId);
@@ -66,7 +90,6 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
                     model.setSection(UtilFunctions.getBookSectionFromMapping(mFragment.getContext(), mBookId));
                     model.setTimeStamp(System.currentTimeMillis());
                     model.setSearchId(mBookId + "_" + model.getChapterNumber() + "_" + verseNumber);
-
                     new AutographaRepository<SearchModel>().add(model);
 
                     Intent intent = new Intent(mFragment.getContext(), BookActivity.class);
@@ -75,19 +98,6 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
                     intent.putExtra(Constants.Keys.VERSE_NO, verseNumber);
                     mFragment.startActivity(intent);
 
-                } else {
-
-                    VerseIdModel model = new VerseIdModel();
-                    model.setVerseNumber(verseNumber);
-                    model.setChapterNumber(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
-
-                    model.setBookId(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedBook());
-                    model.setBookName(UtilFunctions.getBookNameFromMapping(mFragment.getContext(), ((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedBook()));
-
-                    Intent output = new Intent();
-                    output.putExtra(Constants.Keys.VERSE_NOTE_MODEL, model);
-
-                    mFragment.getActivity().setResult(RESULT_OK, output);
                     mFragment.getActivity().finish();
                 }
                 break;

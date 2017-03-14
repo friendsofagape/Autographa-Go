@@ -18,8 +18,6 @@ import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Spannable;
-import android.text.style.BackgroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -133,6 +131,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (fromUser) {
             mFontSize = getFontSizeEnum(progress);
+            SharedPrefs.putFontSize(mFontSize);
         }
     }
 
@@ -197,12 +196,16 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 mReadingMode = Constants.ReadingMode.Day;
                 mDayMode.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
                 mNightMode.setColorFilter(ContextCompat.getColor(this, R.color.black_40));
+                SharedPrefs.putReadingMode(mReadingMode);
+                recreate();
                 break;
             }
             case R.id.iv_night_mode: {
                 mReadingMode = Constants.ReadingMode.Night;
                 mDayMode.setColorFilter(ContextCompat.getColor(this, R.color.black_40));
                 mNightMode.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
+                SharedPrefs.putReadingMode(mReadingMode);
+                recreate();
                 break;
             }
             case R.id.tv_about_us: {
@@ -554,18 +557,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     private void saveToSharedPrefs() {
         Intent output = new Intent();
-        if (SharedPrefs.getFontSize().equals(mFontSize)) {
-            output.putExtra(Constants.Keys.TEXT_SIZE_CHANGED, false);
-        } else {
-            SharedPrefs.putFontSize(mFontSize);
-            output.putExtra(Constants.Keys.TEXT_SIZE_CHANGED, true);
-        }
-        if (SharedPrefs.getReadingMode().equals(mReadingMode)) {
-            output.putExtra(Constants.Keys.READING_MODE_CHANGE, false);
-        } else {
-            SharedPrefs.putReadingMode(mReadingMode);
-            output.putExtra(Constants.Keys.READING_MODE_CHANGE, true);
-        }
+        output.putExtra(Constants.Keys.TEXT_SIZE_CHANGED, true);
+        output.putExtra(Constants.Keys.READING_MODE_CHANGE, true);
         setResult(RESULT_OK, output);
         finish();
     }

@@ -13,6 +13,19 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="dummy_item_height">64dp</dimen>
 
+    <dimen name="button_xs">12dp</dimen>
+    <dimen name="button_s">18dp</dimen>
+    <dimen name="button_m">24dp</dimen>
+    <dimen name="button_l">36dp</dimen>
+    <dimen name="button_xl">48dp</dimen>
+
+    <dimen name="button_padding_xs">0dp</dimen>
+    <dimen name="button_padding_s">2dp</dimen>
+    <dimen name="button_padding_m">4dp</dimen>
+    <dimen name="button_padding_l">6dp</dimen>
+    <dimen name="button_padding_xl">8dp</dimen>
+
+
     <!-- text dimensions -->
     <!--<dimen name="body">14sp</dimen>-->
     <!--<dimen name="heading_1">20sp</dimen>-->

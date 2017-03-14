@@ -57,10 +57,10 @@
             android:layout_alignParentRight="true"
             android:src="@drawable/ic_brightness_high_white"
             android:tint="@color/black_40"
-            android:layout_width="wrap_content"
+            android:layout_width="?attr/button_dimen"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="@dimen/activity_horizontal_margin"
-            android:layout_height="wrap_content" />
+            android:layout_height="?attr/button_dimen" />
 
         <TextView
             android:id="@+id/tv_night_mode"
@@ -68,6 +68,7 @@
             android:layout_toLeftOf="@id/iv_night_mode"
             android:layout_alignTop="@id/iv_night_mode"
             android:layout_alignBottom="@id/iv_night_mode"
+            android:textSize="?attr/body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -78,8 +79,8 @@
             android:src="@drawable/ic_brightness_low_white"
             android:tint="@color/black_40"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="?attr/button_dimen"
+            android:layout_height="?attr/button_dimen" />
 
         <TextView
             android:id="@+id/tv_day_mode"
@@ -87,6 +88,7 @@
             android:layout_toLeftOf="@id/iv_day_mode"
             android:layout_alignTop="@id/iv_day_mode"
             android:layout_alignBottom="@id/iv_day_mode"
+            android:textSize="?attr/body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -125,8 +127,6 @@
             android:clickable="true"
             android:textSize="?attr/title_text"
             android:textAllCaps="true"
-            android:drawableRight="@drawable/ic_file_download_white"
-            android:drawableTint="@color/black_40"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

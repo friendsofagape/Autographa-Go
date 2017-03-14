@@ -50,6 +50,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
     private BookModel mBookModel;
     private TextView mToolBarTitle;
+    private LinearLayout mBookmarkHolder;
     private ImageView mIvBookMark;
     private String mBookId;
     private int mBookMarkNumber;
@@ -69,7 +70,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         realm = Realm.getDefaultInstance();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_menu_white);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
         toolbar.setContentInsetStartWithNavigation(0);
         setSupportActionBar(toolbar);
 
@@ -84,9 +85,11 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
         mToolBarTitle = (TextView) findViewById(R.id.toolbar_title);
         mIvBookMark = (ImageView) findViewById(R.id.iv_bookmark);
+        mBookmarkHolder = (LinearLayout) findViewById(R.id.bookmark_holder);
         mBottomBar = (LinearLayout) findViewById(R.id.bottom_bar);
 
-        mIvBookMark.setOnClickListener(this);
+        mBookmarkHolder.setOnClickListener(this);
+        mToolBarTitle.setOnClickListener(this);
         findViewById(R.id.view_highlights).setOnClickListener(this);
         findViewById(R.id.view_notes).setOnClickListener(this);
         findViewById(R.id.view_share).setOnClickListener(this);
@@ -109,7 +112,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new ChapterAdapter(this, mChapterModels, verseNumber, chapterNumber - 1, SharedPrefs.getFontSize());
+        mAdapter = new ChapterAdapter(this, mChapterModels, SharedPrefs.getFontSize());
         mRecyclerView.setAdapter(mAdapter);
 
         if (mBookMarkNumber == 1) {
@@ -354,7 +357,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.iv_bookmark: {
+            case R.id.bookmark_holder: {
 
                 BounceInterpolator interpolator = new BounceInterpolator(0.2, 20);
                 final Animation myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
@@ -393,25 +396,15 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 hideBottomBar();
                 break;
             }
+            case R.id.toolbar_title: {
+                Intent intent = new Intent(this, SelectChapterAndVerseActivity.class);
+                intent.putExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, true);
+                intent.putExtra(Constants.Keys.OPEN_BOOK, true);
+                intent.putExtra(Constants.Keys.BOOK_ID, Constants.CONTAINER_BOOKS_LIST.get(0).getBookId());
+                startActivityForResult(intent, Constants.RequestCodes.CHANGE_BOOK);
+                break;
+            }
         }
-//        if(Intent.ACTION_VIEW.equals(intent.getAction())){
-//            String filePath = intent.getData().getPath();
-//
-//            USFMParser usfmParser = new USFMParser();
-//            Toast.makeText(getApplicationContext(), "path= " + filePath, Toast.LENGTH_SHORT).show();
-//            usfmParser.parseUSFMFile(this, filePath, false);
-//        }
-
-//        unzipButton = (Button) findViewById(R.id.bt_unzip);
-//        unzipButton.setOnClickListener(this);
-
-//        switch (v.getId()) {
-//            case R.id.bt_unzip: {
-//                String filePath = Environment.getExternalStorageDirectory()+"/Download/zipfolder.zip";
-//                UnzipUtil.unzipFile(new File(filePath), getApplicationContext());
-//                break;
-//            }
-//        }
     }
 
     public void showBottomBar() {
@@ -436,6 +429,43 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (hide) {
             hideBottomBar();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case Constants.RequestCodes.CHANGE_BOOK: {
+                if (resultCode == RESULT_OK) {
+                    VerseIdModel model = data.getParcelableExtra(Constants.Keys.VERSE_NOTE_MODEL);
+
+                    String verseNumber = model.getVerseNumber();
+                    int chapterNumber = model.getChapterNumber();
+                    mBookId = model.getBookId();
+
+                    mBookModel = getBookModel(mBookId);
+
+                    if (mBookModel != null) {
+                        mToolBarTitle.setText(mBookModel.getBookName());
+
+                        mChapterModels.clear();
+                        for (ChapterModel chapterModel : mBookModel.getChapterModels()) {
+                            mChapterModels.add(chapterModel);
+                        }
+                        mAdapter.notifyDataSetChanged();
+                        mBookMarkNumber = mBookModel.getBookmarkChapterNumber();
+                    }
+
+                    if (mBookMarkNumber == 1) {
+                        mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
+                    }
+
+                    mRecyclerView.scrollToPosition(findPositionToScroll(chapterNumber-1, verseNumber));
+                }
+                break;
+            }
         }
     }
 

@@ -10,6 +10,7 @@ import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -60,6 +61,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private String languageCode, languageName, versionCode;
     private Realm realm;
+    private boolean isStartService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,13 +126,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         registerReceiver(onParsingComplete, new IntentFilter(Constants.ACTION.PARSING_COMPLETE_ACTION));
 
-        if (getIntent().getBooleanExtra(Constants.Keys.START_SERVICE, false)) {
-            Intent startIntent = new Intent(this, DownloadService.class);
-            startIntent.setAction(Constants.ACTION.PARSE_ENG_UDB_ACTION);
-            startIntent.putExtra(Constants.Keys.LANGUAGE_NAME, "English");
-            startIntent.putExtra(Constants.Keys.VERSION_CODE, Constants.VersionCodes.UDB);
-            startService(startIntent);
-        }
+        isStartService = getIntent().getBooleanExtra(Constants.Keys.START_SERVICE, false);
     }
 
     public int getSelectedSpinnerPosition() {
@@ -296,8 +292,22 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         realm.close();
         unregisterReceiver(onParsingComplete);
-    }
 
+        if (isStartService) {
+            Intent startIntent = new Intent(this, DownloadService.class);
+            startIntent.setAction(Constants.ACTION.PARSE_ENG_UDB_ACTION);
+            startIntent.putExtra(Constants.Keys.LANGUAGE_NAME, "English");
+            startIntent.putExtra(Constants.Keys.VERSION_CODE, Constants.VersionCodes.UDB);
+            if (UtilFunctions.isServiceRunning(DownloadService.class.getName(), this)) {
+                //    see how to queue
+                Log.i(Constants.DUMMY_TAG, "service already running");
+            } else {
+                startService(startIntent);
+            }
+        }
+        // TODO here also start service if some folder exist in memory that contains usfm, parse those files also
+        // also unzip if zip file present, and phone switched off
+    }
 
     private BroadcastReceiver onParsingComplete = new BroadcastReceiver() {
         @Override

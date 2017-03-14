@@ -40,6 +40,8 @@ public class BookItemViewHolder extends RecyclerView.ViewHolder implements View.
             case R.id.tv_book_name: {
                 int position = (int) v.getTag();
                 Intent intent = new Intent(mContext, SelectChapterAndVerseActivity.class);
+                intent.putExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, false);
+                intent.putExtra(Constants.Keys.OPEN_BOOK, true);
                 intent.putExtra(Constants.Keys.BOOK_ID, mBookModels.get(position).getBookId());
                 mContext.startActivity(intent);
                 break;

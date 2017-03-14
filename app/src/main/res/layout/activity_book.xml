@@ -21,14 +21,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
 
-                <ImageView
-                    android:id="@+id/iv_bookmark"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <LinearLayout
+                    android:id="@+id/bookmark_holder"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_bookmark_white"
-                    android:padding="@dimen/default_content_padding" />
+                    android:padding="@dimen/button_padding"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/iv_bookmark"
+                        android:layout_width="?attr/button_dimen"
+                        android:layout_height="?attr/button_dimen"
+                        android:src="@drawable/ic_bookmark_white" />
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -39,7 +48,7 @@
                     android:gravity="center"
                     android:textSize="?attr/title_text"
                     android:textAllCaps="true"
-                    android:layout_toLeftOf="@id/iv_bookmark"
+                    android:layout_toLeftOf="@id/bookmark_holder"
                     android:layout_alignParentLeft="true"
                     android:id="@+id/toolbar_title" />
 
@@ -88,6 +97,7 @@
                 android:id="@+id/tv_highlight"
                 android:gravity="center_vertical"
                 android:text="HIGHLIGHT"
+                android:ellipsize="end"
                 android:textColor="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
@@ -95,9 +105,9 @@
             <ImageView
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/ic_border_color_white"
-                android:padding="@dimen/default_content_padding"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="?attr/button_dimen"
+                android:layout_marginLeft="@dimen/button_padding"
+                android:layout_height="?attr/button_dimen" />
 
         </LinearLayout>
 
@@ -120,6 +130,7 @@
                 android:textSize="?attr/heading_2"
                 android:gravity="center_vertical"
                 android:text="NOTES"
+                android:ellipsize="end"
                 android:textColor="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
@@ -127,9 +138,9 @@
             <ImageView
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/ic_note_white"
-                android:padding="@dimen/default_content_padding"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_marginLeft="@dimen/button_padding"
+                android:layout_width="?attr/button_dimen"
+                android:layout_height="?attr/button_dimen" />
 
         </LinearLayout>
 
@@ -152,6 +163,7 @@
                 android:textSize="?attr/heading_2"
                 android:gravity="center_vertical"
                 android:text="SHARE"
+                android:ellipsize="end"
                 android:textColor="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
@@ -159,9 +171,9 @@
             <ImageView
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/ic_share_white"
-                android:padding="@dimen/default_content_padding"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_marginLeft="@dimen/button_padding"
+                android:layout_width="?attr/button_dimen"
+                android:layout_height="?attr/button_dimen" />
 
         </LinearLayout>
 

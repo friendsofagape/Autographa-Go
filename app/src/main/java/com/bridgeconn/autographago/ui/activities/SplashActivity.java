@@ -12,7 +12,6 @@ import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
-import com.bridgeconn.autographago.services.DownloadService;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.USFMParser;
@@ -56,20 +55,13 @@ public class SplashActivity extends AppCompatActivity {
                 }
             }
         }
+        realm.close();
 
         if (addToDB) {
             for (int i = 0; i < Constants.UsfmFileNames.length; i++) {
                 USFMParser usfmParser = new USFMParser();
                 usfmParser.parseUSFMFile(this, "english_ulb/" + Constants.UsfmFileNames[i], true, "English", "ENG", Constants.VersionCodes.ULB);
             }
-        }
-
-        if (startService) {
-            Intent startIntent = new Intent(this, DownloadService.class);
-            startIntent.setAction(Constants.ACTION.PARSE_ENG_UDB_ACTION);
-            startIntent.putExtra(Constants.Keys.LANGUAGE_NAME, "English");
-            startIntent.putExtra(Constants.Keys.VERSION_CODE, Constants.VersionCodes.UDB);
-            startService(startIntent);
         }
 
         languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
@@ -93,12 +85,5 @@ public class SplashActivity extends AppCompatActivity {
             resultsToReturn.add(mapper.map(result));
         }
         return resultsToReturn;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        realm.close();
     }
 }

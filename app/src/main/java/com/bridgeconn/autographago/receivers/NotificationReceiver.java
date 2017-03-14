@@ -12,6 +12,7 @@ import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.services.DownloadService;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
+import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,14 +55,14 @@ public class NotificationReceiver extends BroadcastReceiver {
                                 startIntent.putExtra(Constants.Keys.VERSION_NAME, versionName);
                                 startIntent.putExtra(Constants.Keys.VERSION_CODE, versionCode);
 
-//                                if (UtilFunctions.isServiceRunning(DownloadService.class.getName(), context)) {
-//                                     see how to queue
-//                                    Log.i(Constants.DUMMY_TAG, "service already running");
-//                                } else {
+                                if (UtilFunctions.isServiceRunning(DownloadService.class.getName(), context)) {
+                                 //    see how to queue
+                                    Log.i(Constants.DUMMY_TAG, "service already running");
+                                } else {
                                     Log.i(Constants.DUMMY_TAG, "starting serivce");
                                     startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
                                     context.startService(startIntent);
-//                                }
+                                }
                             } catch (JSONException je) {
                             }
                         }
@@ -74,8 +75,6 @@ public class NotificationReceiver extends BroadcastReceiver {
                     }
                 }
             }
-        } else if (intent.getAction().equals("")) {
-
         }
     }
 }

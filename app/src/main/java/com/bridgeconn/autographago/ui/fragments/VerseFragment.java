@@ -32,7 +32,7 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
     private NumberAdapter mAdapter;
     private BookModel mBookModel;
     private String mBookId;
-    private boolean mOpenBook;
+    private boolean mOpenBook, mSelectVerse;
     private ArrayList<VerseComponentsModel> mVerseComponentsModels = new ArrayList<>();
     private int mNumberOfBlocks;
     private int mChapterNumber;
@@ -76,6 +76,7 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
         mBookId = getArguments().getString(Constants.Keys.BOOK_ID);
         mChapterNumber = getArguments().getInt(Constants.Keys.CHAPTER_NO);
         mOpenBook = getArguments().getBoolean(Constants.Keys.OPEN_BOOK);
+        mSelectVerse = getArguments().getBoolean(Constants.Keys.SELECT_VERSE_FOR_NOTE);
 
         mBookModel = getBookModel(mBookId);
         if (mBookModel == null) {
@@ -186,7 +187,7 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
         });
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
-        mAdapter = new NumberAdapter(this, null, null, mVerseComponentsModels, mChapterNumber, mBookId, mOpenBook);
+        mAdapter = new NumberAdapter(this, null, null, mVerseComponentsModels, mChapterNumber, mBookId, mOpenBook, mSelectVerse);
         mRecyclerView.setAdapter(mAdapter);
 
         return view;

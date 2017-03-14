@@ -29,6 +29,8 @@
         <attr name="button_text" format="dimension" />
         <attr name="small_button_text" format="dimension" />
         <attr name="app_bar_text" format="dimension" />
+
+        <attr name="button_dimen" format="dimension" />
     </declare-styleable>
 
 </resources>
