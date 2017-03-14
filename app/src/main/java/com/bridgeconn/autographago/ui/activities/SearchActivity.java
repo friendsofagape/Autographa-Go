@@ -160,7 +160,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     noResultsFound.setVisibility(View.GONE);
                 }
                 numOfResults.setVisibility(View.VISIBLE);
-                numOfResults.setText(mShowSearchResultModels.size() + " search results found");
+                numOfResults.setText(mShowSearchResultModels.size() + " " + getResources().getString(R.string.search_results_found));
                 break;
             }
         }
@@ -372,7 +372,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 noResultsFound.setVisibility(View.GONE);
             }
             numOfResults.setVisibility(View.VISIBLE);
-            numOfResults.setText(mShowSearchResultModels.size() + " search results found");
+            numOfResults.setText(mShowSearchResultModels.size() + " " + getResources().getString(R.string.search_results_found));
         }
     }
 

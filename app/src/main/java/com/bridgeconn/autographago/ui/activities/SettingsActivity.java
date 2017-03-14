@@ -233,7 +233,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         }
 
         if (languages.size() == 0) {
-            Toast.makeText(this, "No new languages available", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.no_new_languages_available), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -302,7 +302,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         }
 
         if (versions.size() == 0) {
-            Toast.makeText(this, "No new versions available", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.no_new_versions_available), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -371,7 +371,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void showNetworkToast() {
-        Toast.makeText(SettingsActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
+        Toast.makeText(SettingsActivity.this, getResources().getString(R.string.network_error), Toast.LENGTH_SHORT).show();
     }
 
     public void getAvailableListOfVersions(final String language) {
@@ -408,8 +408,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI |
                         DownloadManager.Request.NETWORK_MOBILE)
                 .setAllowedOverRoaming(false)
-                .setTitle("Downloading Bible")
-                .setDescription("Downloading...")
+                .setTitle(getResources().getString(R.string.downloading_bible))
+                .setDescription(getResources().getString(R.string.downloading))
                 .setDestinationInExternalPublicDir(dirName, Constants.USFM_ZIP_FILE_NAME)
         );
 
@@ -445,7 +445,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                     model.getMetaData().getVersionName()
                             );
                             Button button = new Button(SettingsActivity.this);
-                            button.setText("DOWNLOAD");
+                            button.setText(getResources().getString(R.string.download));
                             button.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {

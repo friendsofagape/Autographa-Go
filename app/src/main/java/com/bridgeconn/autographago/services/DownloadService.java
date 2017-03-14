@@ -54,9 +54,9 @@ public class DownloadService extends Service {
                     R.drawable.ic_file_download_white_24dp);
 
             Notification notification = new NotificationCompat.Builder(this)
-                    .setContentTitle("Autographa Go")
+                    .setContentTitle(getResources().getString(R.string.app_name))
                     .setTicker(languageName + " " + versionCode)
-                    .setContentText("Parsing")
+                    .setContentText(getResources().getString(R.string.parsing))
                     .setSmallIcon(R.drawable.ic_file_download_white)
                     .setLargeIcon(
                             Bitmap.createScaledBitmap(icon, 128, 128, false))
@@ -92,9 +92,9 @@ public class DownloadService extends Service {
                     R.drawable.ic_file_download_white_24dp);
 
             Notification notification = new NotificationCompat.Builder(this)
-                    .setContentTitle("Autographa Go")
+                    .setContentTitle(getResources().getString(R.string.app_name))
                     .setTicker(languageName + " " + versionCode)
-                    .setContentText("Parsing")
+                    .setContentText(getResources().getString(R.string.parsing))
                     .setSmallIcon(R.drawable.ic_file_download_white)
                     .setLargeIcon(
                             Bitmap.createScaledBitmap(icon, 128, 128, false))

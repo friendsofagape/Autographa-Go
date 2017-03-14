@@ -63,7 +63,7 @@ public class HighlightActivity extends AppCompatActivity {
 
         mToolBarTitle = (TextView) findViewById(R.id.toolbar_title);
         getSupportActionBar().setTitle("");
-        mToolBarTitle.setText("Highlights");
+        mToolBarTitle.setText(getResources().getString(R.string.highlights));
 
         mRecyclerViewHighlights = (RecyclerView) findViewById(R.id.list_menu);
 

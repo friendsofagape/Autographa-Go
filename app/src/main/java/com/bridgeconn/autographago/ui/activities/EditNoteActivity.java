@@ -75,7 +75,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setTitle(getResources().getString(R.string.title_notes));
+        getSupportActionBar().setTitle(getResources().getString(R.string.notes));
 
         mEtTitle = (EditText) findViewById(R.id.et_title);
         mEditor = (EditText) findViewById(R.id.editor);

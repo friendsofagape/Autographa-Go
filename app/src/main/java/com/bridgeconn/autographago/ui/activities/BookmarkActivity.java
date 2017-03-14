@@ -57,7 +57,7 @@ public class BookmarkActivity extends AppCompatActivity {
 
         mToolBarTitle = (TextView) findViewById(R.id.toolbar_title);
         getSupportActionBar().setTitle("");
-        mToolBarTitle.setText("Bookmarks");
+        mToolBarTitle.setText(getResources().getString(R.string.bookmarks));
 
         mRecyclerViewBookmarks = (RecyclerView) findViewById(R.id.list_menu);
 
