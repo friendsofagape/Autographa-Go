@@ -14,7 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DownloadUtil {
 
-    public interface FileDownloadCallback {
+    public interface JsonDownloadCallback {
         void onSuccess(ResponseModel model);
         void onFailure();
     }
@@ -32,7 +32,7 @@ public class DownloadUtil {
         retrofit = builder.client(httpClient.build()).build();
     }
 
-    public void downloadJson(final String fileUrl, final FileDownloadCallback callback) {
+    public void downloadJson(final String fileUrl, final JsonDownloadCallback callback) {
         final ApiInterface downloadService = retrofit.create(ApiInterface.class);
 
         new AsyncTask<Void, Long, Void>() {

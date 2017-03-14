@@ -27,6 +27,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +62,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private AppCompatSeekBar mSeekBarTextSize;
     private Constants.ReadingMode mReadingMode;
     private Constants.FontSize mFontSize;
+    private ProgressBar mProgressBar;
 
     private long lastDownload=-1L;
     private DownloadManager downloadManager;
@@ -94,6 +96,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         mTvDownload = (TextView) findViewById(R.id.download_bible);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mDayMode = (ImageView) findViewById(R.id.iv_day_mode);
         mNightMode = (ImageView) findViewById(R.id.iv_night_mode);
         mInflateLayout = (LinearLayout) findViewById(R.id.inflate_layout);
@@ -189,6 +192,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.download_bible: {
+                mInflateLayout.removeAllViews();
                 getAvailableLanguages();
                 break;
             }
@@ -351,12 +355,14 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void getAvailableLanguages() {
+        mProgressBar.setVisibility(View.VISIBLE);
 
         DownloadUtil downloadUtil = new DownloadUtil();
-        downloadUtil.downloadJson(Constants.META_DATA_FILE_NAME, new DownloadUtil.FileDownloadCallback() {
+        downloadUtil.downloadJson(Constants.META_DATA_FILE_NAME, new DownloadUtil.JsonDownloadCallback() {
 
             @Override
             public void onSuccess(ResponseModel model) {
+                mProgressBar.setVisibility(View.GONE);
                 if (model.getLanguagesAvailable() != null) {
                     showLanguageDialog(model.getLanguagesAvailable());
                 }
@@ -364,6 +370,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onFailure() {
+                mProgressBar.setVisibility(View.GONE);
                 showNetworkToast();
                 Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
             }
@@ -375,11 +382,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void getAvailableListOfVersions(final String language) {
+        mProgressBar.setVisibility(View.VISIBLE);
         DownloadUtil downloadUtil = new DownloadUtil();
-        downloadUtil.downloadJson(language + "/" + Constants.META_DATA_FILE_NAME, new DownloadUtil.FileDownloadCallback() {
+        downloadUtil.downloadJson(language + "/" + Constants.META_DATA_FILE_NAME, new DownloadUtil.JsonDownloadCallback() {
 
             @Override
             public void onSuccess(ResponseModel model) {
+                mProgressBar.setVisibility(View.GONE);
                 if (model.getListOfVersionsAvailable() != null) {
                     showVersionDialog(model.getListOfVersionsAvailable(), language);
                 }
@@ -387,6 +396,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onFailure() {
+                mProgressBar.setVisibility(View.GONE);
                 showNetworkToast();
                 Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
             }
@@ -394,6 +404,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void startDownload(String url) {
+        Toast.makeText(this, getResources().getString(R.string.download_has_started), Toast.LENGTH_SHORT).show();
         Uri uri=Uri.parse(url);
 
         File root = Environment.getExternalStorageDirectory();
@@ -425,12 +436,14 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void getMetaData(final String language, final String version) {
+        mProgressBar.setVisibility(View.VISIBLE);
         final DownloadUtil downloadUtil = new DownloadUtil();
         downloadUtil.downloadJson(language + "/" + version + "/" + Constants.META_DATA_FILE_NAME,
-                new DownloadUtil.FileDownloadCallback() {
+                new DownloadUtil.JsonDownloadCallback() {
 
                     @Override
                     public void onSuccess(final ResponseModel model) {
+                        mProgressBar.setVisibility(View.GONE);
                         if (model.getMetaData() != null) {
                             languageName = model.getMetaData().getLanguageName();
                             languageCode = model.getMetaData().getLanguageCode();
@@ -445,7 +458,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                     model.getMetaData().getVersionName()
                             );
                             Button button = new Button(SettingsActivity.this);
-                            button.setText(getResources().getString(R.string.download));
+                            button.setText(getResources().getString(R.string.download) + " " +
+                                    model.getMetaData().getLanguageName() + " " + model.getMetaData().getVersionCode() + " Bible");
                             button.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -469,6 +483,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
                     @Override
                     public void onFailure() {
+                        mProgressBar.setVisibility(View.GONE);
                         showNetworkToast();
                         Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
                     }

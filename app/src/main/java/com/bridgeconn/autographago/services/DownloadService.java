@@ -13,15 +13,12 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.ui.activities.HomeActivity;
-import com.bridgeconn.autographago.ui.activities.SearchActivity;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.USFMParser;
 import com.bridgeconn.autographago.utils.UnzipUtil;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class DownloadService extends Service {
 
@@ -56,7 +53,7 @@ public class DownloadService extends Service {
             Notification notification = new NotificationCompat.Builder(this)
                     .setContentTitle(getResources().getString(R.string.app_name))
                     .setTicker(languageName + " " + versionCode)
-                    .setContentText(getResources().getString(R.string.parsing))
+                    .setContentText(getResources().getString(R.string.downloading_bible))
                     .setSmallIcon(R.drawable.ic_file_download_white)
                     .setLargeIcon(
                             Bitmap.createScaledBitmap(icon, 128, 128, false))
@@ -94,7 +91,7 @@ public class DownloadService extends Service {
             Notification notification = new NotificationCompat.Builder(this)
                     .setContentTitle(getResources().getString(R.string.app_name))
                     .setTicker(languageName + " " + versionCode)
-                    .setContentText(getResources().getString(R.string.parsing))
+                    .setContentText(getResources().getString(R.string.downloading_bible))
                     .setSmallIcon(R.drawable.ic_file_download_white)
                     .setLargeIcon(
                             Bitmap.createScaledBitmap(icon, 128, 128, false))
@@ -144,7 +141,7 @@ public class DownloadService extends Service {
         }
     }
 
-        private void startUnzipping(final Context context, final String languageName, final String languageCode,
+    private void startUnzipping(final Context context, final String languageName, final String languageCode,
                                 final String versionCode, final String versionName, String filePath) {
 
         UnzipUtil.unzipFile(new File(filePath),

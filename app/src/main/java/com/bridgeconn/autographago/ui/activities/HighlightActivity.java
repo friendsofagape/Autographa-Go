@@ -1,11 +1,14 @@
 package com.bridgeconn.autographago.ui.activities;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
@@ -32,10 +35,11 @@ import io.realm.RealmResults;
 
 public class HighlightActivity extends AppCompatActivity {
 
+    private ProgressBar mProgressBar;
     private TextView mToolBarTitle;
     private RecyclerView mRecyclerViewHighlights;
     private HighlightAdapter mHighlightAdapter;
-    private  ArrayList<VerseIdModel> mHighlightModels = new ArrayList<>();
+    private ArrayList<VerseIdModel> mHighlightModels = new ArrayList<>();
     private String languageCode, versionCode;
     private Realm realm;
 
@@ -46,8 +50,6 @@ public class HighlightActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         UtilFunctions.applyReadingMode();
-
-        realm = Realm.getDefaultInstance();
 
         languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
@@ -65,6 +67,7 @@ public class HighlightActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("");
         mToolBarTitle.setText(getResources().getString(R.string.highlights));
 
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mRecyclerViewHighlights = (RecyclerView) findViewById(R.id.list_menu);
 
         mRecyclerViewHighlights.setHasFixedSize(true);
@@ -76,27 +79,47 @@ public class HighlightActivity extends AppCompatActivity {
     }
 
     private void getHighlights() {
-        List<BookModel> bookModels = query(
-                new AllSpecifications.BooksByLanguageAndVersion(languageCode, versionCode), new AllMappers.BookMapper());
-        HashSet<VerseIdModel> verseIdModelHashSet = new HashSet<>();
-        for (BookModel bookModel : bookModels) {
-            for (ChapterModel chapterModel : bookModel.getChapterModels()) {
-                for (VerseComponentsModel verseComponentsModel : chapterModel.getVerseComponentsModels()) {
-                    if (verseComponentsModel.isHighlighted()) {
-                        VerseIdModel verseIdModel = new VerseIdModel();
-                        verseIdModel.setBookId(bookModel.getBookId());
-                        verseIdModel.setBookName(bookModel.getBookName());
-                        verseIdModel.setChapterNumber(chapterModel.getChapterNumber());
-                        verseIdModel.setVerseNumber(verseComponentsModel.getVerseNumber());
-                        verseIdModelHashSet.add(verseIdModel);
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                mProgressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                realm = Realm.getDefaultInstance();
+                List<BookModel> bookModels = query(
+                        new AllSpecifications.BooksByLanguageAndVersion(languageCode, versionCode), new AllMappers.BookMapper());
+                HashSet<VerseIdModel> verseIdModelHashSet = new HashSet<>();
+                for (BookModel bookModel : bookModels) {
+                    for (ChapterModel chapterModel : bookModel.getChapterModels()) {
+                        for (VerseComponentsModel verseComponentsModel : chapterModel.getVerseComponentsModels()) {
+                            if (verseComponentsModel.isHighlighted()) {
+                                VerseIdModel verseIdModel = new VerseIdModel();
+                                verseIdModel.setBookId(bookModel.getBookId());
+                                verseIdModel.setBookName(bookModel.getBookName());
+                                verseIdModel.setChapterNumber(chapterModel.getChapterNumber());
+                                verseIdModel.setVerseNumber(verseComponentsModel.getVerseNumber());
+                                verseIdModelHashSet.add(verseIdModel);
+                            }
+                        }
                     }
                 }
+                for (VerseIdModel model : verseIdModelHashSet) {
+                    mHighlightModels.add(model);
+                }
+                realm.close();
+                return null;
             }
-        }
-        for (VerseIdModel model : verseIdModelHashSet) {
-            mHighlightModels.add(model);
-        }
-        mHighlightAdapter.notifyDataSetChanged();
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                mProgressBar.setVisibility(View.GONE);
+                mHighlightAdapter.notifyDataSetChanged();
+            }
+        }.execute();
     }
 
     @Override
@@ -121,25 +144,11 @@ public class HighlightActivity extends AppCompatActivity {
         mHighlightAdapter.notifyItemRemoved(position);
         mHighlightAdapter.notifyItemRangeChanged(position, mHighlightModels.size(), null);
 
-        BookModel bookModel = null;
-        bookModel = getBookModel(bookId);
-
-        if (bookModel != null) {
-            for (ChapterModel cModel : bookModel.getChapterModels()) {
-                if (cModel.getChapterId().equals(languageCode + "_" + versionCode + "_" + chapterId)) {
-                    for (VerseComponentsModel vModel : cModel.getVerseComponentsModels()) {
-                        if (vModel.getVerseNumber().equals(verseNumber)) {
-                            vModel.setHighlighted(false);
-                        }
-                    }
-                    break;
-                }
-            }
-            new AutographaRepository<BookModel>().update(bookModel);
-        }
+        updateToDb(bookId, chapterId, verseNumber);
     }
 
-    private BookModel getBookModel(String bookId) {
+    private void updateToDb(String bookId, String chapterId, String verseNumber) {
+        realm = Realm.getDefaultInstance();
         String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
         ArrayList<BookModel> resultList = query(new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
@@ -164,7 +173,12 @@ public class HighlightActivity extends AppCompatActivity {
                 for (VerseComponentsModel vModel : cModel.getVerseComponentsModels()) {
                     VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
                     verseComponentsModel.setChapterId(vModel.getChapterId());
-                    verseComponentsModel.setHighlighted(vModel.isHighlighted());
+                    if (cModel.getChapterId().equals(languageCode + "_" + versionCode + "_" + chapterId) &&
+                            vModel.getVerseNumber().equals(verseNumber)) {
+                        verseComponentsModel.setHighlighted(false);
+                    } else {
+                        verseComponentsModel.setHighlighted(vModel.isHighlighted());
+                    }
                     verseComponentsModel.setVersionCode(vModel.getVersionCode());
                     verseComponentsModel.setLanguageCode(vModel.getLanguageCode());
                     verseComponentsModel.setText(vModel.getText());
@@ -174,9 +188,9 @@ public class HighlightActivity extends AppCompatActivity {
                 }
                 bookModel.getChapterModels().add(chapterModel);
             }
-            return bookModel;
+            new AutographaRepository<BookModel>().update(bookModel);
+            realm.close();
         }
-        return null;
     }
 
     public ArrayList<BookModel> query(Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
@@ -186,11 +200,5 @@ public class HighlightActivity extends AppCompatActivity {
             resultsToReturn.add(mapper.map(result));
         }
         return resultsToReturn;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        realm.close();
     }
 }

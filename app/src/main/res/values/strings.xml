@@ -71,5 +71,6 @@
     <string name="downloading_bible">Downloading Bible</string>
     <string name="downloading">Downloading...</string>
     <string name="parsing">Parsing</string>
+    <string name="download_has_started">Download has started.</string>
 
 </resources>
