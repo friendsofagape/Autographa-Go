@@ -16,6 +16,7 @@ public class VerseComponentsModel extends RealmObject {
     private String type;
     @Index
     private String verseNumber;
+    @Index
     private String text;
     @Ignore
     private boolean added;

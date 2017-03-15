@@ -300,6 +300,11 @@ public class USFMParser {
         }
 
         verseComponentsModel.setType(Constants.MarkerTypes.VERSE);
+        String verseNum = splitString[1];
+        String intString = verseNum.replaceAll(Constants.Styling.REGEX_NUMBERS, "");
+        if (intString.equals("")) {
+            throw new NumberFormatException();
+        }
         verseComponentsModel.setVerseNumber(splitString[1]);
 
         for (int i=2; i<splitString.length; i++) {

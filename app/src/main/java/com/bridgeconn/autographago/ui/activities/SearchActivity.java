@@ -34,7 +34,6 @@ import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import io.realm.Realm;
@@ -55,6 +54,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private Realm realm;
     private RadioGroup sectionGroupView;
     private TextView numOfResults;
+    private PerformSearch performSearchTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,32 +167,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void doSearch(String searchText, String languageCode, String versionCode) {
-        new PerformSearch().execute(new String[] { searchText, languageCode, versionCode });
-    }
-
-    private ArrayList<SearchModel> searchInBookName(String searchText, String languageCode, String versionCode) {
-        ArrayList<SearchModel> searchResults = new ArrayList<>();
-        realm = Realm.getDefaultInstance();
-        if (!searchText.trim().equals("")) {
-            List<BookModel> resultList = queryBook(
-                    new AllSpecifications.SearchInBookName(searchText, languageCode, versionCode), new AllMappers.BookMapper());
-
-            for (BookModel bookModel : resultList) {
-                SearchModel searchModel = new SearchModel();
-                searchModel.setBookId(bookModel.getBookId());
-                searchModel.setBookName(bookModel.getBookName());
-                searchModel.setChapterNumber(1);
-                searchModel.setVerseNumber("1");
-                searchModel.setText(getVerseText(bookModel.getChapterModels().get(0)));
-                searchModel.setSection(bookModel.getSection());
-                searchModel.setBookNumber(bookModel.getBookNumber());
-                searchModel.setLanguageCode(languageCode);
-                searchModel.setVersionCode(versionCode);
-                searchResults.add(searchModel);
-            }
+        if (performSearchTask != null) {
+            performSearchTask.cancel(true);
         }
-        realm.close();
-        return searchResults;
+        performSearchTask = new PerformSearch();
+        performSearchTask.execute(new String[] { searchText, languageCode, versionCode });
     }
 
     private String getVerseText(ChapterModel chapterModel) {
@@ -213,34 +192,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
         return text;
-    }
-
-    private ArrayList<SearchModel> searchInVerseText(String searchText, String languageCode, String versionCode) {
-        ArrayList<SearchModel> searchResults = new ArrayList<>();
-        realm = Realm.getDefaultInstance();
-        if (!searchText.trim().equals("")) {
-            List<VerseComponentsModel> resultList = queryVerse(
-                    new AllSpecifications.SearchInVerseComponentsText(searchText, languageCode, versionCode), new AllMappers.VerseComponentsMapper());
-            for (VerseComponentsModel verseComponentsModel : resultList) {
-                SearchModel searchModel = new SearchModel();
-                String [] splitString = verseComponentsModel.getChapterId().split("_");
-                if (splitString.length > 1) {
-                    searchModel.setBookId(splitString[0]);
-                    searchModel.setBookName(UtilFunctions.getBookNameFromMapping(this, splitString[0]));
-                    searchModel.setSection(UtilFunctions.getBookSectionFromMapping(this, splitString[0]));
-                    searchModel.setChapterNumber(Integer.parseInt(splitString[1]));
-                    searchModel.setVerseNumber(verseComponentsModel.getVerseNumber());
-                    searchModel.setText(verseComponentsModel.getText());
-                    searchModel.setSection(UtilFunctions.getBookSectionFromMapping(SearchActivity.this, splitString[0]));
-                    searchModel.setBookNumber(UtilFunctions.getBookNumberFromMapping(SearchActivity.this, splitString[0]));
-                    searchModel.setLanguageCode(languageCode);
-                    searchModel.setVersionCode(versionCode);
-                    searchResults.add(searchModel);
-                }
-            }
-        }
-        realm.close();
-        return searchResults;
     }
 
     public ArrayList<SearchHistoryModel> querySearchHistory(Specification<SearchHistoryModel> specification, Mapper<SearchHistoryModel, SearchHistoryModel> mapper) {
@@ -311,68 +262,132 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private class PerformSearch extends AsyncTask<String, Void, ArrayList<SearchModel>> {
+    private class PerformSearch extends AsyncTask<String, SearchModel, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
 
             noResultsFound.setVisibility(View.GONE);
-            sectionGroupView.setVisibility(View.GONE);
-            numOfResults.setVisibility(View.GONE);
-            mSearchResultModels.clear();
+            sectionGroupView.setVisibility(View.VISIBLE);
             mShowSearchResultModels.clear();
+            mSearchResultModels.clear();
             mAdapter.notifyDataSetChanged();
             mProgressBar.setVisibility(View.VISIBLE);
+            numOfResults.setVisibility(View.VISIBLE);
+            numOfResults.setText(mShowSearchResultModels.size() + " " + getResources().getString(R.string.search_results_found));
         }
 
         @Override
-        protected ArrayList<SearchModel> doInBackground(String... params) {
-            ArrayList<SearchModel> resultList = new ArrayList<>();
-            resultList.addAll(searchInBookName(params[0], params[1], params[2]));
-            resultList.addAll(searchInVerseText(params[0], params[1], params[2]));
-            return resultList;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<SearchModel> resultList) {
-            super.onPostExecute(resultList);
+        protected void onCancelled() {
+            super.onCancelled();
 
             mProgressBar.setVisibility(View.GONE);
-            sectionGroupView.setVisibility(View.VISIBLE);
-            mSearchResultModels.addAll(resultList);
-            // sort by book number
-            Collections.sort(mSearchResultModels, new SearchModel.BookNumberComparator());
+            mShowSearchResultModels.clear();
+            mSearchResultModels.clear();
+            mAdapter.notifyDataSetChanged();
+            sectionGroupView.setVisibility(View.GONE);
+            noResultsFound.setVisibility(View.GONE);
+            numOfResults.setVisibility(View.GONE);
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            realm = Realm.getDefaultInstance();
+            if (!params[0].trim().equals("")) {
+                List<BookModel> resultList = queryBook(
+                        new AllSpecifications.SearchInBookName(params[0], params[1], params[2]), new AllMappers.BookMapper());
+
+                for (BookModel bookModel : resultList) {
+                    if (isCancelled()) {
+                        realm.close();
+                        return null;
+                    }
+                    SearchModel searchModel = new SearchModel();
+                    searchModel.setBookId(bookModel.getBookId());
+                    searchModel.setBookName(bookModel.getBookName());
+                    searchModel.setChapterNumber(1);
+                    searchModel.setVerseNumber("1");
+                    searchModel.setText(getVerseText(bookModel.getChapterModels().get(0)));
+                    searchModel.setSection(bookModel.getSection());
+                    searchModel.setBookNumber(bookModel.getBookNumber());
+                    searchModel.setLanguageCode(languageCode);
+                    searchModel.setVersionCode(versionCode);
+                    publishProgress(searchModel);
+                }
+            }
+
+            if (!params[0].trim().equals("")) {
+                List<VerseComponentsModel> resultList = queryVerse(
+                        new AllSpecifications.SearchInVerseComponentsText(params[0], params[1], params[2]), new AllMappers.VerseComponentsMapper());
+                for (VerseComponentsModel verseComponentsModel : resultList) {
+                    if (isCancelled()) {
+                        realm.close();
+                        return null;
+                    }
+                    SearchModel searchModel = new SearchModel();
+                    String [] splitString = verseComponentsModel.getChapterId().split("_");
+                    if (splitString.length > 1) {
+                        searchModel.setBookId(splitString[0]);
+                        searchModel.setBookName(UtilFunctions.getBookNameFromMapping(SearchActivity.this, splitString[0]));
+                        searchModel.setSection(UtilFunctions.getBookSectionFromMapping(SearchActivity.this, splitString[0]));
+                        searchModel.setChapterNumber(Integer.parseInt(splitString[1]));
+                        searchModel.setVerseNumber(verseComponentsModel.getVerseNumber());
+                        searchModel.setText(verseComponentsModel.getText());
+                        searchModel.setSection(UtilFunctions.getBookSectionFromMapping(SearchActivity.this, splitString[0]));
+                        searchModel.setBookNumber(UtilFunctions.getBookNumberFromMapping(SearchActivity.this, splitString[0]));
+                        searchModel.setLanguageCode(languageCode);
+                        searchModel.setVersionCode(versionCode);
+                        publishProgress(searchModel);
+                    }
+                }
+            }
+            realm.close();
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(SearchModel... values) {
+            if (isCancelled()) {
+                return;
+            }
+            mSearchResultModels.add(values[0]);
+
+            noResultsFound.setVisibility(View.GONE);
             switch (sectionGroupView.getCheckedRadioButtonId()) {
                 case R.id.allSection: {
-                    mShowSearchResultModels.addAll(mSearchResultModels);
+                    mShowSearchResultModels.add(values[0]);
+                    mAdapter.notifyItemRangeInserted(mShowSearchResultModels.size()-1, 1);
                     break;
                 }
                 case R.id.oldSection: {
-                    for (SearchModel searchModel : mSearchResultModels) {
-                        if (searchModel.getBookNumber() < 40) {
-                            mShowSearchResultModels.add(searchModel);
-                        }
+                    if (values[0].getBookNumber() < 40) {
+                        mShowSearchResultModels.add(values[0]);
+                        mAdapter.notifyItemRangeInserted(mShowSearchResultModels.size()-1, 1);
                     }
                     break;
                 }
                 case R.id.newSection: {
-                    for (SearchModel searchModel : mSearchResultModels) {
-                        if (searchModel.getBookNumber() > 40) {
-                            mShowSearchResultModels.add(searchModel);
-                        }
+                    if (values[0].getBookNumber() > 40) {
+                        mShowSearchResultModels.add(values[0]);
+                        mAdapter.notifyItemRangeInserted(mShowSearchResultModels.size()-1, 1);
                     }
                     break;
                 }
             }
-            mAdapter.notifyDataSetChanged();
+            numOfResults.setText(mShowSearchResultModels.size() + " " + getResources().getString(R.string.search_results_found));
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
+            mProgressBar.setVisibility(View.GONE);
             if (mShowSearchResultModels.size() == 0) {
                 noResultsFound.setVisibility(View.VISIBLE);
             } else {
                 noResultsFound.setVisibility(View.GONE);
             }
-            numOfResults.setVisibility(View.VISIBLE);
-            numOfResults.setText(mShowSearchResultModels.size() + " " + getResources().getString(R.string.search_results_found));
         }
     }
 

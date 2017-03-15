@@ -111,7 +111,7 @@ public class AllSpecifications {
             query = query.equalTo("languageCode", language);
             query = query.equalTo("versionCode", version);
             query = query.contains("bookName", text, Case.INSENSITIVE);
-            return query.findAll();
+            return query.findAll().sort("bookNumber");
         }
     }
 
