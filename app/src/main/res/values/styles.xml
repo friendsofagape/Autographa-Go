@@ -52,6 +52,8 @@
         <item name="app_bar_text">20sp</item>
 
         <item name="button_dimen">24dp</item>
+        <item name="home_button_dimen">36dp</item>
+        <item name="button_padding">6dp</item>
     </style>
 
     <style name="FontSize.XSmall">
@@ -66,6 +68,8 @@
         <item name="app_bar_text">16sp</item>
 
         <item name="button_dimen">12dp</item>
+        <item name="home_button_dimen">36dp</item>
+        <item name="button_padding">12dp</item>
     </style>
 
     <style name="FontSize.Small">
@@ -80,6 +84,8 @@
         <item name="app_bar_text">18sp</item>
 
         <item name="button_dimen">18dp</item>
+        <item name="home_button_dimen">36dp</item>
+        <item name="button_padding">9dp</item>
     </style>
 
     <style name="FontSize.Large">
@@ -94,6 +100,8 @@
         <item name="app_bar_text">22sp</item>
 
         <item name="button_dimen">36dp</item>
+        <item name="home_button_dimen">36dp</item>
+        <item name="button_padding">0dp</item>
     </style>
 
     <style name="FontSize.XLarge">
@@ -108,6 +116,8 @@
         <item name="app_bar_text">24sp</item>
 
         <item name="button_dimen">48dp</item>
+        <item name="home_button_dimen">48dp</item>
+        <item name="button_padding">0dp</item>
     </style>
 
 </resources>
