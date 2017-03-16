@@ -7,10 +7,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VerseIdModel;
-import com.bridgeconn.autographago.ormutils.AutographaRepository;
+import com.bridgeconn.autographago.services.BackgroundService;
 import com.bridgeconn.autographago.ui.activities.BookActivity;
 import com.bridgeconn.autographago.ui.activities.SelectChapterAndVerseActivity;
 import com.bridgeconn.autographago.utils.Constants;
@@ -54,19 +53,20 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
             case R.id.tv_number: {
                 int position = (int) v.getTag();
                 String verseNumber = mVerseComponentsModels.get(position).getVerseNumber();
+
+                Intent task = new Intent(mFragment.getContext(), BackgroundService.class);
+                task.setAction(Constants.ACTION.ADD_TO_HISTORY);
+                task.putExtra(Constants.Keys.VERSE_NO, verseNumber);
+                String chapterId = mVerseComponentsModels.get(position).getChapterId();
+                task.putExtra(Constants.Keys.CHAPTER_NO, Integer.parseInt(chapterId.split("_")[1]));
+                task.putExtra(Constants.Keys.LANGUAGE_CODE, mVerseComponentsModels.get(position).getLanguageCode());
+                task.putExtra(Constants.Keys.VERSION_CODE, mVerseComponentsModels.get(position).getVersionCode());
+                task.putExtra(Constants.Keys.BOOK_ID, mBookId);
+                task.putExtra(Constants.Keys.TIMESTAMP, System.currentTimeMillis());
+
                 if (mSelectVerse) {
                     if (mOpenBook) {
-                        SearchModel model = new SearchModel();
-                        model.setVerseNumber(verseNumber);
-                        model.setChapterNumber(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
-                        model.setLanguageCode(mVerseComponentsModels.get(position).getLanguageCode());
-                        model.setVersionCode(mVerseComponentsModels.get(position).getVersionCode());
-                        model.setBookId(mBookId);
-                        model.setBookName(UtilFunctions.getBookNameFromMapping(mFragment.getContext(), mBookId));
-                        model.setSection(UtilFunctions.getBookSectionFromMapping(mFragment.getContext(), mBookId));
-                        model.setTimeStamp(System.currentTimeMillis());
-                        model.setSearchId(mBookId + "_" + model.getChapterNumber() + "_" + verseNumber);
-                        new AutographaRepository<SearchModel>().add(model);
+                        mFragment.getContext().startService(task);
                     }
                     VerseIdModel model = new VerseIdModel();
                     model.setVerseNumber(verseNumber);
@@ -80,17 +80,7 @@ public class VerseNumberViewHolder extends RecyclerView.ViewHolder implements Vi
                     mFragment.getActivity().setResult(RESULT_OK, output);
                     mFragment.getActivity().finish();
                 } else {
-                    SearchModel model = new SearchModel();
-                    model.setVerseNumber(verseNumber);
-                    model.setChapterNumber(((SelectChapterAndVerseActivity) mFragment.getActivity()).getSelectedChapter());
-                    model.setLanguageCode(mVerseComponentsModels.get(position).getLanguageCode());
-                    model.setVersionCode(mVerseComponentsModels.get(position).getVersionCode());
-                    model.setBookId(mBookId);
-                    model.setBookName(UtilFunctions.getBookNameFromMapping(mFragment.getContext(), mBookId));
-                    model.setSection(UtilFunctions.getBookSectionFromMapping(mFragment.getContext(), mBookId));
-                    model.setTimeStamp(System.currentTimeMillis());
-                    model.setSearchId(mBookId + "_" + model.getChapterNumber() + "_" + verseNumber);
-                    new AutographaRepository<SearchModel>().add(model);
+                    mFragment.getContext().startService(task);
 
                     Intent intent = new Intent(mFragment.getContext(), BookActivity.class);
                     intent.putExtra(Constants.Keys.BOOK_ID, mBookId);

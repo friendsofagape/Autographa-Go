@@ -1,8 +1,7 @@
 package com.bridgeconn.autographago.utils;
 
+import android.app.NotificationManager;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
@@ -18,111 +17,69 @@ import java.util.zip.ZipFile;
 
 public class UnzipUtil {
 
-    public interface FileUnzipCallback {
-        void onSuccess(File zipFile, String directoryName);
-        void onFailure();
-    }
+    public static void unzipFile(final File zipfile1, Context context, final String languageName, final String languageCode,
+                                 final String versionCode) {
+        final String directory = zipfile1.getParent() + "/";
 
-    private static Handler myHandler;
+        File archive = zipfile1;
+        String outputDir = directory;
 
-    public static void unzipFile(final File zipfile, final Context context, final FileUnzipCallback callback) {
-        final File zipFile1 = zipfile;
-        final String directory = zipFile1.getParent() + "/";
-        final File zipDirectory = new File(directory);
-        myHandler = new Handler() {
-
-            @Override
-            public void handleMessage(Message msg) {
-                // process incoming messages here
-                switch (msg.what) {
-                    case 1: {
-                        callback.onSuccess(zipfile, directory);
-                        break;
-                    }
-                    case 2: {
-                        callback.onFailure();
-                        break;
-                    }
-
+        try {
+            ZipFile zipfile = new ZipFile(archive);
+            for (Enumeration e = zipfile.entries(); e.hasMoreElements(); ) {
+                ZipEntry entry = (ZipEntry) e.nextElement();
+                if (!entry.isDirectory()) {
+                    unzipEntry(zipfile, entry, outputDir);
                 }
-                super.handleMessage(msg);
             }
+            Log.i(Constants.DUMMY_TAG, "unzip success");
+            archive.delete();
 
-        };
-        Thread workthread = new Thread(new UnZip(zipfile, directory));
-        workthread.start();
-    }
+            NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE);
 
-    public static class UnZip implements Runnable {
+            UtilFunctions.startParseService(context, outputDir, languageName, languageCode, versionCode);
 
-        File archive;
-        String outputDir;
-
-        public UnZip(File ziparchive, String directory) {
-            archive = ziparchive;
-            outputDir = directory;
-        }
-
-        public void log(String log) {
-            Log.v(Constants.DUMMY_TAG, "unzip :: " + log);
-        }
-
-        @SuppressWarnings("unchecked")
-        public void run() {
-            Message msg;
-            try {
-                ZipFile zipfile = new ZipFile(archive);
-                for (Enumeration e = zipfile.entries(); e.hasMoreElements(); ) {
-                    ZipEntry entry = (ZipEntry) e.nextElement();
-                    msg = new Message();
-                    msg.what = 0;
-                    msg.obj = "Extracting " + entry.getName();
-                    myHandler.sendMessage(msg);
-                    if (!entry.isDirectory()) {
-                        unzipEntry(zipfile, entry, outputDir);
-                    }
-                }
-            } catch (Exception e) {
-                log("Error while extracting file " + archive);
-            }
-            msg = new Message();
-            msg.what = 1;
-            myHandler.sendMessage(msg);
-        }
-
-        private void unzipEntry(ZipFile zipfile, ZipEntry entry,
-                                String outputDir) throws IOException {
-
-            if (entry.isDirectory()) {
-                createDir(new File(outputDir, entry.getName()));
-                return;
-            }
-
-            File outputFile = new File(outputDir, entry.getName());
-            if (!outputFile.getParentFile().exists()) {
-                createDir(outputFile.getParentFile());
-            }
-
-            log("Extracting: " + entry);
-            BufferedInputStream inputStream = new
-                    BufferedInputStream(zipfile
-                    .getInputStream(entry));
-            BufferedOutputStream outputStream = new BufferedOutputStream(
-                    new FileOutputStream(outputFile));
-
-            try {
-                IOUtils.copy(inputStream, outputStream);
-            } finally {
-                outputStream.close();
-                inputStream.close();
-            }
-        }
-
-        private void createDir(File dir) {
-            log("Creating dir " + dir.getName());
-            if (!dir.mkdirs())
-                throw new RuntimeException("Can not create dir " + dir);
+        } catch (Exception e) {
+            archive.delete();
+            Log.v(Constants.DUMMY_TAG, "unzip :: " + "Deleting zip anyway, Error while extracting file " + archive);
         }
     }
 
+    private static void unzipEntry(ZipFile zipfile, ZipEntry entry, String outputDir) throws IOException {
+
+        if (entry.isDirectory()) {
+            createDir(new File(outputDir, entry.getName()));
+            return;
+        }
+
+        File outputFile = new File(outputDir, entry.getName());
+        if (!outputFile.getParentFile().exists()) {
+            createDir(outputFile.getParentFile());
+        }
+
+        log("Extracting: " + entry);
+        BufferedInputStream inputStream = new
+                BufferedInputStream(zipfile
+                .getInputStream(entry));
+        BufferedOutputStream outputStream = new BufferedOutputStream(
+                new FileOutputStream(outputFile));
+
+        try {
+            IOUtils.copy(inputStream, outputStream);
+        } finally {
+            outputStream.close();
+            inputStream.close();
+        }
+    }
+
+    private static void createDir(File dir) {
+        log("Creating dir " + dir.getName());
+        if (!dir.mkdirs())
+            throw new RuntimeException("Can not create dir " + dir);
+    }
+
+    public static void log(String log) {
+        Log.v(Constants.DUMMY_TAG, "unzip :: " + log);
+    }
 }

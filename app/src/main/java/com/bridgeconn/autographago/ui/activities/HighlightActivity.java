@@ -148,6 +148,7 @@ public class HighlightActivity extends AppCompatActivity {
     }
 
     private void updateToDb(String bookId, String chapterId, String verseNumber) {
+        // TODO see how to do this in background
         realm = Realm.getDefaultInstance();
         String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);

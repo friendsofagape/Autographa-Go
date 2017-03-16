@@ -152,9 +152,7 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
     }
 
     private int getNumberOfVerses(BookModel bookModel) {
-        // TODO fix java.lang.IndexOutOfBoundsException: Invalid index 0, size is 0
         ChapterModel chapterModel = bookModel.getChapterModels().get(mChapterNumber - 1);
-
         int size = 0;
         for (int i=0; i<chapterModel.getVerseComponentsModels().size(); i++) {
             if (i==0) {
@@ -169,7 +167,6 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
             }
         }
         return size;
-//        return chapterModel.getVerseComponentsModels().get(chapterModel.getVerseComponentsModels().size() - 1).getVerseNumber();
     }
 
     @Override

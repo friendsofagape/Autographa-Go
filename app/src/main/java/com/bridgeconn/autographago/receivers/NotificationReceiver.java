@@ -9,7 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
-import com.bridgeconn.autographago.services.DownloadService;
+import com.bridgeconn.autographago.services.ParseService;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
@@ -34,36 +34,14 @@ public class NotificationReceiver extends BroadcastReceiver {
 
                         long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
                         // DO THIS IN SERVICE
-
-                        /// get valued from shared prefs
-                        String languageName, languageCode, versionName, versionCode;
                         String value = SharedPrefs.getString(Constants.PrefKeys.DOWNLOAD_ID_ + id, null);
                         if (value != null) {
                             try {
                                 JSONObject object = new JSONObject(value);
-                                languageCode = object.getString(Constants.PrefKeys.LANGUAGE_CODE);
-                                languageName = object.getString(Constants.PrefKeys.LANGUAGE_NAME);
-                                versionName = object.getString(Constants.PrefKeys.VERSION_NAME);
-                                versionCode = object.getString(Constants.PrefKeys.VERSION_CODE);
+                                long time = object.getLong(Constants.PrefKeys.TIMESTAMP);
 
-                                SharedPrefs.removeKey(Constants.PrefKeys.DOWNLOAD_ID_ + id);
-
-                                Intent startIntent = new Intent(context, DownloadService.class);
-                                startIntent.putExtra(Constants.Keys.FILE_PATH, file);
-                                startIntent.putExtra(Constants.Keys.LANGUAGE_NAME, languageName);
-                                startIntent.putExtra(Constants.Keys.LANGUAGE_CODE, languageCode);
-                                startIntent.putExtra(Constants.Keys.VERSION_NAME, versionName);
-                                startIntent.putExtra(Constants.Keys.VERSION_CODE, versionCode);
-
-                                if (UtilFunctions.isServiceRunning(DownloadService.class.getName(), context)) {
-                                 //    see how to queue
-                                    Log.i(Constants.DUMMY_TAG, "service already running");
-                                } else {
-                                    Log.i(Constants.DUMMY_TAG, "starting serivce");
-                                    startIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
-                                    context.startService(startIntent);
-                                }
-                            } catch (JSONException je) {
+                                UtilFunctions.startUnzipService(time, context);
+                            } catch (JSONException e) {
                             }
                         }
                     } else {
@@ -71,7 +49,6 @@ public class NotificationReceiver extends BroadcastReceiver {
                         if (message == DownloadManager.ERROR_INSUFFICIENT_SPACE) {
                             Toast.makeText(context, context.getString(R.string.insufficient_storage), Toast.LENGTH_SHORT).show();
                         }
-                        // So something here on failed.
                     }
                 }
             }

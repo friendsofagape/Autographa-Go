@@ -70,6 +70,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private String languageName, languageCode, versionCode, versionName;
 
     private static String downloadUrl;
+    private static boolean recreateNeeded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +134,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (fromUser) {
+            recreateNeeded = true;
             mFontSize = getFontSizeEnum(progress);
             SharedPrefs.putFontSize(mFontSize);
         }
@@ -197,6 +199,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 break;
             }
             case R.id.iv_day_mode: {
+                recreateNeeded = true;
                 mReadingMode = Constants.ReadingMode.Day;
                 mDayMode.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
                 mNightMode.setColorFilter(ContextCompat.getColor(this, R.color.black_40));
@@ -205,6 +208,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 break;
             }
             case R.id.iv_night_mode: {
+                recreateNeeded = true;
                 mReadingMode = Constants.ReadingMode.Night;
                 mDayMode.setColorFilter(ContextCompat.getColor(this, R.color.black_40));
                 mNightMode.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
@@ -409,7 +413,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         File root = Environment.getExternalStorageDirectory();
 
-        String dirName = Constants.STORAGE_DIRECTORY + System.currentTimeMillis() + "/";
+        long time = System.currentTimeMillis();
+        String dirName = Constants.STORAGE_DIRECTORY + time + "/";
         if (root.canWrite()) {
             File dir = new File(root, dirName);
             dir.mkdirs();
@@ -424,13 +429,22 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 .setDestinationInExternalPublicDir(dirName, Constants.USFM_ZIP_FILE_NAME)
         );
 
-        JSONObject jsonObject = new JSONObject();
+        JSONObject jsonObject1 = new JSONObject();
         try {
-            jsonObject.put(Constants.PrefKeys.LANGUAGE_NAME, languageName);
-            jsonObject.put(Constants.PrefKeys.LANGUAGE_CODE, languageCode);
-            jsonObject.put(Constants.PrefKeys.VERSION_NAME, versionName);
-            jsonObject.put(Constants.PrefKeys.VERSION_CODE, versionCode);
-            SharedPrefs.putString(Constants.PrefKeys.DOWNLOAD_ID_ + lastDownload, jsonObject.toString());
+            jsonObject1.put(Constants.PrefKeys.TIMESTAMP, time);
+
+            SharedPrefs.putString(Constants.PrefKeys.DOWNLOAD_ID_ + lastDownload, jsonObject1.toString());
+        } catch (JSONException je) {
+        }
+
+        JSONObject jsonObject2 = new JSONObject();
+        try {
+            jsonObject2.put(Constants.PrefKeys.LANGUAGE_NAME, languageName);
+            jsonObject2.put(Constants.PrefKeys.LANGUAGE_CODE, languageCode);
+            jsonObject2.put(Constants.PrefKeys.VERSION_NAME, versionName);
+            jsonObject2.put(Constants.PrefKeys.VERSION_CODE, versionCode);
+
+            SharedPrefs.putString(Constants.PrefKeys.TIMESTAMP_ + time, jsonObject2.toString());
         } catch (JSONException je) {
         }
     }
@@ -572,8 +586,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     private void saveToSharedPrefs() {
         Intent output = new Intent();
-        output.putExtra(Constants.Keys.TEXT_SIZE_CHANGED, true);
-        output.putExtra(Constants.Keys.READING_MODE_CHANGE, true);
+        output.putExtra(Constants.Keys.RECREATE_NEEDED, recreateNeeded);
         setResult(RESULT_OK, output);
         finish();
     }

@@ -14,7 +14,7 @@ public class Constants {
     public static final String META_DATA_FILE_NAME = "package.json";
     public static final String USFM_ZIP_FILE_NAME = "Archive.zip";
 
-    public static final String STORAGE_DIRECTORY = "/appname-external-data-cache/";
+    public static final String STORAGE_DIRECTORY = "/autographago-external-data-cache/";
 
     public interface VersionNames {
         String UDB = "Unlocked Dynamic Bible";
@@ -159,15 +159,21 @@ public class Constants {
         String VERSE_NOTE_MODEL = "verse_note_model";
         String NOTES_MODEL = "notes_model";
 
-        String READING_MODE_CHANGE = "reading_mode_change";
-        String TEXT_SIZE_CHANGED = "text_size_changed";
+        String RECREATE_NEEDED = "recreate_needed";
 
         String LANGUAGE_CODE = "language_code";
         String LANGUAGE_NAME = "language_name";
         String VERSION_CODE = "version_code";
         String VERSION_NAME = "version_name";
         String FILE_PATH = "file_path";
-        String START_SERVICE = "start_service";
+        String START_SERVICE_ULB = "start_service_ulb";
+        String START_SERVICE_UDB = "start_service_udb";
+
+        String BOOK_NAME = "book_name";
+        String SECTION = "section";
+        String TIMESTAMP = "timestamp";
+        String SEARCH_ID = "search_id";
+        String REFRESH_CONTAINER = "refresh_container";
     }
 
     public interface RequestCodes {
@@ -197,6 +203,8 @@ public class Constants {
         String LANGUAGE_CODE = "language_code";
         String VERSION_NAME = "version_name";
         String VERSION_CODE = "version_code";
+        String TIMESTAMP = "timestamp";
+        String TIMESTAMP_ = "timestamp_";
     }
 
     public enum ReadingMode {
@@ -245,12 +253,13 @@ public class Constants {
     }
 
     public interface ACTION {
-        String MAIN_ACTION = "com.bridgeconn.autographago.action.main";
-        String STARTFOREGROUND_ACTION = "com.bridgeconn.autographago.action.startforeground";
-        String STOPFOREGROUND_ACTION = "com.bridgeconn.autographago.action.stopforeground";
-        String PARSE_ENG_UDB_ACTION = "com.bridgeconn.autographago.action.parseengudb";
+        String PARSE_ENG_UDB = "com.bridgeconn.autographago.action.parseengudb";
+        String PARSE_ENG_ULB = "com.bridgeconn.autographago.action.parseengulb";
+        String START_UNZIP = "com.bridgeconn.autographago.action.startunzip";
+        String START_PARSE = "com.bridgeconn.autographago.action.startparse";
+        String PARSE_COMPLETE = "com.bridgeconn.autographago.action.parsedone";
 
-        String PARSING_COMPLETE_ACTION = "com.bridgeconn.autographago.action.parsingdone";
+        String ADD_TO_HISTORY = "com.bridgeconn.autographago.action.addtohistory";
     }
 
     public interface NOTIFICATION_ID {

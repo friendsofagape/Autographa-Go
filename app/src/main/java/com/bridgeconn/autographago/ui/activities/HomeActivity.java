@@ -26,11 +26,12 @@ import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
-import com.bridgeconn.autographago.services.DownloadService;
+import com.bridgeconn.autographago.services.ParseService;
 import com.bridgeconn.autographago.ui.adapters.BookAdapter;
 import com.bridgeconn.autographago.ui.adapters.SpinnerAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
+import com.bridgeconn.autographago.utils.USFMParser;
 import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import org.json.JSONException;
@@ -61,7 +62,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private String languageCode, languageName, versionCode;
     private Realm realm;
-    private boolean isStartService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,9 +124,29 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         getAllBooks();
 
-        registerReceiver(onParsingComplete, new IntentFilter(Constants.ACTION.PARSING_COMPLETE_ACTION));
+        registerReceiver(onParsingComplete, new IntentFilter(Constants.ACTION.PARSE_COMPLETE));
 
-        isStartService = getIntent().getBooleanExtra(Constants.Keys.START_SERVICE, false);
+        boolean isStartServiceUlb = getIntent().getBooleanExtra(Constants.Keys.START_SERVICE_ULB, false);
+        boolean isStartServiceUdb = getIntent().getBooleanExtra(Constants.Keys.START_SERVICE_UDB, false);
+
+        if (isStartServiceUlb) {
+            Intent startIntent = new Intent(this, ParseService.class);
+            startIntent.setAction(Constants.ACTION.PARSE_ENG_ULB);
+            startIntent.putExtra(Constants.Keys.LANGUAGE_NAME, "English");
+            startIntent.putExtra(Constants.Keys.VERSION_CODE, Constants.VersionCodes.ULB);
+            startService(startIntent);
+        }
+
+        if (isStartServiceUdb) {
+            Intent startIntent = new Intent(this, ParseService.class);
+            startIntent.setAction(Constants.ACTION.PARSE_ENG_UDB);
+            startIntent.putExtra(Constants.Keys.LANGUAGE_NAME, "English");
+            startIntent.putExtra(Constants.Keys.VERSION_CODE, Constants.VersionCodes.UDB);
+            startService(startIntent);
+        }
+
+        UtilFunctions.queueArchivesForUnzipping(this);
+        UtilFunctions.queueDirectoriesForParsing(this);
     }
 
     public int getSelectedSpinnerPosition() {
@@ -275,10 +295,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         switch (requestCode) {
             case Constants.RequestCodes.SETTINGS: {
                 if (resultCode == RESULT_OK) {
-                    boolean readingMode, fontSize;
-                    readingMode = data.getBooleanExtra(Constants.Keys.TEXT_SIZE_CHANGED, false);
-                    fontSize = data.getBooleanExtra(Constants.Keys.READING_MODE_CHANGE, false);
-                    if (readingMode || fontSize) {
+                    if (data.getBooleanExtra(Constants.Keys.RECREATE_NEEDED, false)) {
                         this.recreate();
                     }
                 }
@@ -292,27 +309,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         realm.close();
         unregisterReceiver(onParsingComplete);
-
-        if (isStartService) {
-            Intent startIntent = new Intent(this, DownloadService.class);
-            startIntent.setAction(Constants.ACTION.PARSE_ENG_UDB_ACTION);
-            startIntent.putExtra(Constants.Keys.LANGUAGE_NAME, "English");
-            startIntent.putExtra(Constants.Keys.VERSION_CODE, Constants.VersionCodes.UDB);
-            if (UtilFunctions.isServiceRunning(DownloadService.class.getName(), this)) {
-                //    see how to queue
-                Log.i(Constants.DUMMY_TAG, "service already running");
-            } else {
-                startService(startIntent);
-            }
-        }
-        // TODO here also start service if some folder exist in memory that contains usfm, parse those files also
-        // also unzip if zip file present, and phone switched off
     }
 
     private BroadcastReceiver onParsingComplete = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             getCategories();
+            if (intent.getBooleanExtra(Constants.Keys.REFRESH_CONTAINER, false)) {
+                new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
+                getAllBooks();
+            }
         }
     };
 

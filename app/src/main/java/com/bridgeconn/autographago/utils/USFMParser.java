@@ -77,7 +77,7 @@ public class USFMParser {
 //            try {
             while ((mLine = reader.readLine()) != null) {
                 if (!processLine(context, mLine, languageName, languageCode, versionCode)) {
-                    return true;
+                    return false;
                 }
             }
             addComponentsToChapter();

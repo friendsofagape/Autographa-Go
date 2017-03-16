@@ -1,6 +1,7 @@
 package com.bridgeconn.autographago.ui.activities;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
@@ -57,6 +59,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
     private LinearLayout mBottomBar;
     private Realm realm;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +70,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
         UtilFunctions.applyReadingMode();
 
-        realm = Realm.getDefaultInstance();
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
         toolbar.setContentInsetStartWithNavigation(0);
@@ -78,11 +79,9 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
-        Intent intent = getIntent();
-        String verseNumber = intent.getStringExtra(Constants.Keys.VERSE_NO);
-        int chapterNumber = intent.getIntExtra(Constants.Keys.CHAPTER_NO, 0);
-        mBookId = intent.getStringExtra(Constants.Keys.BOOK_ID);
+        mBookId = getIntent().getStringExtra(Constants.Keys.BOOK_ID);
 
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mToolBarTitle = (TextView) findViewById(R.id.toolbar_title);
         mIvBookMark = (ImageView) findViewById(R.id.iv_bookmark);
         mBookmarkHolder = (LinearLayout) findViewById(R.id.bookmark_holder);
@@ -94,18 +93,48 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.view_notes).setOnClickListener(this);
         findViewById(R.id.view_share).setOnClickListener(this);
 
-        mBookModel = getBookModel(mBookId);
+        getSupportActionBar().setTitle("");
+        mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(this, mBookId));
 
-        if (mBookModel != null) {
-            getSupportActionBar().setTitle("");
-            mToolBarTitle.setText(mBookModel.getBookName());
-
-            for (ChapterModel model : mBookModel.getChapterModels()) {
-                mChapterModels.add(model);
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                mProgressBar.setVisibility(View.VISIBLE);
+                mIvBookMark.setOnClickListener(null);
+                mToolBarTitle.setOnClickListener(null);
             }
 
-            mBookMarkNumber = mBookModel.getBookmarkChapterNumber();
-        }
+            @Override
+            protected Void doInBackground(Void... params) {
+                mBookModel = getBookModel(mBookId);
+
+                if (mBookModel != null) {
+                    for (ChapterModel model : mBookModel.getChapterModels()) {
+                        mChapterModels.add(model);
+                    }
+                    mBookMarkNumber = mBookModel.getBookmarkChapterNumber();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                mProgressBar.setVisibility(View.GONE);
+
+                mToolBarTitle.setOnClickListener(BookActivity.this);
+                mIvBookMark.setOnClickListener(BookActivity.this);
+                if (mBookMarkNumber == 1) {
+                    mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
+                }
+
+                String verseNumber = getIntent().getStringExtra(Constants.Keys.VERSE_NO);
+                int chapterNumber = getIntent().getIntExtra(Constants.Keys.CHAPTER_NO, 0);
+
+                mRecyclerView.scrollToPosition(findPositionToScroll(chapterNumber-1, verseNumber));
+            }
+        }.execute();
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list_chapters);
 
@@ -114,12 +143,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new ChapterAdapter(this, mChapterModels, SharedPrefs.getFontSize());
         mRecyclerView.setAdapter(mAdapter);
-
-        if (mBookMarkNumber == 1) {
-            mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
-        }
-
-        mRecyclerView.scrollToPosition(findPositionToScroll(chapterNumber-1, verseNumber));
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -145,6 +168,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private BookModel getBookModel(String bookId) {
+        realm = Realm.getDefaultInstance();
         String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
         ArrayList<BookModel> resultList = query(new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
@@ -179,8 +203,10 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 bookModel.getChapterModels().add(chapterModel);
             }
+            realm.close();
             return bookModel;
         }
+        realm.close();
         return null;
     }
 
@@ -191,12 +217,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
             resultsToReturn.add(mapper.map(result));
         }
         return resultsToReturn;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        realm.close();
     }
 
     private int findPositionToScroll(int chapterPosition, String verseNumber) {
@@ -236,7 +256,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void findSelectedAndHighlight() {
-
+        // TODO see how to do this in background
         BookModel bookModel = new BookModel(mBookModel);
 
         for (int i=0;  i<mChapterModels.size(); i++) {

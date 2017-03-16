@@ -1,14 +1,16 @@
 package com.bridgeconn.autographago.utils;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Environment;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import com.bridgeconn.autographago.services.ParseService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -207,14 +209,105 @@ public class UtilFunctions {
         return spannableStringBuilder.toString();
     }
 
-    public static boolean isServiceRunning(String serviceName, Context context) {
-        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceName.equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
+    public static void queueArchivesForUnzipping(Context context) {
+        traverseForExist(new File (Environment.getExternalStorageDirectory() + Constants.STORAGE_DIRECTORY), context);
     }
 
+    private static void traverseForExist (File dir, Context context) {
+        Log.i(Constants.DUMMY_TAG, "traversing : " + dir.getAbsolutePath());
+        if (dir.exists()) {
+            File[] files = dir.listFiles();
+            for (int i = 0; i < files.length; ++i) {
+                File file = files[i];
+                if (file.isDirectory()) {
+                    traverseForExist(file, context);
+                } else {
+                    if (file.getAbsolutePath().endsWith(".zip")){
+                        // here unzip the archive
+                        String filePath = file.getAbsolutePath();
+                        filePath = filePath.replaceAll(Environment.getExternalStorageDirectory().getAbsolutePath(), "");
+                        filePath = filePath.replaceAll(Constants.STORAGE_DIRECTORY, "");
+                        filePath = filePath.replaceAll(Constants.USFM_ZIP_FILE_NAME, "");
+                        filePath = filePath.replaceAll("/", "");
+                        Log.i(Constants.DUMMY_TAG, "filePath = " + filePath);
+                        try {
+                            long timeStamp = Long.parseLong(filePath);
+                            startUnzipService(timeStamp, context);
+                        } catch (NumberFormatException e) {
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void queueDirectoriesForParsing(Context context) {
+        traverseForTimeStamp(context, new File (Environment.getExternalStorageDirectory() + Constants.STORAGE_DIRECTORY));
+    }
+
+    private static void traverseForTimeStamp(Context context, File dir) {
+        if (dir.exists()) {
+            File[] files = dir.listFiles();
+            for (int i = 0; i < files.length; ++i) {
+                File file = files[i];
+                if (file.isDirectory()) {
+                    // here start parsing service
+                    String filePath = file.getAbsolutePath();
+                    filePath = filePath.replaceAll(Environment.getExternalStorageDirectory().getAbsolutePath(), "");
+                    filePath = filePath.replaceAll(Constants.STORAGE_DIRECTORY, "");
+                    filePath = filePath.replaceAll("/", "");
+                    try {
+                        long timeStamp = Long.parseLong(filePath);
+                        String value = SharedPrefs.getString(Constants.PrefKeys.TIMESTAMP_ + timeStamp, null);
+                        if (value != null) {
+                            JSONObject jsonObject = new JSONObject(value);
+                            String languageCode = jsonObject.getString(Constants.PrefKeys.LANGUAGE_CODE);
+                            String languageName = jsonObject.getString(Constants.PrefKeys.LANGUAGE_NAME);
+                            String versionCode = jsonObject.getString(Constants.PrefKeys.VERSION_CODE);
+                            startParseService(context, file.getAbsolutePath(), languageName, languageCode, versionCode);
+                        }
+                    } catch (NumberFormatException | JSONException e) {
+                    }
+                }
+            }
+        }
+    }
+
+    public static void startUnzipService(long time, Context context) {
+        /// get valued from shared prefs
+        try {
+            String value = SharedPrefs.getString(Constants.PrefKeys.TIMESTAMP_ + time, null);
+            if (value != null) {
+                JSONObject jsonObject = new JSONObject(value);
+                String languageCode = jsonObject.getString(Constants.PrefKeys.LANGUAGE_CODE);
+                String languageName = jsonObject.getString(Constants.PrefKeys.LANGUAGE_NAME);
+                String versionName = jsonObject.getString(Constants.PrefKeys.VERSION_NAME);
+                String versionCode = jsonObject.getString(Constants.PrefKeys.VERSION_CODE);
+
+                String file = Environment.getExternalStorageDirectory() + Constants.STORAGE_DIRECTORY + time + "/" + Constants.USFM_ZIP_FILE_NAME;
+//              SharedPrefs.removeKey(Constants.PrefKeys.DOWNLOAD_ID_ + id);
+
+                Intent startIntent = new Intent(context, ParseService.class);
+                startIntent.putExtra(Constants.Keys.FILE_PATH, file);
+                startIntent.putExtra(Constants.Keys.LANGUAGE_NAME, languageName);
+                startIntent.putExtra(Constants.Keys.LANGUAGE_CODE, languageCode);
+                startIntent.putExtra(Constants.Keys.VERSION_NAME, versionName);
+                startIntent.putExtra(Constants.Keys.VERSION_CODE, versionCode);
+                Log.i(Constants.DUMMY_TAG, "starting serivce");
+                startIntent.setAction(Constants.ACTION.START_UNZIP);
+                context.startService(startIntent);
+            }
+        } catch (JSONException je) {
+        }
+    }
+
+    public static void startParseService(Context context, String directoryPath, String languageName, String languageCode, String versionCode) {
+        Intent startParse = new Intent(context, ParseService.class);
+        startParse.setAction(Constants.ACTION.START_PARSE);
+        startParse.putExtra(Constants.Keys.FILE_PATH, directoryPath);
+        startParse.putExtra(Constants.Keys.LANGUAGE_NAME, languageName);
+        startParse.putExtra(Constants.Keys.LANGUAGE_CODE, languageCode);
+        startParse.putExtra(Constants.Keys.VERSION_CODE, versionCode);
+        context.startService(startParse);
+    }
 }
