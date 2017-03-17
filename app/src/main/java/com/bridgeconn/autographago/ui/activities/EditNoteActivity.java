@@ -43,7 +43,6 @@ import io.realm.RealmResults;
 
 public class EditNoteActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Realm realm;
     private EditText mEditor;
     private EditText mEtTitle;
     private TextView mSave;
@@ -57,8 +56,6 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
         super.onCreate(savedInstanceState);
-
-        realm = Realm.getDefaultInstance();
 
         setContentView(R.layout.activity_edit_note);
 
@@ -178,25 +175,6 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
             }
         });
         mButtonLayout.addView(view);
-    }
-
-    public ArrayList<NotesModel> query(Specification<NotesModel> specification, Mapper<NotesModel, NotesModel> mapper) {
-        RealmResults<NotesModel> realmResults = specification.generateResults(realm);
-
-        ArrayList<NotesModel> resultsToReturn = new ArrayList<>();
-
-        for (NotesModel result : realmResults) {
-            resultsToReturn.add(mapper.map(result));
-        }
-
-        return resultsToReturn;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        realm.close();
     }
 
     private int findMin() {

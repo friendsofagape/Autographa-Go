@@ -58,7 +58,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     private int mBookMarkNumber;
 
     private LinearLayout mBottomBar;
-    private Realm realm;
     private ProgressBar mProgressBar;
 
     @Override
@@ -101,7 +100,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
             protected void onPreExecute() {
                 super.onPreExecute();
                 mProgressBar.setVisibility(View.VISIBLE);
-                mIvBookMark.setOnClickListener(null);
                 mToolBarTitle.setOnClickListener(null);
             }
 
@@ -124,7 +122,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 mProgressBar.setVisibility(View.GONE);
 
                 mToolBarTitle.setOnClickListener(BookActivity.this);
-                mIvBookMark.setOnClickListener(BookActivity.this);
                 if (mBookMarkNumber == 1) {
                     mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
                 }
@@ -168,10 +165,10 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private BookModel getBookModel(String bookId) {
-        realm = Realm.getDefaultInstance();
+        final Realm realm = Realm.getDefaultInstance();
         String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
-        ArrayList<BookModel> resultList = query(new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
+        ArrayList<BookModel> resultList = query(realm, new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
         if (resultList.size() > 0) {
             BookModel bModel = resultList.get(0);
             BookModel bookModel = new BookModel();
@@ -210,7 +207,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         return null;
     }
 
-    public ArrayList<BookModel> query(Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
+    public ArrayList<BookModel> query(Realm realm, Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
         RealmResults<BookModel> realmResults = specification.generateResults(realm);
         ArrayList<BookModel> resultsToReturn = new ArrayList<>();
         for (BookModel result : realmResults) {
@@ -257,7 +254,6 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
     private void findSelectedAndHighlight() {
         // TODO see how to do this in background
-        BookModel bookModel = new BookModel(mBookModel);
 
         for (int i=0;  i<mChapterModels.size(); i++) {
             for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
@@ -265,17 +261,15 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     mChapterModels.get(i).getVerseComponentsModels().get(j).setSelected(false);
                     mChapterModels.get(i).getVerseComponentsModels().get(j).setHighlighted(true);
 
-                    String [] chapterIds = bookModel.getChapterModels().get(i).getChapterId().split("_");
+                    String [] chapterIds = mBookModel.getChapterModels().get(i).getChapterId().split("_");
 
-                    bookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setChapterId(chapterIds[2] + "_" + chapterIds[3]);
-                    bookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(true);
+                    mBookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setChapterId(chapterIds[2] + "_" + chapterIds[3]);
+                    mBookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(true);
                 }
             }
         }
-
-        new AutographaRepository<BookModel>().update(bookModel);
-
         mAdapter.notifyDataSetChanged();
+        new AutographaRepository<BookModel>().update(mBookModel);
     }
 
     private void findSelectedAndAddNote() {
@@ -327,26 +321,14 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     private int findChapterNumber(int position) {
         int size = 0;
         for (int i=0; i<mChapterModels.size(); i++) {
-            for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
-                if (j==0) {
-                    if (size == position) {
-                        return i+1;
-                    }
-                    size++;
-                } else {
-                    if (mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber().equals(
-                            mChapterModels.get(i).getVerseComponentsModels().get(j-1).getVerseNumber())) {
-                        continue;
-                    } else {
-                        if (size == position) {
-                            return i+1;
-                        }
-                        size++;
-                    }
-                }
+            size = size + mChapterModels.get(i).getNumberOfVerses();
+            if (position > size - 1) {
+                continue;
+            } else { // pos <= num
+                return mChapterModels.get(i).getChapterNumber();
             }
         }
-        return 0;
+        return 1;
     }
 
     private String findVerseNumber(int position) {
@@ -379,26 +361,32 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.bookmark_holder: {
 
-                BounceInterpolator interpolator = new BounceInterpolator(0.2, 20);
-                final Animation myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
-                myAnim.setInterpolator(interpolator);
-                mIvBookMark.startAnimation(myAnim);
+//                BounceInterpolator interpolator = new BounceInterpolator(0.2, 20);
+//                final Animation myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
+//                myAnim.setInterpolator(interpolator);
+//                mIvBookMark.startAnimation(myAnim);
 
                 mIvBookMark.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
 
                 int position = mLayoutManager.findFirstVisibleItemPosition();
 
-                mBookMarkNumber = findChapterNumber(position);
+                new AsyncTask<Integer, Void, Void>(){
+                    @Override
+                    protected Void doInBackground(Integer... params) {
+                        mBookMarkNumber = findChapterNumber(params[0]);
 
-                for (BookIdModel bookIdModel : Constants.CONTAINER_BOOKS_LIST) {
-                    if (bookIdModel.getBookId().equals(mBookId)) {
-                        bookIdModel.setBookmarkChapterNumber(mBookMarkNumber);
-                        break;
+                        for (BookIdModel bookIdModel : Constants.CONTAINER_BOOKS_LIST) {
+                            if (bookIdModel.getBookId().equals(mBookId)) {
+                                bookIdModel.setBookmarkChapterNumber(mBookMarkNumber);
+                                break;
+                            }
+                        }
+                        mBookModel.setBookmarkChapterNumber(mBookMarkNumber);
+                        new AutographaRepository<BookModel>().update(mBookModel);
+
+                        return null;
                     }
-                }
-                mBookModel.setBookmarkChapterNumber(mBookMarkNumber);
-                new AutographaRepository<BookModel>().update(mBookModel);
-
+                }.execute(position);
                 break;
             }
             case R.id.view_highlights: {

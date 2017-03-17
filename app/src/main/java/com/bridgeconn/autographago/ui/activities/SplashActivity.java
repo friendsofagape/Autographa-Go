@@ -28,7 +28,6 @@ import io.realm.RealmResults;
 public class SplashActivity extends AppCompatActivity {
 
     private String languageCode, versionCode;
-    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,43 +36,51 @@ public class SplashActivity extends AppCompatActivity {
 
         UtilFunctions.applyReadingMode();
 
-        // TODO fix memory error crash here
-        realm = Realm.getDefaultInstance();
+        boolean addToDB = true, startServiceUdb = true, startServiceUlb = true, addInSplash = true;
 
-        boolean addToDB = true, startServiceUdb = true, startServiceUlb = true;
-        ArrayList<LanguageModel> resultsList = query(new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
-        for (LanguageModel languageModel : resultsList) {
-            if (languageModel.getLanguageName().equals("English")) {
-                for (VersionModel versionModel : languageModel.getVersionModels()) {
-                    if (versionModel.getVersionCode().equals(Constants.VersionCodes.ULB)) {
-                        if (versionModel.getBookModels().size() == 66) {
-                            // all books of this version and languages already in db
-                            startServiceUlb = false;
-                            addToDB = false;
-                        }
-                    } else if (versionModel.getVersionCode().equals(Constants.VersionCodes.UDB)) {
-                        if (versionModel.getBookModels().size() == 66) {
-                            // all books of this version and languages already in db
-                            startServiceUdb = false;
+        // TODO fix memory error crash here
+        Realm realm = null;
+        try {
+            realm = Realm.getDefaultInstance();
+            ArrayList<LanguageModel> resultsList = query(realm, new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
+            for (LanguageModel languageModel : resultsList) {
+                if (languageModel.getLanguageName().equals("English")) {
+                    for (VersionModel versionModel : languageModel.getVersionModels()) {
+                        if (versionModel.getVersionCode().equals(Constants.VersionCodes.ULB)) {
+                            if (versionModel.getBookModels().size() == 66) {
+                                // all books of this version and languages already in db
+                                startServiceUlb = false;
+                                addToDB = false;
+                            }
+                            if (versionModel.getBookModels().size() > 10) {
+                                addInSplash = false;
+                            }
+                        } else if (versionModel.getVersionCode().equals(Constants.VersionCodes.UDB)) {
+                            if (versionModel.getBookModels().size() == 66) {
+                                // all books of this version and languages already in db
+                                startServiceUdb = false;
+                            }
                         }
                     }
                 }
             }
+            realm.close();
+        } catch (Exception e) {
+            if (realm != null) {
+                realm.close();
+            }
+            Log.e(Constants.DUMMY_TAG, "REALM MEMORY EXCEPTION");
         }
-        realm.close();
 
         int filesAdded = 0;
-        if (addToDB) {
+        if (addInSplash) {
             for (int i = 0; i < Constants.UsfmFileNames.length; i++) {
                 USFMParser usfmParser = new USFMParser();
                 boolean added = usfmParser.parseUSFMFile(this, "english_ulb/" + Constants.UsfmFileNames[i], true, "English", "ENG", Constants.VersionCodes.ULB);
                 if (added) {
                     filesAdded++;
                 }
-                if (i==65) {
-                    startServiceUlb = false;
-                }
-                if (filesAdded > 5) {
+                if (filesAdded >= 10) {
                     break;
                 }
             }
@@ -92,7 +99,7 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
-    private ArrayList<LanguageModel> query(Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
+    private ArrayList<LanguageModel> query(Realm realm, Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
         RealmResults<LanguageModel> realmResults = specification.generateResults(realm);
 
         ArrayList<LanguageModel> resultsToReturn = new ArrayList<>();

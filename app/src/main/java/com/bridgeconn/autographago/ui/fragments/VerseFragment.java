@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class VerseFragment extends Fragment implements View.OnClickListener, SelectChapterAndVerseActivity.OnItemClickListener {
+public class VerseFragment extends Fragment implements SelectChapterAndVerseActivity.OnItemClickListener {
 
     private RecyclerView mRecyclerView;
     private NumberAdapter mAdapter;
@@ -36,7 +36,6 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
     private ArrayList<VerseComponentsModel> mVerseComponentsModels = new ArrayList<>();
     private int mNumberOfBlocks;
     private int mChapterNumber;
-    private Realm realm;
 
     @Override
     public void onItemClick(int number, String bookId) {
@@ -61,17 +60,12 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
                 mVerseComponentsModels.add(model);
             }
         }
-
-//        mAdapter.changeVerseCount(mNumberOfBlocks);
-//        mAdapter.changeChapterNumber(mChapterNumber);
         mAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        realm = Realm.getDefaultInstance();
 
         mBookId = getArguments().getString(Constants.Keys.BOOK_ID);
         mChapterNumber = getArguments().getInt(Constants.Keys.CHAPTER_NO);
@@ -103,9 +97,10 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
     }
 
     private BookModel getBookModel(String bookId) {
+        final Realm realm = Realm.getDefaultInstance();
         String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
-        ArrayList<BookModel> resultList = query(new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
+        ArrayList<BookModel> resultList = query(realm, new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
         if (resultList.size() > 0) {
             BookModel bModel = resultList.get(0);
             BookModel bookModel = new BookModel();
@@ -137,12 +132,14 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
                 }
                 bookModel.getChapterModels().add(chapterModel);
             }
+            realm.close();
             return bookModel;
         }
+        realm.close();
         return null;
     }
 
-    public ArrayList<BookModel> query(Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
+    public ArrayList<BookModel> query(Realm realm, Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
         RealmResults<BookModel> realmResults = specification.generateResults(realm);
         ArrayList<BookModel> resultsToReturn = new ArrayList<>();
         for (BookModel result : realmResults) {
@@ -188,19 +185,6 @@ public class VerseFragment extends Fragment implements View.OnClickListener, Sel
         mRecyclerView.setAdapter(mAdapter);
 
         return view;
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        realm.close();
     }
 
 }

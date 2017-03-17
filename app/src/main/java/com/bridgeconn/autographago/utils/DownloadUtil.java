@@ -35,7 +35,7 @@ public class DownloadUtil {
     public void downloadJson(final String fileUrl, final JsonDownloadCallback callback) {
         final ApiInterface downloadService = retrofit.create(ApiInterface.class);
 
-        new AsyncTask<Void, Long, Void>() {
+        new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
                 Call<ResponseModel> call = downloadService.downloadJsonResponse(fileUrl);

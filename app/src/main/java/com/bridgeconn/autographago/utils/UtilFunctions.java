@@ -217,6 +217,9 @@ public class UtilFunctions {
         Log.i(Constants.DUMMY_TAG, "traversing : " + dir.getAbsolutePath());
         if (dir.exists()) {
             File[] files = dir.listFiles();
+            if (files == null) {
+                return;
+            }
             for (int i = 0; i < files.length; ++i) {
                 File file = files[i];
                 if (file.isDirectory()) {
@@ -248,6 +251,9 @@ public class UtilFunctions {
     private static void traverseForTimeStamp(Context context, File dir) {
         if (dir.exists()) {
             File[] files = dir.listFiles();
+            if (files == null) {
+                return;
+            }
             for (int i = 0; i < files.length; ++i) {
                 File file = files[i];
                 if (file.isDirectory()) {

@@ -41,7 +41,6 @@ public class HighlightActivity extends AppCompatActivity {
     private HighlightAdapter mHighlightAdapter;
     private ArrayList<VerseIdModel> mHighlightModels = new ArrayList<>();
     private String languageCode, versionCode;
-    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,9 +87,11 @@ public class HighlightActivity extends AppCompatActivity {
 
             @Override
             protected Void doInBackground(Void... params) {
-                realm = Realm.getDefaultInstance();
+                final Realm realm = Realm.getDefaultInstance();
                 List<BookModel> bookModels = query(
-                        new AllSpecifications.BooksByLanguageAndVersion(languageCode, versionCode), new AllMappers.BookMapper());
+                                realm,
+                                new AllSpecifications.BooksByLanguageAndVersion(languageCode, versionCode),
+                                new AllMappers.BookMapper());
                 HashSet<VerseIdModel> verseIdModelHashSet = new HashSet<>();
                 for (BookModel bookModel : bookModels) {
                     for (ChapterModel chapterModel : bookModel.getChapterModels()) {
@@ -144,15 +145,21 @@ public class HighlightActivity extends AppCompatActivity {
         mHighlightAdapter.notifyItemRemoved(position);
         mHighlightAdapter.notifyItemRangeChanged(position, mHighlightModels.size(), null);
 
-        updateToDb(bookId, chapterId, verseNumber);
+        new AsyncTask<String, Void, Void>(){
+            @Override
+            protected Void doInBackground(String... params) {
+                updateToDb(params[0], params[1], params[2]);
+                return null;
+            }
+        }.execute(bookId, chapterId, verseNumber);
     }
 
     private void updateToDb(String bookId, String chapterId, String verseNumber) {
         // TODO see how to do this in background
-        realm = Realm.getDefaultInstance();
+        final Realm realm = Realm.getDefaultInstance();
         String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
-        ArrayList<BookModel> resultList = query(new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
+        ArrayList<BookModel> resultList = query(realm, new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
         if (resultList.size() > 0) {
             BookModel bModel = resultList.get(0);
             BookModel bookModel = new BookModel();
@@ -190,11 +197,12 @@ public class HighlightActivity extends AppCompatActivity {
                 bookModel.getChapterModels().add(chapterModel);
             }
             new AutographaRepository<BookModel>().update(bookModel);
-            realm.close();
         }
+        realm.close();
+        return;
     }
 
-    public ArrayList<BookModel> query(Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
+    public ArrayList<BookModel> query(Realm realm, Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
         RealmResults<BookModel> realmResults = specification.generateResults(realm);
         ArrayList<BookModel> resultsToReturn = new ArrayList<>();
         for (BookModel result : realmResults) {

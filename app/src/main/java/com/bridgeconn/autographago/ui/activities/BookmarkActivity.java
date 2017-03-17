@@ -1,5 +1,6 @@
 package com.bridgeconn.autographago.ui.activities;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,7 +35,6 @@ public class BookmarkActivity extends AppCompatActivity {
     private RecyclerView mRecyclerViewBookmarks;
     private BookmarkAdapter mBookmarkAdapter;
     private ArrayList<BookIdModel> mBookmarkModels = new ArrayList<>();
-    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +43,6 @@ public class BookmarkActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         UtilFunctions.applyReadingMode();
-
-        realm = Realm.getDefaultInstance();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
@@ -105,18 +103,26 @@ public class BookmarkActivity extends AppCompatActivity {
                 bookIdModel.setBookmarkChapterNumber(0);
             }
         }
-        BookModel bookModel = getBookModel(mBookmarkModels.get(position).getBookId());
-        bookModel.setBookmarkChapterNumber(0);
-        new AutographaRepository<BookModel>().update(bookModel);
+        String bookId = mBookmarkModels.get(position).getBookId();
         mBookmarkModels.remove(position);
         mBookmarkAdapter.notifyItemRemoved(position);
         mBookmarkAdapter.notifyItemRangeChanged(position, mBookmarkModels.size(), null);
+        new AsyncTask<String, Void, Void>() {
+            @Override
+            protected Void doInBackground(String... params) {
+                BookModel bookModel = getBookModel(params[0]);
+                bookModel.setBookmarkChapterNumber(0);
+                new AutographaRepository<BookModel>().update(bookModel);
+                return null;
+            }
+        }.execute(bookId);
     }
 
     private BookModel getBookModel(String bookId) {
+        final Realm realm = Realm.getDefaultInstance();
         String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
-        ArrayList<BookModel> resultList = query(new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
+        ArrayList<BookModel> resultList = query(realm, new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
         if (resultList.size() > 0) {
             BookModel bModel = resultList.get(0);
             BookModel bookModel = new BookModel();
@@ -148,23 +154,19 @@ public class BookmarkActivity extends AppCompatActivity {
                 }
                 bookModel.getChapterModels().add(chapterModel);
             }
+            realm.close();
             return bookModel;
         }
+        realm.close();
         return null;
     }
 
-    public ArrayList<BookModel> query(Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
+    public ArrayList<BookModel> query(Realm realm, Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
         RealmResults<BookModel> realmResults = specification.generateResults(realm);
         ArrayList<BookModel> resultsToReturn = new ArrayList<>();
         for (BookModel result : realmResults) {
             resultsToReturn.add(mapper.map(result));
         }
         return resultsToReturn;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        realm.close();
     }
 }

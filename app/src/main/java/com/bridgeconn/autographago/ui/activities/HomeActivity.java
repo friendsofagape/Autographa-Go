@@ -59,9 +59,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private AppCompatSpinner mSpinner;
     private List<SpinnerModel> categoriesList = new ArrayList<>();
     private SpinnerAdapter spinnerAdapter;
-
     private String languageCode, languageName, versionCode;
-    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +72,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         languageName = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, "English");
         versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
-
-        realm = Realm.getDefaultInstance();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setContentInsetStartWithNavigation(0);
@@ -166,8 +162,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getCategories() {
+        final Realm realm = Realm.getDefaultInstance();
         categoriesList.clear();
-        ArrayList<LanguageModel> languageModels = query(new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
+        ArrayList<LanguageModel> languageModels = query(realm, new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
         for (LanguageModel languageModel : languageModels) {
             for (VersionModel versionModel : languageModel.getVersionModels()) {
                 SpinnerModel spinnerModel = new SpinnerModel();
@@ -177,10 +174,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 categoriesList.add(spinnerModel);
             }
         }
+        realm.close();
         spinnerAdapter.notifyDataSetChanged();
     }
 
-    public ArrayList<LanguageModel> query(Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
+    public ArrayList<LanguageModel> query(Realm realm, Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
         RealmResults<LanguageModel> realmResults = specification.generateResults(realm);
         ArrayList<LanguageModel> resultsToReturn = new ArrayList<>();
         for (LanguageModel result : realmResults) {
@@ -307,7 +305,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        realm.close();
         unregisterReceiver(onParsingComplete);
     }
 

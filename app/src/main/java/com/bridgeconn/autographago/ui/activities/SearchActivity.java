@@ -1,5 +1,6 @@
 package com.bridgeconn.autographago.ui.activities;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,14 +21,13 @@ import android.widget.TextView;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
-import com.bridgeconn.autographago.models.SearchHistoryModel;
 import com.bridgeconn.autographago.models.SearchModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
-import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
+import com.bridgeconn.autographago.services.BackgroundService;
 import com.bridgeconn.autographago.ui.adapters.SearchAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
@@ -51,7 +51,6 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     private ProgressBar mProgressBar;
     private LinearLayout noResultsFound;
     private String languageCode, versionCode;
-    private Realm realm;
     private RadioGroup sectionGroupView;
     private TextView numOfResults;
     private PerformSearch performSearchTask;
@@ -104,21 +103,11 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             if (!text.equals("")) {
                 UtilFunctions.hideKeyboard(SearchActivity.this, mAutoCompleteTextView);
 
-                realm = Realm.getDefaultInstance();
-                ArrayList<SearchHistoryModel> resultList = querySearchHistory(new AllSpecifications.SearchHistoryModelByText(text), new AllMappers.SearchHistoryMapper());
+                Intent task = new Intent(SearchActivity.this, BackgroundService.class);
+                task.setAction(Constants.ACTION.UPDATE_SEARCH_HISTORY);
+                task.putExtra(Constants.Keys.TEXT, text);
+                startService(task);
 
-                SearchHistoryModel model = new SearchHistoryModel();
-                model.setLastSearchTime(System.currentTimeMillis());
-                model.setSearchText(text);
-
-                if (resultList.size() > 0) {
-                    model.setSearchCount(resultList.get(0).getSearchCount() + 1);
-                    new AutographaRepository<SearchHistoryModel>().update(model);
-                } else {
-                    model.setSearchCount(1);
-                    new AutographaRepository<SearchHistoryModel>().add(model);
-                }
-                realm.close();
                 doSearch(text, languageCode, versionCode);
                 return true;
             }
@@ -194,16 +183,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         return text;
     }
 
-    public ArrayList<SearchHistoryModel> querySearchHistory(Specification<SearchHistoryModel> specification, Mapper<SearchHistoryModel, SearchHistoryModel> mapper) {
-        RealmResults<SearchHistoryModel> realmResults = specification.generateResults(realm);
-        ArrayList<SearchHistoryModel> resultsToReturn = new ArrayList<>();
-        for (SearchHistoryModel result : realmResults) {
-            resultsToReturn.add(mapper.map(result));
-        }
-        return resultsToReturn;
-    }
-
-    public ArrayList<BookModel> queryBook(Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
+    public ArrayList<BookModel> queryBook(Realm realm, Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
         RealmResults<BookModel> realmResults = specification.generateResults(realm);
         ArrayList<BookModel> resultsToReturn = new ArrayList<>();
         for (BookModel result : realmResults) {
@@ -212,7 +192,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         return resultsToReturn;
     }
 
-    public ArrayList<VerseComponentsModel> queryVerse(Specification<VerseComponentsModel> specification, Mapper<VerseComponentsModel, VerseComponentsModel> mapper) {
+    public ArrayList<VerseComponentsModel> queryVerse(Realm realm, Specification<VerseComponentsModel> specification, Mapper<VerseComponentsModel, VerseComponentsModel> mapper) {
         RealmResults<VerseComponentsModel> realmResults = specification.generateResults(realm);
         ArrayList<VerseComponentsModel> resultsToReturn = new ArrayList<>();
         for (VerseComponentsModel result : realmResults) {
@@ -293,9 +273,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         @Override
         protected Void doInBackground(String... params) {
-            realm = Realm.getDefaultInstance();
+            final Realm realm = Realm.getDefaultInstance();
             if (!params[0].trim().equals("")) {
-                List<BookModel> resultList = queryBook(
+                List<BookModel> resultList = queryBook(realm,
                         new AllSpecifications.SearchInBookName(params[0], params[1], params[2]), new AllMappers.BookMapper());
 
                 for (BookModel bookModel : resultList) {
@@ -318,7 +298,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             }
 
             if (!params[0].trim().equals("")) {
-                List<VerseComponentsModel> resultList = queryVerse(
+                List<VerseComponentsModel> resultList = queryVerse(realm,
                         new AllSpecifications.SearchInVerseComponentsText(params[0], params[1], params[2]), new AllMappers.VerseComponentsMapper());
                 for (VerseComponentsModel verseComponentsModel : resultList) {
                     if (isCancelled()) {

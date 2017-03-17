@@ -4,10 +4,20 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
+import com.bridgeconn.autographago.models.SearchHistoryModel;
 import com.bridgeconn.autographago.models.SearchModel;
+import com.bridgeconn.autographago.ormutils.AllMappers;
+import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
+import com.bridgeconn.autographago.ormutils.Mapper;
+import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.UtilFunctions;
+
+import java.util.ArrayList;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class BackgroundService extends IntentService {
 
@@ -32,5 +42,34 @@ public class BackgroundService extends IntentService {
             model.setSearchId(model.getBookId() + "_" + model.getChapterNumber() + "_" + model.getVerseNumber());
             new AutographaRepository<SearchModel>().add(model);
         }
+        else if (intent.getAction().equals(Constants.ACTION.UPDATE_SEARCH_HISTORY)) {
+            Log.i(Constants.DUMMY_TAG, "Received Start update search action");
+
+            String text = intent.getStringExtra(Constants.Keys.TEXT);
+            final Realm realm = Realm.getDefaultInstance();
+            ArrayList<SearchHistoryModel> resultList = querySearchHistory(realm, new AllSpecifications.SearchHistoryModelByText(text), new AllMappers.SearchHistoryMapper());
+
+            SearchHistoryModel model = new SearchHistoryModel();
+            model.setLastSearchTime(System.currentTimeMillis());
+            model.setSearchText(text);
+
+            if (resultList.size() > 0) {
+                model.setSearchCount(resultList.get(0).getSearchCount() + 1);
+                new AutographaRepository<SearchHistoryModel>().update(model);
+            } else {
+                model.setSearchCount(1);
+                new AutographaRepository<SearchHistoryModel>().add(model);
+            }
+            realm.close();
+        }
+    }
+
+    private ArrayList<SearchHistoryModel> querySearchHistory(Realm realm, Specification<SearchHistoryModel> specification, Mapper<SearchHistoryModel, SearchHistoryModel> mapper) {
+        RealmResults<SearchHistoryModel> realmResults = specification.generateResults(realm);
+        ArrayList<SearchHistoryModel> resultsToReturn = new ArrayList<>();
+        for (SearchHistoryModel result : realmResults) {
+            resultsToReturn.add(mapper.map(result));
+        }
+        return resultsToReturn;
     }
 }

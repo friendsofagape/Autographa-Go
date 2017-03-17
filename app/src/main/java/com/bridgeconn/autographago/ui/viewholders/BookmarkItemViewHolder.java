@@ -33,7 +33,7 @@ public class BookmarkItemViewHolder extends RecyclerView.ViewHolder implements V
 
     public void onBind(final int position) {
         BookIdModel model = mBookmarkModels.get(position);
-        mTvBookName.setText(model.getBookName() + "    " + model.getBookmarkChapterNumber());
+        mTvBookName.setText(model.getBookName() + "  " + model.getBookmarkChapterNumber());
         mTvBookName.setCompoundDrawables(null, null, null, null);
         mTvBookName.setAllCaps(false);
         mTvBookName.setOnClickListener(this);

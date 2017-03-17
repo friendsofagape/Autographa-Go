@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.NotesModel;
+import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
@@ -29,7 +30,6 @@ import io.realm.RealmResults;
 
 public class NotesActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Realm realm;
     private ImageView mIvNewNote;
     private RecyclerView mRecyclerView;
     private NotesAdapter mAdapter;
@@ -45,8 +45,6 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
 
         UtilFunctions.applyReadingMode();
 
-        realm = Realm.getDefaultInstance();
-
         languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
 
@@ -58,8 +56,6 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
-
-//        getNotesFromDB();
 
         mIvNewNote = (ImageView) findViewById(R.id.iv_new_note);
         mRecyclerView = (RecyclerView) findViewById(R.id.list_notes);
@@ -73,14 +69,28 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void getNotesFromDB() {
+        final Realm realm = Realm.getDefaultInstance();
         mNotesModels.clear();
-        ArrayList<NotesModel> models = query(new AllSpecifications.AllNotes(languageCode, versionCode), new AllMappers.NotesMapper());
+        ArrayList<NotesModel> models = query(realm, new AllSpecifications.AllNotes(languageCode, versionCode), new AllMappers.NotesMapper());
         for (NotesModel model : models) {
-            mNotesModels.add(model);
+            NotesModel notesModel = new NotesModel();
+            notesModel.setTitle(model.getTitle());
+            notesModel.setText(model.getText());
+            notesModel.setLanguageCode(model.getLanguageCode());
+            notesModel.setVersionCode(model.getVersionCode());
+            for (VerseIdModel verseIdModel : model.getVerseIds()) {
+                notesModel.getVerseIds().add(verseIdModel);
+            }
+            notesModel.setTimestamp(model.getTimestamp());
+            mNotesModels.add(notesModel);
+        }
+        realm.close();
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
         }
     }
 
-    private ArrayList<NotesModel> query(Specification<NotesModel> specification, Mapper<NotesModel, NotesModel> mapper) {
+    private ArrayList<NotesModel> query(Realm realm, Specification<NotesModel> specification, Mapper<NotesModel, NotesModel> mapper) {
         RealmResults<NotesModel> realmResults = specification.generateResults(realm);
 
         ArrayList<NotesModel> resultsToReturn = new ArrayList<>();
@@ -115,20 +125,10 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        realm.close();
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
 
         getNotesFromDB();
-        if (mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
-        }
     }
 
     public void refreshList(int position) {

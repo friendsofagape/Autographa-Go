@@ -3,7 +3,6 @@ package com.bridgeconn.autographago.utils;
 import android.content.Context;
 import android.util.Log;
 
-import com.bridgeconn.autographago.models.AllLanguagesModel;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
@@ -22,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -30,13 +28,8 @@ import io.realm.RealmResults;
 
 public class USFMParser {
 
-    private AllLanguagesModel allLanguagesModel;
-    private List<LanguageModel> languageModelList;
-
     private LanguageModel languageModel;
-    private RealmList<VersionModel> versionModelList;
     private VersionModel versionModel;
-    private RealmList<BookModel> bookModelList;
 
     private BookModel bookModel;
     private RealmList<ChapterModel> chapterModelList;
@@ -47,13 +40,8 @@ public class USFMParser {
     private int versionPosition, bookPosition;
 
     public USFMParser() {
-        allLanguagesModel = new AllLanguagesModel();
-        languageModelList = new ArrayList<>();
-
         languageModel = new LanguageModel();
-        versionModelList = new RealmList<>();
         versionModel = new VersionModel();
-        bookModelList = new RealmList<>();
         bookModel = new BookModel();
         chapterModelList = new RealmList<>();
         verseComponentsModelList = new RealmList<>();

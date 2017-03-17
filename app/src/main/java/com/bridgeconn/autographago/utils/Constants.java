@@ -174,6 +174,8 @@ public class Constants {
         String TIMESTAMP = "timestamp";
         String SEARCH_ID = "search_id";
         String REFRESH_CONTAINER = "refresh_container";
+
+        String TEXT = "text";
     }
 
     public interface RequestCodes {
@@ -260,6 +262,7 @@ public class Constants {
         String PARSE_COMPLETE = "com.bridgeconn.autographago.action.parsedone";
 
         String ADD_TO_HISTORY = "com.bridgeconn.autographago.action.addtohistory";
+        String UPDATE_SEARCH_HISTORY = "com.bridgeconn.autographago.action.updatesearchhistory";
     }
 
     public interface NOTIFICATION_ID {

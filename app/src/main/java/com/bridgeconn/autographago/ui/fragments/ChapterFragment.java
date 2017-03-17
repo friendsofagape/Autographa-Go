@@ -34,7 +34,6 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
     private ArrayList<ChapterModel> mChapterModels = new ArrayList<>();
     private String mBookId;
     private boolean mOpenBook, mSelectVerse;
-    private Realm realm;
 
     @Override
     public void onItemClick(int number, String bookId) {
@@ -57,8 +56,6 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
         mOpenBook = getArguments().getBoolean(Constants.Keys.OPEN_BOOK);
         mSelectVerse = getArguments().getBoolean(Constants.Keys.SELECT_VERSE_FOR_NOTE);
 
-        realm = Realm.getDefaultInstance();
-
         mBookModel = getBookModel(mBookId);
         if (mBookModel != null) {
             for (int i=0; i<mBookModel.getChapterModels().size(); i++) {
@@ -71,9 +68,10 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
     }
 
     private BookModel getBookModel(String bookId) {
+        final Realm realm = Realm.getDefaultInstance();
         String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
-        ArrayList<BookModel> resultList = query(new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
+        ArrayList<BookModel> resultList = query(realm, new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
         if (resultList.size() > 0) {
             BookModel bModel = resultList.get(0);
             BookModel bookModel = new BookModel();
@@ -105,12 +103,14 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
                 }
                 bookModel.getChapterModels().add(chapterModel);
             }
+            realm.close();
             return bookModel;
         }
+        realm.close();
         return null;
     }
 
-    public ArrayList<BookModel> query(Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
+    public ArrayList<BookModel> query(Realm realm, Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
         RealmResults<BookModel> realmResults = specification.generateResults(realm);
         ArrayList<BookModel> resultsToReturn = new ArrayList<>();
         for (BookModel result : realmResults) {
@@ -138,13 +138,6 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
         mRecyclerView.setAdapter(mAdapter);
 
         return view;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        realm.close();
-//        setSelected(-1);
     }
 
     public void setSelected(int position) {
