@@ -38,7 +38,8 @@ import com.bridgeconn.autographago.models.ResponseModel;
 import com.bridgeconn.autographago.models.VersionModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
-import com.bridgeconn.autographago.ormutils.AutographaRepository;
+import com.bridgeconn.autographago.ormutils.Mapper;
+import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.adapters.DownloadDialogAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.DownloadUtil;
@@ -52,6 +53,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener,
         SeekBar.OnSeekBarChangeListener {
@@ -224,8 +228,18 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    private ArrayList<LanguageModel> query(Realm realm, Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
+        RealmResults<LanguageModel> realmResults = specification.generateResults(realm);
+        ArrayList<LanguageModel> resultsToReturn = new ArrayList<>();
+        for (LanguageModel result : realmResults) {
+            resultsToReturn.add(mapper.map(result));
+        }
+        return resultsToReturn;
+    }
+
     private void showLanguageDialog(List<String> languages) {
-        ArrayList<LanguageModel> languageModels = new AutographaRepository<LanguageModel>().query(new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
+        Realm realm = Realm.getDefaultInstance();
+        ArrayList<LanguageModel> languageModels = query(realm, new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
         for (Iterator<String> iterator = languages.iterator(); iterator.hasNext(); ) {
             String lan = iterator.next();
             for (LanguageModel languageModel : languageModels) {
@@ -236,6 +250,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 }
             }
         }
+        realm.close();
         if (isFinishing()) {
             return;
         }
@@ -290,8 +305,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void showVersionDialog(List<String> versions, String language) {
-
-        ArrayList<LanguageModel> languageModels = new AutographaRepository<LanguageModel>().query(new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
+        Realm realm = Realm.getDefaultInstance();
+        ArrayList<LanguageModel> languageModels = query(realm, new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
         for (Iterator<String> iterator = versions.iterator(); iterator.hasNext(); ) {
             String ver = iterator.next();
             for (LanguageModel languageModel : languageModels) {
@@ -304,7 +319,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 }
             }
         }
-
+        realm.close();
         if (isFinishing()) {
             return;
         }
@@ -360,6 +375,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     private void getAvailableLanguages() {
         mProgressBar.setVisibility(View.VISIBLE);
+        mTvDownload.setOnClickListener(null);
 
         DownloadUtil downloadUtil = new DownloadUtil();
         downloadUtil.downloadJson(Constants.META_DATA_FILE_NAME, new DownloadUtil.JsonDownloadCallback() {
@@ -367,6 +383,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onSuccess(ResponseModel model) {
                 mProgressBar.setVisibility(View.GONE);
+                mTvDownload.setOnClickListener(SettingsActivity.this);
                 if (model.getLanguagesAvailable() != null) {
                     showLanguageDialog(model.getLanguagesAvailable());
                 }
@@ -375,6 +392,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onFailure() {
                 mProgressBar.setVisibility(View.GONE);
+                mTvDownload.setOnClickListener(SettingsActivity.this);
                 showNetworkToast();
                 Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
             }
@@ -387,12 +405,15 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     public void getAvailableListOfVersions(final String language) {
         mProgressBar.setVisibility(View.VISIBLE);
+        mTvDownload.setOnClickListener(null);
+
         DownloadUtil downloadUtil = new DownloadUtil();
         downloadUtil.downloadJson(language + "/" + Constants.META_DATA_FILE_NAME, new DownloadUtil.JsonDownloadCallback() {
 
             @Override
             public void onSuccess(ResponseModel model) {
                 mProgressBar.setVisibility(View.GONE);
+                mTvDownload.setOnClickListener(SettingsActivity.this);
                 if (model.getListOfVersionsAvailable() != null) {
                     showVersionDialog(model.getListOfVersionsAvailable(), language);
                 }
@@ -401,6 +422,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onFailure() {
                 mProgressBar.setVisibility(View.GONE);
+                mTvDownload.setOnClickListener(SettingsActivity.this);
                 showNetworkToast();
                 Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
             }
@@ -451,6 +473,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     public void getMetaData(final String language, final String version) {
         mProgressBar.setVisibility(View.VISIBLE);
+        mTvDownload.setOnClickListener(null);
         final DownloadUtil downloadUtil = new DownloadUtil();
         downloadUtil.downloadJson(language + "/" + version + "/" + Constants.META_DATA_FILE_NAME,
                 new DownloadUtil.JsonDownloadCallback() {
@@ -458,6 +481,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onSuccess(final ResponseModel model) {
                         mProgressBar.setVisibility(View.GONE);
+                        mTvDownload.setOnClickListener(SettingsActivity.this);
                         if (model.getMetaData() != null) {
                             languageName = model.getMetaData().getLanguageName();
                             languageCode = model.getMetaData().getLanguageCode();
@@ -498,6 +522,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onFailure() {
                         mProgressBar.setVisibility(View.GONE);
+                        mTvDownload.setOnClickListener(SettingsActivity.this);
                         showNetworkToast();
                         Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
                     }

@@ -79,7 +79,12 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
             notesModel.setLanguageCode(model.getLanguageCode());
             notesModel.setVersionCode(model.getVersionCode());
             for (VerseIdModel verseIdModel : model.getVerseIds()) {
-                notesModel.getVerseIds().add(verseIdModel);
+                VerseIdModel vIdModel = new VerseIdModel();
+                vIdModel.setChapterNumber(verseIdModel.getChapterNumber());
+                vIdModel.setVerseNumber(verseIdModel.getVerseNumber());
+                vIdModel.setBookId(verseIdModel.getBookId());
+                vIdModel.setBookName(verseIdModel.getBookName());
+                notesModel.getVerseIds().add(vIdModel);
             }
             notesModel.setTimestamp(model.getTimestamp());
             mNotesModels.add(notesModel);

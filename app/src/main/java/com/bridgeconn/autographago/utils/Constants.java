@@ -70,75 +70,6 @@ public class Constants {
         String UNDERLINE = "UNDERLINE";
     }
 
-    public static String [] UsfmFileNames = {
-            "01-GEN.usfm",
-            "02-EXO.usfm",
-            "03-LEV.usfm",
-            "04-NUM.usfm",
-            "05-DEU.usfm",
-            "06-JOS.usfm",
-            "07-JDG.usfm",
-            "08-RUT.usfm",
-            "09-1SA.usfm",
-            "10-2SA.usfm",
-            "11-1KI.usfm",
-            "12-2KI.usfm",
-            "13-1CH.usfm",
-            "14-2CH.usfm",
-            "15-EZR.usfm",
-            "16-NEH.usfm",
-            "17-EST.usfm",
-            "18-JOB.usfm",
-            "19-PSA.usfm",
-            "20-PRO.usfm",
-            "21-ECC.usfm",
-            "22-SNG.usfm",
-            "23-ISA.usfm",
-            "24-JER.usfm",
-            "25-LAM.usfm",
-            "26-EZK.usfm",
-            "27-DAN.usfm",
-            "28-HOS.usfm",
-            "29-JOL.usfm",
-            "30-AMO.usfm",
-            "31-OBA.usfm",
-            "32-JON.usfm",
-            "33-MIC.usfm",
-            "34-NAM.usfm",
-            "35-HAB.usfm",
-            "36-ZEP.usfm",
-            "37-HAG.usfm",
-            "38-ZEC.usfm",
-            "39-MAL.usfm",
-            "41-MAT.usfm",
-            "42-MRK.usfm",
-            "43-LUK.usfm",
-            "44-JHN.usfm",
-            "45-ACT.usfm",
-            "46-ROM.usfm",
-            "47-1CO.usfm",
-            "48-2CO.usfm",
-            "49-GAL.usfm",
-            "50-EPH.usfm",
-            "51-PHP.usfm",
-            "52-COL.usfm",
-            "53-1TH.usfm",
-            "54-2TH.usfm",
-            "55-1TI.usfm",
-            "56-2TI.usfm",
-            "57-TIT.usfm",
-            "58-PHM.usfm",
-            "59-HEB.usfm",
-            "60-JAS.usfm",
-            "61-1PE.usfm",
-            "62-2PE.usfm",
-            "63-1JN.usfm",
-            "64-2JN.usfm",
-            "65-3JN.usfm",
-            "66-JUD.usfm",
-            "67-REV.usfm"
-    };
-
     public interface MarkerTypes {
         String SECTION_HEADING_ONE = "s1";
         String SECTION_HEADING_TWO = "s2";
@@ -166,13 +97,8 @@ public class Constants {
         String VERSION_CODE = "version_code";
         String VERSION_NAME = "version_name";
         String FILE_PATH = "file_path";
-        String START_SERVICE_ULB = "start_service_ulb";
-        String START_SERVICE_UDB = "start_service_udb";
 
-        String BOOK_NAME = "book_name";
-        String SECTION = "section";
         String TIMESTAMP = "timestamp";
-        String SEARCH_ID = "search_id";
         String REFRESH_CONTAINER = "refresh_container";
 
         String TEXT = "text";
@@ -207,6 +133,8 @@ public class Constants {
         String VERSION_CODE = "version_code";
         String TIMESTAMP = "timestamp";
         String TIMESTAMP_ = "timestamp_";
+
+        String FIRST_LAUNCH = "first_launch";
     }
 
     public enum ReadingMode {
@@ -255,8 +183,6 @@ public class Constants {
     }
 
     public interface ACTION {
-        String PARSE_ENG_UDB = "com.bridgeconn.autographago.action.parseengudb";
-        String PARSE_ENG_ULB = "com.bridgeconn.autographago.action.parseengulb";
         String START_UNZIP = "com.bridgeconn.autographago.action.startunzip";
         String START_PARSE = "com.bridgeconn.autographago.action.startparse";
         String PARSE_COMPLETE = "com.bridgeconn.autographago.action.parsedone";

@@ -36,8 +36,10 @@ public class USFMParser {
     private RealmList<VerseComponentsModel> verseComponentsModelList;
 
     private boolean languageExist = false, versionExist = false, bookExist = false;
-    private ArrayList<LanguageModel> languageResults;
+    private ArrayList<LanguageModel> languageResults = new ArrayList<>();
     private int versionPosition, bookPosition;
+
+    private Realm realm;
 
     public USFMParser() {
         languageModel = new LanguageModel();
@@ -45,6 +47,8 @@ public class USFMParser {
         bookModel = new BookModel();
         chapterModelList = new RealmList<>();
         verseComponentsModelList = new RealmList<>();
+
+        realm = Realm.getDefaultInstance();
     }
 
     /**
@@ -65,6 +69,7 @@ public class USFMParser {
 //            try {
             while ((mLine = reader.readLine()) != null) {
                 if (!processLine(context, mLine, languageName, languageCode, versionCode)) {
+                    realm.close();
                     return false;
                 }
             }
@@ -72,7 +77,8 @@ public class USFMParser {
             addChaptersToBook();
 
             addBookToContainer(languageName, languageCode, versionCode);
-
+            realm.close();
+            realm = null;
             return true;
 //            } catch (Exception e) {
 //                Log.e(Constants.TAG, "Exception in processing lines. So skipping this file" + e.toString());
@@ -88,6 +94,8 @@ public class USFMParser {
                 }
             }
         }
+        realm.close();
+        realm = null;
         return false;
     }
 
@@ -361,69 +369,14 @@ public class USFMParser {
         bookModel.setChapterModels(chapterModelList);
     }
 
-    private Realm realm;
-
     private ArrayList<LanguageModel> query(Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
-
-        realm = Realm.getDefaultInstance();
 
         RealmResults<LanguageModel> realmResults = specification.generateResults(realm);
         ArrayList<LanguageModel> resultsToReturn = new ArrayList<>();
         for (LanguageModel result : realmResults) {
             resultsToReturn.add(mapper.map(result));
         }
-
-        ArrayList<LanguageModel> languageResults = new ArrayList<>();
-        for (LanguageModel languageModel1 : resultsToReturn) {
-            LanguageModel lModel = new LanguageModel();
-            lModel.setLanguageCode(languageModel1.getLanguageCode());
-            lModel.setLanguageName(languageModel1.getLanguageName());
-            for (VersionModel versionModel1 : languageModel1.getVersionModels()) {
-                VersionModel vModel = new VersionModel();
-                vModel.setVersionCode(versionModel1.getVersionCode());
-                vModel.setVersionName(versionModel1.getVersionName());
-                vModel.setLanguageCode(versionModel1.getLanguageCode());
-                vModel.setVersionId(versionModel1.getVersionId());
-                for (BookModel bookModel1 : versionModel1.getBookModels()) {
-                    BookModel bModel = new BookModel();
-                    bModel.setBookId(bookModel1.getBookId());
-                    bModel.setBookPrimaryId(bookModel1.getBookPrimaryId());
-                    bModel.setBookmarkChapterNumber(bookModel1.getBookmarkChapterNumber());
-                    bModel.setBookName(bookModel1.getBookName());
-                    bModel.setBookNumber(bookModel1.getBookNumber());
-                    bModel.setSection(bookModel1.getSection());
-                    bModel.setLanguageCode(bookModel1.getLanguageCode());
-                    bModel.setVersionCode(bookModel1.getVersionCode());
-                    for (ChapterModel chapterModel1 : bookModel1.getChapterModels()) {
-                        ChapterModel cModel = new ChapterModel();
-                        cModel.setChapterNumber(chapterModel1.getChapterNumber());
-                        cModel.setChapterId(chapterModel1.getChapterId());
-                        cModel.setLanguageCode(chapterModel1.getLanguageCode());
-                        cModel.setVersionCode(chapterModel1.getVersionCode());
-                        cModel.setNumberOfVerses(chapterModel1.getNumberOfVerses());
-                        for (VerseComponentsModel verseComponentsModel1 : chapterModel1.getVerseComponentsModels()) {
-                            VerseComponentsModel vcModel = new VerseComponentsModel();
-                            vcModel.setLanguageCode(verseComponentsModel1.getLanguageCode());
-                            vcModel.setVersionCode(verseComponentsModel1.getVersionCode());
-                            vcModel.setText(verseComponentsModel1.getText());
-                            vcModel.setVerseNumber(verseComponentsModel1.getVerseNumber());
-                            vcModel.setChapterId(verseComponentsModel1.getChapterId());
-                            vcModel.setType(verseComponentsModel1.getType());
-                            vcModel.setHighlighted(verseComponentsModel1.isHighlighted());
-                            cModel.getVerseComponentsModels().add(vcModel);
-                        }
-                        bModel.getChapterModels().add(cModel);
-                    }
-                    vModel.getBookModels().add(bModel);
-                }
-                lModel.getVersionModels().add(vModel);
-            }
-            languageResults.add(lModel);
-        }
-
-        realm.close();
-
-        return languageResults;
+        return resultsToReturn;
     }
 
     /**
@@ -450,18 +403,14 @@ public class USFMParser {
         if (!versionExist) {
             // add new version in same language
             Log.i(Constants.DUMMY_TAG, "adding new version - " + versionModel.getVersionCode());
-            LanguageModel newLanguageModel = new LanguageModel(languageResults.get(versionPosition));
-            newLanguageModel.getVersionModels().add(versionModel);
-            new AutographaRepository<LanguageModel>().update(newLanguageModel);
+            new AutographaRepository<LanguageModel>().updateLanguageWithVersion(realm, new LanguageModel(languageResults.get(versionPosition)), versionModel);
             return;
         }
 
         if (!bookExist) {
             // add new book in same version and language
             Log.i(Constants.DUMMY_TAG, "adding new book - " + bookModel.getBookId());
-            LanguageModel newLanguageModel = new LanguageModel(languageResults.get(versionPosition));
-            newLanguageModel.getVersionModels().get(bookPosition).getBookModels().add(bookModel);
-            new AutographaRepository<LanguageModel>().update(newLanguageModel);
+            new AutographaRepository<LanguageModel>().updateLanguageWithBook(realm, new LanguageModel(languageResults.get(versionPosition)), bookPosition, bookModel);
             return;
         }
     }

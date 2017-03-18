@@ -31,5 +31,9 @@ dependencies {
     compile "com.android.support:percent:$supportLibraryVersion"
     compile "com.android.support:support-v4:$supportLibraryVersion"
 
+    compile 'com.squareup.retrofit2:converter-gson:2.0.1'
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile 'com.squareup.retrofit2:retrofit:2.0.1'
+
     compile 'commons-io:commons-io:2.5'
 }

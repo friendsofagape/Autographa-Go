@@ -63,6 +63,22 @@ public class SharedPrefs {
         editor.commit();
     }
 
+    public static void putBoolean(String key, boolean value) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putBoolean(key, value);
+        editor.apply();
+    }
+
+    public static boolean getBoolean(String key, boolean defValue) {
+        return sharedPrefs.getBoolean(key, defValue);
+    }
+
+    public static void putBooleanInstant(String key, boolean value) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putBoolean(key, value);
+        editor.commit();
+    }
+
     public static void removeKey(String key) {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.remove(key);

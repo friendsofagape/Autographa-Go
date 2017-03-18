@@ -56,24 +56,6 @@ public class ParseService extends IntentService {
 
             startUnzipping(this, languageName, languageCode, versionCode, versionName, zipFilePath);
         }
-        else if (intent.getAction().equals(Constants.ACTION.PARSE_ENG_UDB)) {
-
-            String languageName = intent.getStringExtra(Constants.Keys.LANGUAGE_NAME);
-            String versionCode = intent.getStringExtra(Constants.Keys.VERSION_CODE);
-
-            generateNotification(languageName, versionCode);
-
-            parseEngUdb(this);
-        }
-        else if (intent.getAction().equals(Constants.ACTION.PARSE_ENG_ULB)) {
-
-            String languageName = intent.getStringExtra(Constants.Keys.LANGUAGE_NAME);
-            String versionCode = intent.getStringExtra(Constants.Keys.VERSION_CODE);
-
-            generateNotification(languageName, versionCode);
-
-            parseEngUlb(this);
-        }
     }
 
     private void generateNotification(String languageName, String versionCode) {
@@ -101,51 +83,19 @@ public class ParseService extends IntentService {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        notificationManager.cancel(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE);
+        Log.i(Constants.DUMMY_TAG, "In onDestroy, service");
+    }
+
+    @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
 
         notificationManager.cancel(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE);
         Log.i(Constants.DUMMY_TAG, "In onTaskRemoved, service");
-    }
-
-    private void parseEngUdb(Context context) {
-        for (int i = 0; i<Constants.UsfmFileNames.length; i++) {
-            USFMParser usfmParser = new USFMParser();
-            usfmParser.parseUSFMFile(ParseService.this, "english_udb/"+Constants.UsfmFileNames[i], true, "English", "ENG", Constants.VersionCodes.UDB);
-        }
-
-        notificationManager.cancel(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE);
-
-        Intent broadcastIntent = new Intent();
-        broadcastIntent.setAction(Constants.ACTION.PARSE_COMPLETE);
-        String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
-        String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
-        if (languageCode.equals("ENG") && versionCode.equals(Constants.VersionCodes.UDB)) {
-            broadcastIntent.putExtra(Constants.Keys.REFRESH_CONTAINER, true);
-        } else {
-            broadcastIntent.putExtra(Constants.Keys.REFRESH_CONTAINER, false);
-        }
-        sendBroadcast(broadcastIntent);
-    }
-
-    private void parseEngUlb(Context context) {
-        for (int i = 0; i<Constants.UsfmFileNames.length; i++) {
-            USFMParser usfmParser = new USFMParser();
-            usfmParser.parseUSFMFile(ParseService.this, "english_ulb/"+Constants.UsfmFileNames[i], true, "English", "ENG", Constants.VersionCodes.ULB);
-        }
-
-        notificationManager.cancel(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE);
-
-        Intent broadcastIntent = new Intent();
-        broadcastIntent.setAction(Constants.ACTION.PARSE_COMPLETE);
-        String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
-        String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
-        if (languageCode.equals("ENG") && versionCode.equals(Constants.VersionCodes.ULB)) {
-            broadcastIntent.putExtra(Constants.Keys.REFRESH_CONTAINER, true);
-        } else {
-            broadcastIntent.putExtra(Constants.Keys.REFRESH_CONTAINER, false);
-        }
-        sendBroadcast(broadcastIntent);
     }
 
     private void startUnzipping(final Context context, final String languageName, final String languageCode,
@@ -185,8 +135,8 @@ public class ParseService extends IntentService {
                                 languageCode,
                                 versionCode);
 
-                            // delete that file
-                            file.delete();
+                        // delete that file
+                        file.delete();
                     }
                 }
             }

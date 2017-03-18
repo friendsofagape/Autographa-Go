@@ -3,8 +3,13 @@ package com.bridgeconn.autographago.ormutils;
 import android.support.annotation.UiThread;
 import android.support.annotation.WorkerThread;
 
+import com.bridgeconn.autographago.models.BookModel;
+import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.VersionModel;
+
 import java.util.ArrayList;
 
+import io.realm.Realm;
 import io.realm.RealmObject;
 
 public interface Repository<T extends RealmObject> {
@@ -19,6 +24,10 @@ public interface Repository<T extends RealmObject> {
     void add(Iterable<T> items);
 
     void update(T item);
+
+    void updateLanguageWithVersion(Realm realm, LanguageModel languageModel, VersionModel versionModel);
+
+    void updateLanguageWithBook(Realm realm, LanguageModel languageModel, int position, BookModel bookModel);
 
     void remove(Specification<T> specification);
 

@@ -10,7 +10,6 @@ import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -121,25 +120,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getAllBooks();
 
         registerReceiver(onParsingComplete, new IntentFilter(Constants.ACTION.PARSE_COMPLETE));
-
-        boolean isStartServiceUlb = getIntent().getBooleanExtra(Constants.Keys.START_SERVICE_ULB, false);
-        boolean isStartServiceUdb = getIntent().getBooleanExtra(Constants.Keys.START_SERVICE_UDB, false);
-
-        if (isStartServiceUlb) {
-            Intent startIntent = new Intent(this, ParseService.class);
-            startIntent.setAction(Constants.ACTION.PARSE_ENG_ULB);
-            startIntent.putExtra(Constants.Keys.LANGUAGE_NAME, "English");
-            startIntent.putExtra(Constants.Keys.VERSION_CODE, Constants.VersionCodes.ULB);
-            startService(startIntent);
-        }
-
-        if (isStartServiceUdb) {
-            Intent startIntent = new Intent(this, ParseService.class);
-            startIntent.setAction(Constants.ACTION.PARSE_ENG_UDB);
-            startIntent.putExtra(Constants.Keys.LANGUAGE_NAME, "English");
-            startIntent.putExtra(Constants.Keys.VERSION_CODE, Constants.VersionCodes.UDB);
-            startService(startIntent);
-        }
 
         UtilFunctions.queueArchivesForUnzipping(this);
         UtilFunctions.queueDirectoriesForParsing(this);
@@ -306,6 +286,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(onParsingComplete);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (Constants.CONTAINER_BOOKS_LIST.size() == 0) {
+            // memory might be cleared, load all data again
+            languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+            languageName = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, "English");
+            versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
+            new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
+            getAllBooks();
+        }
     }
 
     private BroadcastReceiver onParsingComplete = new BroadcastReceiver() {

@@ -4,7 +4,9 @@ import android.support.annotation.UiThread;
 import android.support.annotation.WorkerThread;
 
 import com.bridgeconn.autographago.models.BookIdModel;
+import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.VersionModel;
 import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
@@ -106,6 +108,26 @@ public class AutographaRepository<T extends RealmObject> implements Repository<T
     @Override
     public void update(T item) {
         add(item);
+    }
+
+    @Override
+    public void updateLanguageWithVersion(Realm realm, final LanguageModel languageModel, final VersionModel versionModel) {
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                languageModel.getVersionModels().add(versionModel);
+            }
+        });
+    }
+
+    @Override
+    public void updateLanguageWithBook(Realm realm, final LanguageModel languageModel, final int position, final BookModel bookModel) {
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                languageModel.getVersionModels().get(position).getBookModels().add(bookModel);
+            }
+        });
     }
 
     @Override

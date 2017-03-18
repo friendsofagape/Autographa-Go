@@ -90,17 +90,6 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
                 chapterModel.setVersionCode(cModel.getVersionCode());
                 chapterModel.setChapterId(cModel.getChapterId());
                 chapterModel.setNumberOfVerses(cModel.getNumberOfVerses());
-                for (VerseComponentsModel vModel : cModel.getVerseComponentsModels()) {
-                    VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
-                    verseComponentsModel.setChapterId(vModel.getChapterId());
-                    verseComponentsModel.setHighlighted(vModel.isHighlighted());
-                    verseComponentsModel.setVersionCode(vModel.getVersionCode());
-                    verseComponentsModel.setLanguageCode(vModel.getLanguageCode());
-                    verseComponentsModel.setText(vModel.getText());
-                    verseComponentsModel.setVerseNumber(vModel.getVerseNumber());
-                    verseComponentsModel.setType(vModel.getType());
-                    chapterModel.getVerseComponentsModels().add(verseComponentsModel);
-                }
                 bookModel.getChapterModels().add(chapterModel);
             }
             realm.close();

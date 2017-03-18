@@ -34,20 +34,21 @@ public class VerseFragment extends Fragment implements SelectChapterAndVerseActi
     private String mBookId;
     private boolean mOpenBook, mSelectVerse;
     private ArrayList<VerseComponentsModel> mVerseComponentsModels = new ArrayList<>();
-    private int mNumberOfBlocks;
     private int mChapterNumber;
 
     @Override
     public void onItemClick(int number, String bookId) {
         mChapterNumber = number;
 
-        mBookModel = getBookModel(bookId);
+        mBookModel = getBookModel(bookId, mChapterNumber-1);
         if (mBookModel == null) {
             return;
         }
-        mNumberOfBlocks = getNumberOfVerses(mBookModel);
+        if (mBookModel.getChapterModels().size() == 0) {
+            return;
+        }
 
-        ChapterModel chapterModel = mBookModel.getChapterModels().get(mChapterNumber - 1);
+        ChapterModel chapterModel = mBookModel.getChapterModels().get(0);
         mVerseComponentsModels.clear();
         for (VerseComponentsModel model : chapterModel.getVerseComponentsModels()) {
             if (mVerseComponentsModels.size() > 0) {
@@ -72,16 +73,15 @@ public class VerseFragment extends Fragment implements SelectChapterAndVerseActi
         mOpenBook = getArguments().getBoolean(Constants.Keys.OPEN_BOOK);
         mSelectVerse = getArguments().getBoolean(Constants.Keys.SELECT_VERSE_FOR_NOTE);
 
-        mBookModel = getBookModel(mBookId);
+        mBookModel = getBookModel(mBookId, mChapterNumber-1);
         if (mBookModel == null) {
             return;
         }
         if (mBookModel.getChapterModels().size() == 0) {
             return;
         }
-        mNumberOfBlocks = getNumberOfVerses(mBookModel);
 
-        ChapterModel chapterModel = mBookModel.getChapterModels().get(mChapterNumber - 1);
+        ChapterModel chapterModel = mBookModel.getChapterModels().get(0);
         mVerseComponentsModels.clear();
         for (VerseComponentsModel model : chapterModel.getVerseComponentsModels()) {
             if (mVerseComponentsModels.size() > 0) {
@@ -96,7 +96,7 @@ public class VerseFragment extends Fragment implements SelectChapterAndVerseActi
         }
     }
 
-    private BookModel getBookModel(String bookId) {
+    private BookModel getBookModel(String bookId, int chapterPosition) {
         final Realm realm = Realm.getDefaultInstance();
         String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
@@ -112,7 +112,7 @@ public class VerseFragment extends Fragment implements SelectChapterAndVerseActi
             bookModel.setBookId(bModel.getBookId());
             bookModel.setBookPrimaryId(bModel.getBookPrimaryId());
             bookModel.setBookName(bModel.getBookName());
-            for (ChapterModel cModel : bModel.getChapterModels()) {
+            ChapterModel cModel = bModel.getChapterModels().get(chapterPosition);
                 ChapterModel chapterModel = new ChapterModel();
                 chapterModel.setChapterNumber(cModel.getChapterNumber());
                 chapterModel.setLanguageCode(cModel.getLanguageCode());
@@ -131,7 +131,6 @@ public class VerseFragment extends Fragment implements SelectChapterAndVerseActi
                     chapterModel.getVerseComponentsModels().add(verseComponentsModel);
                 }
                 bookModel.getChapterModels().add(chapterModel);
-            }
             realm.close();
             return bookModel;
         }
@@ -146,24 +145,6 @@ public class VerseFragment extends Fragment implements SelectChapterAndVerseActi
             resultsToReturn.add(mapper.map(result));
         }
         return resultsToReturn;
-    }
-
-    private int getNumberOfVerses(BookModel bookModel) {
-        ChapterModel chapterModel = bookModel.getChapterModels().get(mChapterNumber - 1);
-        int size = 0;
-        for (int i=0; i<chapterModel.getVerseComponentsModels().size(); i++) {
-            if (i==0) {
-                size++;
-            } else {
-                if (chapterModel.getVerseComponentsModels().get(i).getVerseNumber().equals(
-                        chapterModel.getVerseComponentsModels().get(i-1).getVerseNumber())) {
-                    continue;
-                } else {
-                    size++;
-                }
-            }
-        }
-        return size;
     }
 
     @Override

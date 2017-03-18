@@ -95,14 +95,6 @@ public class NumberAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return mVerseComponentsModels.size();
     }
 
-    public void changeVerseCount(int count) {
-//        mVerseCount = count;
-    }
-
-    public void changeChapterNumber(int number) {
-        mChapterNumber = number;
-    }
-
     public void changeBookId(String bookId) {
         mBookId = bookId;
         ((SelectChapterAndVerseActivity) mFragment.getActivity()).reattachFragment();

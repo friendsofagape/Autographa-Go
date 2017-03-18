@@ -289,9 +289,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         notesModel.setText(mEditor.getText().toString());
         notesModel.setLanguageCode(languageCode);
         notesModel.setVersionCode(versionCode);
-        RealmList<VerseIdModel> list = new RealmList<>();
         for (VerseIdModel model : mVerseList) {
-            list.add(model);
             notesModel.getVerseIds().add(model);
         }
         if (mTimeStamp > 0) {
@@ -302,7 +300,6 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
             notesModel.setTimestamp(System.currentTimeMillis());
             new AutographaRepository<NotesModel>().add(notesModel);
         }
-
         Toast.makeText(EditNoteActivity.this, getString(R.string.note_saved), Toast.LENGTH_SHORT).show();
         finish();
     }

@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookIdModel;
-import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.ui.activities.SelectChapterAndVerseActivity;
 import com.bridgeconn.autographago.ui.adapters.NumberAdapter;
 import com.bridgeconn.autographago.utils.Constants;
@@ -21,8 +20,6 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
 
     private RecyclerView mRecyclerView;
     private NumberAdapter mAdapter;
-    private int mNumberOfBlocks;
-    private BookModel mBookModel;
     private String mBookId;
     private ArrayList<BookIdModel> mBookModelArrayList = new ArrayList<>();
     private boolean mOpenBook, mSelectVerse;
@@ -61,13 +58,6 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
         mRecyclerView.setAdapter(mAdapter);
 
         return view;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-//        setSelected(-1);
     }
 
     public void setSelected(int position) {

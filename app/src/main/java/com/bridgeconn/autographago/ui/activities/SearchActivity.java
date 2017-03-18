@@ -28,6 +28,7 @@ import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.services.BackgroundService;
+import com.bridgeconn.autographago.services.ParseService;
 import com.bridgeconn.autographago.ui.adapters.SearchAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;

@@ -261,15 +261,18 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     mChapterModels.get(i).getVerseComponentsModels().get(j).setSelected(false);
                     mChapterModels.get(i).getVerseComponentsModels().get(j).setHighlighted(true);
 
-                    String [] chapterIds = mBookModel.getChapterModels().get(i).getChapterId().split("_");
-
-                    mBookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setChapterId(chapterIds[2] + "_" + chapterIds[3]);
                     mBookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(true);
                 }
             }
         }
         mAdapter.notifyDataSetChanged();
-        new AutographaRepository<BookModel>().update(mBookModel);
+        new AsyncTask<BookModel, Void, Void>() {
+            @Override
+            protected Void doInBackground(BookModel... params) {
+                new AutographaRepository<BookModel>().update(params[0]);
+                return null;
+            }
+        }.execute(mBookModel);
     }
 
     private void findSelectedAndAddNote() {
