@@ -72,5 +72,13 @@
     <string name="downloading">Downloading...</string>
     <string name="parsing">Parsing</string>
     <string name="download_has_started">Download has started.</string>
+    <string name="open_hints">Open Hints</string>
+    <string name="continue_reading">Continue reading where you last left</string>
+    <string name="view_history">See all the history</string>
+    <string name="search_text">Search for text in the Bible</string>
+    <string name="manage_notes">Manage all your notes here</string>
+    <string name="view_bookmarks">See all bookmarks in the Bible</string>
+    <string name="view_highlights">See all the highlighted verses here</string>
+    <string name="go_to_settings">Go to settings</string>
 
 </resources>
