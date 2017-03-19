@@ -25,12 +25,10 @@ import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
-import com.bridgeconn.autographago.services.ParseService;
 import com.bridgeconn.autographago.ui.adapters.BookAdapter;
 import com.bridgeconn.autographago.ui.adapters.SpinnerAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
-import com.bridgeconn.autographago.utils.USFMParser;
 import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import org.json.JSONException;

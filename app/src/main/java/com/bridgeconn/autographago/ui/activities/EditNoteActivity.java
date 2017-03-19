@@ -25,10 +25,9 @@ import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.NotesModel;
+import com.bridgeconn.autographago.models.NotesStyleModel;
 import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
-import com.bridgeconn.autographago.ormutils.Mapper;
-import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.customviews.FlowLayout;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
@@ -36,10 +35,6 @@ import com.bridgeconn.autographago.utils.UtilFunctions;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import io.realm.Realm;
-import io.realm.RealmList;
-import io.realm.RealmResults;
 
 public class EditNoteActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -132,6 +127,24 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         if (notesModel != null) {
             mEtTitle.setText(notesModel.getTitle());
             mEditor.setText(notesModel.getText());
+            for (NotesStyleModel styleModel : notesModel.getNotesStyleModels()) {
+                Spannable spannable = new SpannableString(mEditor.getText());
+                switch (styleModel.getStyle()) {
+                    case Constants.TextEditorStyles.BOLD: {
+                        spannable.setSpan(new StyleSpan(Typeface.BOLD), styleModel.getStart(), styleModel.getEnd(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        break;
+                    }
+                    case Constants.TextEditorStyles.ITALICS: {
+                        spannable.setSpan(new StyleSpan(Typeface.ITALIC), styleModel.getStart(), styleModel.getEnd(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        break;
+                    }
+                    case Constants.TextEditorStyles.UNDERLINE: {
+                        spannable.setSpan(new UnderlineSpan(), styleModel.getStart(), styleModel.getEnd(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        break;
+                    }
+                }
+                mEditor.setText(spannable);
+            }
             mTimeStamp = notesModel.getTimestamp();
             for (final VerseIdModel model : notesModel.getVerseIds()) {
                 mVerseList.add(model);
@@ -287,6 +300,31 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         NotesModel notesModel = new NotesModel();
         notesModel.setTitle(mEtTitle.getText().toString());
         notesModel.setText(mEditor.getText().toString());
+
+        StyleSpan [] styleSpans = mEditor.getText().getSpans(0, mEditor.getText().length(), StyleSpan.class);
+        UnderlineSpan [] underlineSpans = mEditor.getText().getSpans(0, mEditor.getText().length(), UnderlineSpan.class);
+
+        for (StyleSpan span : styleSpans) {
+            NotesStyleModel notesStyleModel = new NotesStyleModel();
+            if (span.getStyle() == Typeface.BOLD) {
+                notesStyleModel.setStyle(Constants.TextEditorStyles.BOLD);
+                notesStyleModel.setStart(mEditor.getText().getSpanStart(span));
+                notesStyleModel.setEnd(mEditor.getText().getSpanEnd(span));
+            } else if (span.getStyle() == Typeface.ITALIC) {
+                notesStyleModel.setStyle(Constants.TextEditorStyles.ITALICS);
+                notesStyleModel.setStart(mEditor.getText().getSpanStart(span));
+                notesStyleModel.setEnd(mEditor.getText().getSpanEnd(span));
+            }
+            notesModel.getNotesStyleModels().add(notesStyleModel);
+        }
+        for (UnderlineSpan span : underlineSpans) {
+            NotesStyleModel notesStyleModel = new NotesStyleModel();
+            notesStyleModel.setStyle(Constants.TextEditorStyles.UNDERLINE);
+            notesStyleModel.setStart(mEditor.getText().getSpanStart(span));
+            notesStyleModel.setEnd(mEditor.getText().getSpanEnd(span));
+            notesModel.getNotesStyleModels().add(notesStyleModel);
+        }
+
         notesModel.setLanguageCode(languageCode);
         notesModel.setVersionCode(versionCode);
         for (VerseIdModel model : mVerseList) {

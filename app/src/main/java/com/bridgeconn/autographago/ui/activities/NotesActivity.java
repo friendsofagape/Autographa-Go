@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.NotesModel;
+import com.bridgeconn.autographago.models.NotesStyleModel;
 import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
@@ -76,6 +77,13 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
             NotesModel notesModel = new NotesModel();
             notesModel.setTitle(model.getTitle());
             notesModel.setText(model.getText());
+            for (NotesStyleModel styleModel : model.getNotesStyleModels()) {
+                NotesStyleModel nsModel = new NotesStyleModel();
+                nsModel.setStyle(styleModel.getStyle());
+                nsModel.setStart(styleModel.getStart());
+                nsModel.setEnd(styleModel.getEnd());
+                notesModel.getNotesStyleModels().add(nsModel);
+            }
             notesModel.setLanguageCode(model.getLanguageCode());
             notesModel.setVersionCode(model.getVersionCode());
             for (VerseIdModel verseIdModel : model.getVerseIds()) {

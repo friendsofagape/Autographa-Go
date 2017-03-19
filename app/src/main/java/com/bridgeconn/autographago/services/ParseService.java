@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.utils.Constants;
@@ -35,12 +34,9 @@ public class ParseService extends IntentService {
             String versionCode = intent.getStringExtra(Constants.Keys.VERSION_CODE);
             String languageName = intent.getStringExtra(Constants.Keys.LANGUAGE_NAME);
 
-            Log.i(Constants.DUMMY_TAG, "Received Start parsing action");
-
             generateNotification(languageName, versionCode);
 
             startParsing(zipFilePath, languageName, languageCode, versionCode);
-
         }
         else if (intent.getAction().equals(Constants.ACTION.START_UNZIP)) {
 
@@ -49,8 +45,6 @@ public class ParseService extends IntentService {
             String versionCode = intent.getStringExtra(Constants.Keys.VERSION_CODE);
             String languageName = intent.getStringExtra(Constants.Keys.LANGUAGE_NAME);
             String versionName = intent.getStringExtra(Constants.Keys.VERSION_NAME);
-
-            Log.i(Constants.DUMMY_TAG, "Received Start unzip action");
 
             generateNotification(languageName, versionCode);
 
@@ -85,17 +79,13 @@ public class ParseService extends IntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         notificationManager.cancel(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE);
-        Log.i(Constants.DUMMY_TAG, "In onDestroy, service");
     }
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-
         notificationManager.cancel(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE);
-        Log.i(Constants.DUMMY_TAG, "In onTaskRemoved, service");
     }
 
     private void startUnzipping(final Context context, final String languageName, final String languageCode,
@@ -125,7 +115,6 @@ public class ParseService extends IntentService {
                     continue;
                 } else {
                     if (file.getPath().endsWith(".usfm")) {
-                        Log.i(Constants.DUMMY_TAG, "now parsing = " + file.getAbsolutePath());
                         boolean success;
                         USFMParser usfmParser = new USFMParser();
                         usfmParser.parseUSFMFile(ParseService.this,
@@ -140,8 +129,6 @@ public class ParseService extends IntentService {
                     }
                 }
             }
-            Log.i(Constants.DUMMY_TAG, "DONE......");
-
             deleteDirectory(zipDirectory);
         }
         notificationManager.cancel(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE);

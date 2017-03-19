@@ -58,7 +58,7 @@ public class UnzipUtil {
             createDir(outputFile.getParentFile());
         }
 
-        log("Extracting: " + entry);
+        Log.v(Constants.DUMMY_TAG, "unzip :: " + "Extracting: " + entry);
         BufferedInputStream inputStream = new
                 BufferedInputStream(zipfile
                 .getInputStream(entry));
@@ -74,12 +74,8 @@ public class UnzipUtil {
     }
 
     private static void createDir(File dir) {
-        log("Creating dir " + dir.getName());
+        Log.v(Constants.DUMMY_TAG, "unzip :: " + "Creating dir " + dir.getName());
         if (!dir.mkdirs())
             throw new RuntimeException("Can not create dir " + dir);
-    }
-
-    public static void log(String log) {
-        Log.v(Constants.DUMMY_TAG, "unzip :: " + log);
     }
 }

@@ -2,6 +2,7 @@ package com.bridgeconn.autographago.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.Editable;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -13,6 +14,7 @@ public class NotesModel extends RealmObject implements Parcelable {
     private long timestamp;
     private String title;
     private String text;
+    private RealmList<NotesStyleModel> notesStyleModels = new RealmList<>();
     private RealmList<VerseIdModel> verseIds = new RealmList<>();
     private String languageCode;
     private String versionCode;
@@ -21,6 +23,7 @@ public class NotesModel extends RealmObject implements Parcelable {
         timestamp = model.getTimestamp();
         title = model.getTitle();
         text = model.getText();
+        notesStyleModels = model.getNotesStyleModels();
         verseIds = model.getVerseIds();
         languageCode = model.getLanguageCode();
         versionCode = model.getVersionCode();
@@ -51,6 +54,14 @@ public class NotesModel extends RealmObject implements Parcelable {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public RealmList<NotesStyleModel> getNotesStyleModels() {
+        return notesStyleModels;
+    }
+
+    public void setNotesStyleModels(RealmList<NotesStyleModel> notesStyleModels) {
+        this.notesStyleModels = notesStyleModels;
     }
 
     public RealmList<VerseIdModel> getVerseIds() {
@@ -87,6 +98,7 @@ public class NotesModel extends RealmObject implements Parcelable {
         dest.writeLong(this.timestamp);
         dest.writeString(this.title);
         dest.writeString(this.text);
+        dest.writeList(this.notesStyleModels);
         dest.writeList(this.verseIds);
         dest.writeString(this.languageCode);
         dest.writeString(this.versionCode);
@@ -96,6 +108,8 @@ public class NotesModel extends RealmObject implements Parcelable {
         this.timestamp = in.readLong();
         this.title = in.readString();
         this.text = in.readString();
+        this.notesStyleModels = new RealmList<>();
+        in.readList(this.notesStyleModels, NotesStyleModel.class.getClassLoader());
         this.verseIds = new RealmList<>();
         in.readList(this.verseIds, VerseIdModel.class.getClassLoader());
         this.languageCode = in.readString();
@@ -122,6 +136,7 @@ public class NotesModel extends RealmObject implements Parcelable {
                 this.timestamp == ((NotesModel) obj).timestamp &&
                 this.title.equals(((NotesModel) obj).title) &&
                 this.text.equals(((NotesModel) obj).text) &&
+                this.notesStyleModels.equals(((NotesModel) obj).notesStyleModels) &&
                 this.verseIds.equals(((NotesModel) obj).verseIds) &&
                 this.languageCode.equals(((NotesModel) obj).languageCode) &&
                 this.versionCode.equals(((NotesModel) obj).versionCode);

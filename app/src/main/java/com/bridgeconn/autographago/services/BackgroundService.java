@@ -2,7 +2,6 @@ package com.bridgeconn.autographago.services;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.util.Log;
 
 import com.bridgeconn.autographago.models.SearchHistoryModel;
 import com.bridgeconn.autographago.models.SearchModel;
@@ -28,8 +27,6 @@ public class BackgroundService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent.getAction().equals(Constants.ACTION.ADD_TO_HISTORY)) {
-            Log.i(Constants.DUMMY_TAG, "Received Start add to history action");
-
             SearchModel model = new SearchModel();
             model.setVerseNumber(intent.getStringExtra(Constants.Keys.VERSE_NO));
             model.setChapterNumber(intent.getIntExtra(Constants.Keys.CHAPTER_NO, 1));
@@ -43,8 +40,6 @@ public class BackgroundService extends IntentService {
             new AutographaRepository<SearchModel>().add(model);
         }
         else if (intent.getAction().equals(Constants.ACTION.UPDATE_SEARCH_HISTORY)) {
-            Log.i(Constants.DUMMY_TAG, "Received Start update search action");
-
             String text = intent.getStringExtra(Constants.Keys.TEXT);
             final Realm realm = Realm.getDefaultInstance();
             ArrayList<SearchHistoryModel> resultList = querySearchHistory(realm, new AllSpecifications.SearchHistoryModelByText(text), new AllMappers.SearchHistoryMapper());

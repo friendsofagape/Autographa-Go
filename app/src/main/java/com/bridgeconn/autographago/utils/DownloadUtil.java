@@ -43,27 +43,19 @@ public class DownloadUtil {
                 call.enqueue(new Callback<ResponseModel>() {
                     @Override
                     public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
-                        Log.i(Constants.DUMMY_TAG, "message = " + response.message());
                         if (response.isSuccessful()) {
-                            Log.d(Constants.DUMMY_TAG, "server contacted and has file");
-
                             if (response.body() != null) {
-                                Log.i(Constants.DUMMY_TAG, "found languages");
                                 callback.onSuccess(response.body());
                             } else {
                                 callback.onFailure();
                             }
                         } else {
-                            Log.d(Constants.DUMMY_TAG, "server contact failed");
-
                             callback.onFailure();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<ResponseModel> call, Throwable t) {
-                        Log.e(Constants.DUMMY_TAG, "error");
-
                         callback.onFailure();
                     }
                 });

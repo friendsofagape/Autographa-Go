@@ -266,7 +266,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             Toast.makeText(this, getResources().getString(R.string.no_new_languages_available), Toast.LENGTH_SHORT).show();
             return;
         }
-
         AlertDialog.Builder builder = null;
         switch (SharedPrefs.getReadingMode()) {
             case Day: {
@@ -391,7 +390,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             public void onSuccess(ResponseModel model) {
                 mProgressBar.setVisibility(View.GONE);
                 mTvDownload.setOnClickListener(SettingsActivity.this);
+                Log.i(Constants.DUMMY_TAG, "in on success, get languages");
                 if (model.getLanguagesAvailable() != null) {
+                    Log.i(Constants.DUMMY_TAG, "model not nulll");
                     showLanguageDialog(model.getLanguagesAvailable());
                 }
             }
@@ -401,7 +402,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 mProgressBar.setVisibility(View.GONE);
                 mTvDownload.setOnClickListener(SettingsActivity.this);
                 showNetworkToast();
-                Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
             }
         });
     }
@@ -431,7 +431,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 mProgressBar.setVisibility(View.GONE);
                 mTvDownload.setOnClickListener(SettingsActivity.this);
                 showNetworkToast();
-                Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
             }
         });
     }
@@ -531,7 +530,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                         mProgressBar.setVisibility(View.GONE);
                         mTvDownload.setOnClickListener(SettingsActivity.this);
                         showNetworkToast();
-                        Log.i(Constants.DUMMY_TAG, "NO DATA FOUND");
                     }
                 });
     }

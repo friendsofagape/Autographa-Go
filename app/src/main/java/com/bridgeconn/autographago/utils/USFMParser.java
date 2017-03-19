@@ -80,11 +80,8 @@ public class USFMParser {
             realm.close();
             realm = null;
             return true;
-//            } catch (Exception e) {
-//                Log.e(Constants.TAG, "Exception in processing lines. So skipping this file" + e.toString());
-//            }
         } catch (Exception e) {
-            Log.e(Constants.DUMMY_TAG, "Exception in reading file. " + e.toString());
+            Log.e(Constants.DUMMY_TAG, "Exception in reading file. So skipping this file" + e.toString());
         } finally {
             if (reader != null) {
                 try {
@@ -112,7 +109,7 @@ public class USFMParser {
         switch (splitString[0]) {
             case Constants.Markers.MARKER_BOOK_NAME: {
                 if (!addBook(context, splitString, languageName, languageCode, versionCode)) {
-                    Log.i(Constants.DUMMY_TAG, "SKIP BOOK");
+                    Log.i(Constants.DUMMY_TAG, "Skip book, already exist in db");
                     return false;
                 }
                 break;
@@ -392,7 +389,6 @@ public class USFMParser {
 
         if (!languageExist) {
             // add new all
-            Log.i(Constants.DUMMY_TAG, "adding new language - " + languageName);
             languageModel.getVersionModels().add(versionModel);
             languageModel.setLanguageName(languageName);
             languageModel.setLanguageCode(languageCode);
@@ -402,14 +398,12 @@ public class USFMParser {
 
         if (!versionExist) {
             // add new version in same language
-            Log.i(Constants.DUMMY_TAG, "adding new version - " + versionModel.getVersionCode());
             new AutographaRepository<LanguageModel>().updateLanguageWithVersion(realm, new LanguageModel(languageResults.get(versionPosition)), versionModel);
             return;
         }
 
         if (!bookExist) {
             // add new book in same version and language
-            Log.i(Constants.DUMMY_TAG, "adding new book - " + bookModel.getBookId());
             new AutographaRepository<LanguageModel>().updateLanguageWithBook(realm, new LanguageModel(languageResults.get(versionPosition)), bookPosition, bookModel);
             return;
         }

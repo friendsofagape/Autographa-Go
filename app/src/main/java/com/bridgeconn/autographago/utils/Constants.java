@@ -70,6 +70,12 @@ public class Constants {
         String UNDERLINE = "UNDERLINE";
     }
 
+    public interface TextEditorStyles {
+        int BOLD = 1;
+        int ITALICS = 2;
+        int UNDERLINE = 3;
+    }
+
     public interface MarkerTypes {
         String SECTION_HEADING_ONE = "s1";
         String SECTION_HEADING_TWO = "s2";

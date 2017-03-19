@@ -214,7 +214,6 @@ public class UtilFunctions {
     }
 
     private static void traverseForExist (File dir, Context context) {
-        Log.i(Constants.DUMMY_TAG, "traversing : " + dir.getAbsolutePath());
         if (dir.exists()) {
             File[] files = dir.listFiles();
             if (files == null) {
@@ -232,7 +231,6 @@ public class UtilFunctions {
                         filePath = filePath.replaceAll(Constants.STORAGE_DIRECTORY, "");
                         filePath = filePath.replaceAll(Constants.USFM_ZIP_FILE_NAME, "");
                         filePath = filePath.replaceAll("/", "");
-                        Log.i(Constants.DUMMY_TAG, "filePath = " + filePath);
                         try {
                             long timeStamp = Long.parseLong(filePath);
                             startUnzipService(timeStamp, context);
@@ -299,7 +297,6 @@ public class UtilFunctions {
                 startIntent.putExtra(Constants.Keys.LANGUAGE_CODE, languageCode);
                 startIntent.putExtra(Constants.Keys.VERSION_NAME, versionName);
                 startIntent.putExtra(Constants.Keys.VERSION_CODE, versionCode);
-                Log.i(Constants.DUMMY_TAG, "starting serivce");
                 startIntent.setAction(Constants.ACTION.START_UNZIP);
                 context.startService(startIntent);
             }
