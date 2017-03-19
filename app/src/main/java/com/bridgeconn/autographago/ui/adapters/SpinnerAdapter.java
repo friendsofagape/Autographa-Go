@@ -15,10 +15,15 @@ import com.bridgeconn.autographago.models.VersionModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
+import com.bridgeconn.autographago.ormutils.Mapper;
+import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.activities.HomeActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class SpinnerAdapter extends BaseAdapter {
 
@@ -64,12 +69,14 @@ public class SpinnerAdapter extends BaseAdapter {
             public void onClick(View v) {
                 new AutographaRepository<VersionModel>().remove(new AllSpecifications.VersionModelByCode
                         (spinnerModels.get(position).getLanguageCode(), spinnerModels.get(position).getVersionCode()));
-                ArrayList<LanguageModel> results = new AutographaRepository<LanguageModel>().query(new AllSpecifications.LanguageModelByCode(spinnerModels.get(position).getLanguageCode()), new AllMappers.LanguageMapper());
+                final Realm realm = Realm.getDefaultInstance();
+                ArrayList<LanguageModel> results = query(realm, new AllSpecifications.LanguageModelByCode(spinnerModels.get(position).getLanguageCode()), new AllMappers.LanguageMapper());
                 if (results.size() > 0) {
                     if (results.get(0).getVersionModels().size() == 0) {
                         new AutographaRepository<LanguageModel>().remove(new AllSpecifications.LanguageModelByCode(spinnerModels.get(position).getLanguageCode()));
                     }
                 }
+                realm.close();
                 spinnerModels.remove(position);
                 notifyDataSetChanged();
             }
@@ -82,5 +89,14 @@ public class SpinnerAdapter extends BaseAdapter {
             delete.setVisibility(View.VISIBLE);
         }
         return convertView;
+    }
+
+    public ArrayList<LanguageModel> query(Realm realm, Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
+        RealmResults<LanguageModel> realmResults = specification.generateResults(realm);
+        ArrayList<LanguageModel> resultsToReturn = new ArrayList<>();
+        for (LanguageModel result : realmResults) {
+            resultsToReturn.add(mapper.map(result));
+        }
+        return resultsToReturn;
     }
 }

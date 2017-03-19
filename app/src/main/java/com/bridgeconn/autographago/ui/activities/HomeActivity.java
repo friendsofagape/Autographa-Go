@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookIdModel;
@@ -304,6 +305,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {
             getCategories();
+            String languageNameParsed = intent.getStringExtra(Constants.Keys.LANGUAGE_NAME);
+            String versionCodeParsed = intent.getStringExtra(Constants.Keys.VERSION_CODE);
+            Toast.makeText(HomeActivity.this, languageNameParsed + " " + versionCodeParsed + " " + context.getResources().getString(R.string.bible_download_finish), Toast.LENGTH_LONG).show();
             if (intent.getBooleanExtra(Constants.Keys.REFRESH_CONTAINER, false)) {
                 new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
                 getAllBooks();

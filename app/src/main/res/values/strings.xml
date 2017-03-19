@@ -80,5 +80,6 @@
     <string name="view_bookmarks">See all bookmarks in the Bible</string>
     <string name="view_highlights">See all the highlighted verses here</string>
     <string name="go_to_settings">Go to settings</string>
+    <string name="bible_download_finish">Bible download finished</string>
 
 </resources>
