@@ -16,11 +16,13 @@ import java.util.ArrayList;
 public class BookItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private TextView mTvBookName;
+    private View mView;
     private Context mContext;
     private ArrayList<BookIdModel> mBookModels;
 
     public BookItemViewHolder(View itemView, Context context, ArrayList<BookIdModel> bookModels) {
         super(itemView);
+        mView = itemView;
         mTvBookName = (TextView) itemView.findViewById(R.id.tv_book_name);
 
         mContext = context;
@@ -30,14 +32,14 @@ public class BookItemViewHolder extends RecyclerView.ViewHolder implements View.
     public void onBind(final int position) {
         BookIdModel bookModel = mBookModels.get(position);
         mTvBookName.setText(bookModel.getBookName());
-        mTvBookName.setOnClickListener(this);
-        mTvBookName.setTag(position);
+        mView.setTag(position);
+        mView.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.tv_book_name: {
+            case R.id.root_item: {
                 int position = (int) v.getTag();
                 Intent intent = new Intent(mContext, SelectChapterAndVerseActivity.class);
                 intent.putExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, false);

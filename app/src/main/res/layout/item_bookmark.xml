@@ -15,8 +15,7 @@
         android:maxLines="1"
         android:layout_centerVertical="true"
         android:textSize="?attr/title_text"
-        android:ellipsize="end"
-        android:textAllCaps="true" />
+        android:ellipsize="end" />
 
     <ImageView
         android:id="@+id/delete"
