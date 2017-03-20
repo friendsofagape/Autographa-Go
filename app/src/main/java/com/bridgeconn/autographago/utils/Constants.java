@@ -7,8 +7,7 @@ import java.util.ArrayList;
 
 public class Constants {
 
-    public static final String TAG = "AutographaGo";
-    public static final String DUMMY_TAG = "abcd";
+    public static final String LOG_TAG = "TagAutographaGo";
 
     public static final String API_BASE_URL = "https://raw.githubusercontent.com/friendsofagape/Autographa_Repo/master/Bibles/";
     public static final String META_DATA_FILE_NAME = "package.json";

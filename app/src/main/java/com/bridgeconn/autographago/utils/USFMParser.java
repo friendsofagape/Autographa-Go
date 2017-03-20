@@ -66,7 +66,6 @@ public class USFMParser {
                 reader = new BufferedReader(new FileReader(new File(fileName)));
             }
             String mLine;
-//            try {
             while ((mLine = reader.readLine()) != null) {
                 if (!processLine(context, mLine, languageName, languageCode, versionCode)) {
                     realm.close();
@@ -81,13 +80,13 @@ public class USFMParser {
             realm = null;
             return true;
         } catch (Exception e) {
-            Log.e(Constants.DUMMY_TAG, "Exception in reading file. So skipping this file" + e.toString());
+            Log.e(Constants.LOG_TAG, "Exception in reading file. " + fileName + "So skipping this file" + e.toString());
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    Log.e(Constants.DUMMY_TAG, "Exception in closing BufferedReader. " + e.toString());
+                    Log.e(Constants.LOG_TAG, "Exception in closing BufferedReader. " + e.toString());
                 }
             }
         }
@@ -109,7 +108,7 @@ public class USFMParser {
         switch (splitString[0]) {
             case Constants.Markers.MARKER_BOOK_NAME: {
                 if (!addBook(context, splitString, languageName, languageCode, versionCode)) {
-                    Log.i(Constants.DUMMY_TAG, "Skip book, already exist in db");
+                    Log.i(Constants.LOG_TAG, "Skip book, already exist in db, " + splitString[1] + "  lan=" + languageName + versionCode);
                     return false;
                 }
                 break;

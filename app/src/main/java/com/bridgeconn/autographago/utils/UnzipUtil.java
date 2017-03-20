@@ -32,7 +32,7 @@ public class UnzipUtil {
                     unzipEntry(zipfile, entry, outputDir);
                 }
             }
-            Log.i(Constants.DUMMY_TAG, "unzip success");
+            Log.i(Constants.LOG_TAG, "unzip success");
             archive.delete();
 
             NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -42,7 +42,7 @@ public class UnzipUtil {
 
         } catch (Exception e) {
             archive.delete();
-            Log.v(Constants.DUMMY_TAG, "unzip :: " + "Deleting zip anyway, Error while extracting file " + archive);
+            Log.v(Constants.LOG_TAG, "unzip :: " + "Deleting zip anyway, Error while extracting file " + archive);
         }
     }
 
@@ -58,7 +58,7 @@ public class UnzipUtil {
             createDir(outputFile.getParentFile());
         }
 
-        Log.v(Constants.DUMMY_TAG, "unzip :: " + "Extracting: " + entry);
+        Log.v(Constants.LOG_TAG, "unzip :: " + "Extracting: " + entry);
         BufferedInputStream inputStream = new
                 BufferedInputStream(zipfile
                 .getInputStream(entry));
@@ -74,7 +74,7 @@ public class UnzipUtil {
     }
 
     private static void createDir(File dir) {
-        Log.v(Constants.DUMMY_TAG, "unzip :: " + "Creating dir " + dir.getName());
+        Log.v(Constants.LOG_TAG, "unzip :: " + "Creating dir " + dir.getName());
         if (!dir.mkdirs())
             throw new RuntimeException("Can not create dir " + dir);
     }

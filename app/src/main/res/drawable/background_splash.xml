@@ -2,12 +2,12 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:drawable="@color/black_splash"/>
+        android:drawable="@color/white"/>
 
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/autographa_icon"/>
+            android:src="@drawable/ic_autographa_go"/>
     </item>
 
 </layer-list>

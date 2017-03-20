@@ -22,7 +22,7 @@
     
     <string name="discard_note">Discard Changes?</string>
     <string name="discard_note_message">Do you want to discard the note or save?</string>
-    <string name="discard">DISCARD</string>
+    <string name="discard">DISCARD CHANGES</string>
     <string name="cancel">CANCEL</string>
     <string name="note_saved">Note saved successfully</string>
 
@@ -40,10 +40,6 @@
     <string name="text_text_size">Text Size</string>
 
     <string name="about_us">About Us</string>
-    <string name="about_us_data">Friends of Agape are business professionals, church leaders, individuals and families
-        who team-up with Christians serving in challenging places of the world. Our focus is the South Asia region,
-        partnering primarily with ministries in India, Nepal and Bhutan where 35% of the of the world’s unreached
-        people groups live. \n\n http://www.autographa.com/about/ \n http://www.autographa.com/products/ \n http://www.autographa.com/contact/</string>
 
     <string name="take_me_to_settings">Take me to settings</string>
     <string name="try_again">Try Again</string>
@@ -67,6 +63,7 @@
     <string name="download">DOWNLOAD</string>
     <string name="no_new_languages_available">No new languages available</string>
     <string name="network_error">Network Error</string>
+    <string name="server_error">Server Error</string>
     <string name="no_new_versions_available">No new versions available</string>
     <string name="downloading_bible">Downloading Bible</string>
     <string name="downloading">Downloading...</string>
@@ -81,5 +78,25 @@
     <string name="view_highlights">See all your highlights</string>
     <string name="go_to_settings">Manage app settings</string>
     <string name="bible_download_finish">Bible download finished</string>
+
+    <string name="about_us_data">Friends of Agape are business professionals, church leaders, individuals and families
+        who team-up with Christians serving in challenging places of the world. Our focus is the South Asia region,
+        partnering primarily with ministries in India, Nepal and Bhutan where 35% of the of the world’s unreached
+        people groups live. \n\n http://www.autographa.com/about/ \n http://www.autographa.com/products/ \n http://www.autographa.com/contact/</string>
+
+    <string name="the_autographa_project">The Autographa Project</string>
+    <string name="about_us_1">aims to equip the global church and the bible translation community with a state of the
+        art minimalistic, yet comprehensive alternative to existing bible translation software bundled with tracking systems,
+        quality checking and publishing tools with no price tag. This is part of the Church Centric Bible Translation (CCBT)
+        Initiatives in areas where Friends of Agape is serving along with other partner agencies. \n\nThe success of the beta
+        version of a cross platform, open source, minimalistic Bible Translation Desktop Tool has paved the way for more
+        comprehensive and feature rich product family which aims to provide functionality that no other commercial or free
+        Bible Translation Tool offers currently. \n\n</string>
+    <string name="autographa_go">Autographa Go</string>
+    <string name="about_us_2">for Android is a part of the product line which are featured at </string>
+    <string name="website">www.autographa.com \n</string>
+    <string name="about_us_3">Autographa Lite (Bible Drafting Tool) \nAutographa Cloud (Online Storage Platform) \nAutographa Live (Collaborative Scripture Drafting Tool) \nAutographa Scribe (Print and Publishing Tool)\n\n</string>
+    <string name="autographa_team">Autographa Team \n</string>
+    <string name="about_us_4">Binu Alexander \nPrerna Singh \nJoel Mathew \nArpit Jacob \nSandeep Kumar \nSony Zacharia \nUday Kumar \n\n \u00a9 Friends of Agape 2017 under MIT License \nwww.friendsofagape.org</string>
 
 </resources>

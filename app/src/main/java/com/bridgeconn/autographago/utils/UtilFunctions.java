@@ -58,10 +58,10 @@ public class UtilFunctions {
                     dst.close();
                 }
             } else {
-                Log.e(Constants.DUMMY_TAG, "sd cannot write");
+                Log.e(Constants.LOG_TAG, "sd cannot write");
             }
         } catch (Exception e) {
-            Log.e(Constants.DUMMY_TAG, e.toString());
+            Log.e(Constants.LOG_TAG, e.toString());
         }
     }
 

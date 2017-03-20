@@ -390,10 +390,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             public void onSuccess(ResponseModel model) {
                 mProgressBar.setVisibility(View.GONE);
                 mTvDownload.setOnClickListener(SettingsActivity.this);
-                Log.i(Constants.DUMMY_TAG, "in on success, get languages");
                 if (model.getLanguagesAvailable() != null) {
-                    Log.i(Constants.DUMMY_TAG, "model not nulll");
                     showLanguageDialog(model.getLanguagesAvailable());
+                } else {
+                    Toast.makeText(SettingsActivity.this, getResources().getString(R.string.server_error), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -401,13 +401,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             public void onFailure() {
                 mProgressBar.setVisibility(View.GONE);
                 mTvDownload.setOnClickListener(SettingsActivity.this);
-                showNetworkToast();
+                Toast.makeText(SettingsActivity.this, getResources().getString(R.string.network_error), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void showNetworkToast() {
-        Toast.makeText(SettingsActivity.this, getResources().getString(R.string.network_error), Toast.LENGTH_SHORT).show();
     }
 
     public void getAvailableListOfVersions(final String language) {
@@ -423,6 +419,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 mTvDownload.setOnClickListener(SettingsActivity.this);
                 if (model.getListOfVersionsAvailable() != null) {
                     showVersionDialog(model.getListOfVersionsAvailable(), language);
+                } else {
+                    Toast.makeText(SettingsActivity.this, getResources().getString(R.string.server_error), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -430,7 +428,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             public void onFailure() {
                 mProgressBar.setVisibility(View.GONE);
                 mTvDownload.setOnClickListener(SettingsActivity.this);
-                showNetworkToast();
+                Toast.makeText(SettingsActivity.this, getResources().getString(R.string.network_error), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -522,6 +520,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             });
 //                            mInflateLayout.addView(tv);
                             mInflateLayout.addView(button);
+                        } else {
+                            Toast.makeText(SettingsActivity.this, getResources().getString(R.string.server_error), Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -529,7 +529,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     public void onFailure() {
                         mProgressBar.setVisibility(View.GONE);
                         mTvDownload.setOnClickListener(SettingsActivity.this);
-                        showNetworkToast();
+                        Toast.makeText(SettingsActivity.this, getResources().getString(R.string.network_error), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
