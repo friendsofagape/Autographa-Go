@@ -1,0 +1,123 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="SplashTheme" parent="AppTheme.NoActionBar">
+        <item name="android:windowBackground">@drawable/background_splash</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="EditTextLight">
+        <item name="colorControlNormal">@color/black_40</item>
+        <item name="colorControlActivated">@color/black_40</item>
+        <item name="colorControlHighlight">@color/black_40</item>
+    </style>
+
+    <style name="DialogThemeLight" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:textColorPrimary">@color/black_40</item>
+        <item name="android:textColor">@color/black_40</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="DialogThemeDark" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="FontSize">
+    </style>
+
+    <style name="FontSize.Medium">
+        <item name="heading_1">20sp</item>
+        <item name="heading_2">16sp</item>
+        <item name="heading_3">15sp</item>
+        <item name="heading_4">14sp</item>
+        <item name="title_text">20sp</item>
+        <item name="body">14sp</item>
+        <item name="button_text">14sp</item>
+        <item name="small_button_text">12sp</item>
+        <item name="app_bar_text">20sp</item>
+
+        <item name="button_dimen">24dp</item>
+        <item name="home_button_dimen">36dp</item>
+        <item name="button_padding">6dp</item>
+    </style>
+
+    <style name="FontSize.XSmall">
+        <item name="heading_1">16sp</item>
+        <item name="heading_2">12sp</item>
+        <item name="heading_3">11sp</item>
+        <item name="heading_4">10sp</item>
+        <item name="title_text">16sp</item>
+        <item name="body">10sp</item>
+        <item name="button_text">10sp</item>
+        <item name="small_button_text">8sp</item>
+        <item name="app_bar_text">16sp</item>
+
+        <item name="button_dimen">12dp</item>
+        <item name="home_button_dimen">36dp</item>
+        <item name="button_padding">12dp</item>
+    </style>
+
+    <style name="FontSize.Small">
+        <item name="heading_1">18sp</item>
+        <item name="heading_2">14sp</item>
+        <item name="heading_3">13sp</item>
+        <item name="heading_4">12sp</item>
+        <item name="title_text">18sp</item>
+        <item name="body">12sp</item>
+        <item name="button_text">12sp</item>
+        <item name="small_button_text">10sp</item>
+        <item name="app_bar_text">18sp</item>
+
+        <item name="button_dimen">18dp</item>
+        <item name="home_button_dimen">36dp</item>
+        <item name="button_padding">9dp</item>
+    </style>
+
+    <style name="FontSize.Large">
+        <item name="heading_1">22sp</item>
+        <item name="heading_2">18sp</item>
+        <item name="heading_3">17sp</item>
+        <item name="heading_4">16sp</item>
+        <item name="title_text">22sp</item>
+        <item name="body">16sp</item>
+        <item name="button_text">16sp</item>
+        <item name="small_button_text">14sp</item>
+        <item name="app_bar_text">22sp</item>
+
+        <item name="button_dimen">36dp</item>
+        <item name="home_button_dimen">36dp</item>
+        <item name="button_padding">0dp</item>
+    </style>
+
+    <style name="FontSize.XLarge">
+        <item name="heading_1">28sp</item>
+        <item name="heading_2">18sp</item>
+        <item name="heading_3">17sp</item>
+        <item name="heading_4">16sp</item>
+        <item name="title_text">28sp</item>
+        <item name="body">24sp</item>
+        <item name="button_text">18sp</item>
+        <item name="small_button_text">16sp</item>
+        <item name="app_bar_text">26sp</item>
+
+        <item name="button_dimen">36dp</item>
+        <item name="home_button_dimen">36dp</item>
+        <item name="button_padding">0dp</item>
+    </style>
+
+</resources>

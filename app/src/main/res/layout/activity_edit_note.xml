@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:text="@string/notes"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:textSize="?attr/title_text"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/iv_save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/done"
+                    android:textSize="?attr/button_text"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white"
+                    android:padding="@dimen/default_content_padding" />
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_book"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/et_title"
+                android:maxLines="1"
+                android:hint="@string/title"
+                android:textSize="?attr/heading_1"
+                android:textIsSelectable="false"
+                android:layout_width="match_parent"
+                android:imeOptions="actionDone"
+                android:paddingLeft="3dp"
+                android:paddingRight="3dp"
+                android:ellipsize="end"
+                android:layout_marginLeft="6dp"
+                android:layout_height="wrap_content" />
+
+            <RelativeLayout
+                android:id="@+id/verse_layout"
+                android:layout_below="@id/et_title"
+                android:layout_marginLeft="@dimen/default_content_padding"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:visibility="visible"
+                    android:id="@+id/iv_add_verse"
+                    android:layout_margin="@dimen/default_content_padding"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_add_circle_white"
+                    android:tint="@color/black_40"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="?attr/button_dimen"
+                    android:layout_height="?attr/button_dimen" />
+
+                <com.bridgeconn.autographago.ui.customviews.FlowLayout
+                    android:id="@+id/button_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/iv_add_verse"
+                    app:childSpacing="1dp"
+                    app:rowSpacing="2dp"/>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_above="@id/verse_layout"
+                android:background="@color/black_40" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/verse_layout"
+                android:background="@color/black_40" />
+
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/editor"
+            android:hint="@string/title_notes"
+            android:textSize="?attr/body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_item"
+    android:layout_margin="@dimen/menu_item_margin"
+    android:gravity="center_vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <ImageView
+        android:id="@+id/iv_chevron"
+        android:tint="@color/black_60"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/default_content_padding"
+        android:src="@drawable/ic_chevron_right_white"
+        android:layout_width="?attr/button_dimen"
+        android:layout_height="?attr/button_dimen" />
+
+    <TextView
+        android:id="@+id/tv_book_name"
+        android:layout_toLeftOf="@id/iv_chevron"
+        android:layout_width="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textSize="?attr/title_text"
+        android:ellipsize="end"
+        android:textAllCaps="true"/>
+
+</RelativeLayout>

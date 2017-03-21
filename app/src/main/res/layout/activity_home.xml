@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <android.support.v7.widget.AppCompatSpinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/toolbar_title"
+                    android:id="@+id/spinner"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textColor="@color/white"
+                    android:text="@string/app_name"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:textSize="?attr/title_text"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:layout_alignParentLeft="true"
+                    android:id="@+id/toolbar_title" />
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_book"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.percent.PercentRelativeLayout
+            android:id="@+id/root_grid_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ScrollView
+                android:id="@+id/navigation_items"
+                app:layout_widthPercent="20%"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                android:gravity="center_horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_continue_reading"
+                        android:layout_width="?attr/home_button_dimen"
+                        android:layout_height="?attr/home_button_dimen"
+                        android:tint="@color/white"
+                        android:layout_marginTop="@dimen/activity_horizontal_margin"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                        android:padding="?attr/button_padding"
+                        android:src="@drawable/ic_local_library_white" />
+
+                    <ImageView
+                        android:id="@+id/iv_history"
+                        android:layout_width="?attr/home_button_dimen"
+                        android:layout_height="?attr/home_button_dimen"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                        android:padding="?attr/button_padding"
+                        android:tint="@color/white"
+                        android:src="@drawable/ic_history_white" />
+
+                    <ImageView
+                        android:id="@+id/iv_search"
+                        android:layout_width="?attr/home_button_dimen"
+                        android:layout_height="?attr/home_button_dimen"
+                        android:tint="@color/white"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                        android:padding="?attr/button_padding"
+                        android:src="@drawable/ic_search_white" />
+
+                    <ImageView
+                        android:id="@+id/iv_notes"
+                        android:layout_width="?attr/home_button_dimen"
+                        android:layout_height="?attr/home_button_dimen"
+                        android:tint="@color/white"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                        android:padding="?attr/button_padding"
+                        android:src="@drawable/ic_note_white" />
+
+                    <ImageView
+                        android:id="@+id/iv_bookmark"
+                        android:layout_width="?attr/home_button_dimen"
+                        android:layout_height="?attr/home_button_dimen"
+                        android:tint="@color/white"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                        android:padding="?attr/button_padding"
+                        android:src="@drawable/ic_bookmark_white" />
+
+                    <ImageView
+                        android:id="@+id/iv_highlight"
+                        android:layout_width="?attr/home_button_dimen"
+                        android:layout_height="?attr/home_button_dimen"
+                        android:tint="@color/white"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                        android:padding="?attr/button_padding"
+                        android:src="@drawable/ic_border_color_white" />
+
+                    <ImageView
+                        android:id="@+id/iv_settings"
+                        android:layout_width="?attr/home_button_dimen"
+                        android:layout_height="?attr/home_button_dimen"
+                        android:tint="@color/white"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                        android:padding="?attr/button_padding"
+                        android:src="@drawable/ic_settings_white" />
+
+                </LinearLayout>
+
+            </ScrollView>
+
+            <LinearLayout
+                android:id="@+id/books"
+                app:layout_widthPercent="80%"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@id/navigation_items"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/list_books"
+                    android:name="com.bridgeconn.autographago.activities.HomeActivity"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:listitem="@layout/item_book" />
+
+            </LinearLayout>
+
+        </android.support.percent.PercentRelativeLayout>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

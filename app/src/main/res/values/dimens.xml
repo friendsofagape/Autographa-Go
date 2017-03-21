@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="menu_item_margin">16dp</dimen>
+    <dimen name="shadow_height">10dp</dimen>
+    <dimen name="tab_padding">20dp</dimen>
+    <dimen name="tab_elevation">4dp</dimen>
+    <dimen name="default_content_padding">8dp</dimen>
+    <dimen name="button_padding">4dp</dimen>
+    <dimen name="spinner_item_height">48dp</dimen>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="dummy_item_height">64dp</dimen>
+
+    <dimen name="button_xs">12dp</dimen>
+    <dimen name="button_s">18dp</dimen>
+    <dimen name="button_m">24dp</dimen>
+    <dimen name="button_l">36dp</dimen>
+    <dimen name="button_xl">48dp</dimen>
+
+    <dimen name="button_padding_xs">0dp</dimen>
+    <dimen name="button_padding_s">2dp</dimen>
+    <dimen name="button_padding_m">4dp</dimen>
+    <dimen name="button_padding_l">6dp</dimen>
+    <dimen name="button_padding_xl">8dp</dimen>
+
+
+    <!-- text dimensions -->
+    <!--<dimen name="body">14sp</dimen>-->
+    <!--<dimen name="heading_1">20sp</dimen>-->
+    <!--<dimen name="heading_2">16sp</dimen>-->
+    <!--<dimen name="heading_3">15sp</dimen>-->
+    <!--<dimen name="heading_4">14sp</dimen>-->
+    <!--<dimen name="title_text">20sp</dimen>-->
+    <!--<dimen name="button_text">14sp</dimen>-->
+    <!--<dimen name="small_button_text">12sp</dimen>-->
+    <!--<dimen name="app_bar_text">20sp</dimen>-->
+
+</resources>

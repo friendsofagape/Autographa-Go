@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <LinearLayout
+                    android:id="@+id/bookmark_holder"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:padding="@dimen/button_padding"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/iv_bookmark"
+                        android:layout_width="?attr/button_dimen"
+                        android:layout_height="?attr/button_dimen"
+                        android:src="@drawable/ic_bookmark_white" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:textSize="?attr/title_text"
+                    android:textAllCaps="true"
+                    android:layout_toLeftOf="@id/bookmark_holder"
+                    android:layout_alignParentLeft="true"
+                    android:id="@+id/toolbar_title" />
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_book"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_chapters"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_chapter" />
+
+        <ProgressBar
+            android:visibility="gone"
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminate="true"
+            android:progressDrawable="@drawable/thin_progress_bar"
+            android:indeterminateDuration="1000"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/bottom_bar"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:weightSum="3"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dummy_item_height">
+
+        <LinearLayout
+            android:id="@+id/view_highlights"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:textSize="?attr/heading_2"
+                android:id="@+id/tv_highlight"
+                android:gravity="center_vertical"
+                android:text="@string/highlight_text"
+                android:textAllCaps="true"
+                android:ellipsize="end"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_border_color_white"
+                android:layout_width="?attr/button_dimen"
+                android:layout_marginLeft="@dimen/button_padding"
+                android:layout_height="?attr/button_dimen" />
+
+        </LinearLayout>
+
+        <View
+            android:background="@color/white"
+            android:layout_width="1dp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_height="32dp"/>
+
+        <LinearLayout
+            android:id="@+id/view_notes"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:textSize="?attr/heading_2"
+                android:gravity="center_vertical"
+                android:text="@string/notes"
+                android:textAllCaps="true"
+                android:ellipsize="end"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_note_white"
+                android:layout_marginLeft="@dimen/button_padding"
+                android:layout_width="?attr/button_dimen"
+                android:layout_height="?attr/button_dimen" />
+
+        </LinearLayout>
+
+        <View
+            android:background="@color/white"
+            android:layout_width="1dp"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_height="32dp"/>
+
+        <LinearLayout
+            android:id="@+id/view_share"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:textSize="?attr/heading_2"
+                android:gravity="center_vertical"
+                android:text="@string/share_text"
+                android:textAllCaps="true"
+                android:ellipsize="end"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_share_white"
+                android:layout_marginLeft="@dimen/button_padding"
+                android:layout_width="?attr/button_dimen"
+                android:layout_height="?attr/button_dimen" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

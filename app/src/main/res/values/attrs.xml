@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="NonSwipeableViewPager">
+        <attr name="swipeable" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="FlowLayout">
+        <attr name="flow" format="boolean"/>
+        <attr name="childSpacing" format="enum|dimension">
+            <enum name="auto" value="-65536"/>
+        </attr>
+        <attr name="childSpacingForLastRow" format="enum|dimension">
+            <enum name="auto" value="-65536"/>
+            <enum name="align" value="-65537"/>
+        </attr>
+        <attr name="rowSpacing" format="enum|dimension">
+            <enum name="auto" value="-65536"/>
+        </attr>
+        <attr name="rtl" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="FontSize">
+        <attr name="heading_1" format="dimension" />
+        <attr name="heading_2" format="dimension" />
+        <attr name="heading_3" format="dimension" />
+        <attr name="heading_4" format="dimension" />
+        <attr name="title_text" format="dimension" />
+        <attr name="body" format="dimension" />
+        <attr name="button_text" format="dimension" />
+        <attr name="small_button_text" format="dimension" />
+        <attr name="app_bar_text" format="dimension" />
+
+        <attr name="button_dimen" format="dimension" />
+        <attr name="home_button_dimen" format="dimension" />
+        <attr name="button_padding" format="dimension" />
+    </declare-styleable>
+
+</resources>
