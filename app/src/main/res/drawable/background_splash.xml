@@ -7,7 +7,7 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/ic_autographa_go"/>
+            android:src="@drawable/ic_autographa_go_splash"/>
     </item>
 
 </layer-list>

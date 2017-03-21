@@ -38,4 +38,13 @@ public class SpinnerModel {
     public void setVersionCode(String versionCode) {
         this.versionCode = versionCode;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof SpinnerModel &&
+                this.languageName != null && this.languageCode != null && this.versionCode != null &&
+                this.languageName.equals(((SpinnerModel) obj).languageName) &&
+                this.languageCode.equals(((SpinnerModel) obj).languageCode) &&
+                this.versionCode.equals(((SpinnerModel) obj).versionCode);
+    }
 }

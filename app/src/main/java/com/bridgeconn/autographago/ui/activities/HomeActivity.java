@@ -153,6 +153,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 categoriesList.add(spinnerModel);
             }
         }
+        SpinnerModel spinnerModelULB = new SpinnerModel();
+        spinnerModelULB.setLanguageCode("ENG");
+        spinnerModelULB.setLanguageName("English");
+        spinnerModelULB.setVersionCode(Constants.VersionCodes.ULB);
+        boolean presentULB = categoriesList.remove(spinnerModelULB);
+        if (presentULB) {
+            categoriesList.add(0, spinnerModelULB);
+        }
+        SpinnerModel spinnerModelUDB = new SpinnerModel();
+        spinnerModelUDB.setLanguageCode("ENG");
+        spinnerModelUDB.setLanguageName("English");
+        spinnerModelUDB.setVersionCode(Constants.VersionCodes.UDB);
+        boolean presentUDB = categoriesList.remove(spinnerModelUDB);
+        if (presentUDB) {
+            if (presentULB) {
+                categoriesList.add(1, spinnerModelUDB);
+            } else {
+                categoriesList.add(0, spinnerModelUDB);
+            }
+        }
         realm.close();
         spinnerAdapter.notifyDataSetChanged();
     }

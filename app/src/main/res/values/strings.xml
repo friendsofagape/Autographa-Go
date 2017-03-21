@@ -39,7 +39,7 @@
     <string name="text_reading_mode">Reading Mode</string>
     <string name="text_text_size">Text Size</string>
 
-    <string name="about_us">About Us</string>
+    <string name="about_us">About</string>
 
     <string name="take_me_to_settings">Take me to settings</string>
     <string name="try_again">Try Again</string>
@@ -94,9 +94,12 @@
         Bible Translation Tool offers currently. \n\n</string>
     <string name="autographa_go">Autographa Go</string>
     <string name="about_us_2">for Android is a part of the product line which are featured at </string>
-    <string name="website">www.autographa.com \n</string>
+    <string name="website">www.autographa.com \n\n</string>
     <string name="about_us_3">Autographa Lite (Bible Drafting Tool) \nAutographa Cloud (Online Storage Platform) \nAutographa Live (Collaborative Scripture Drafting Tool) \nAutographa Scribe (Print and Publishing Tool)\n\n</string>
     <string name="autographa_team">Autographa Team \n</string>
     <string name="about_us_4">Binu Alexander \nPrerna Singh \nJoel Mathew \nArpit Jacob \nSandeep Kumar \nSony Zacharia \nUday Kumar \n\n \u00a9 Friends of Agape 2017 under MIT License \nwww.friendsofagape.org</string>
+    <string name="about_us_5">The Open Source Repo is at https://github.com/friendsofagape/Autographa_Repo . Free Bibles with no copyright or unrestricted distribution
+        licenses can be added and will be considered for adding to app by repo owners. \n\nNOTE : Please do not submit copyrighted Bibles \n\n</string>
+    <string name="version">Version</string>
 
 </resources>

@@ -105,18 +105,18 @@
     </style>
 
     <style name="FontSize.XLarge">
-        <item name="heading_1">24sp</item>
-        <item name="heading_2">20sp</item>
-        <item name="heading_3">19sp</item>
-        <item name="heading_4">18sp</item>
-        <item name="title_text">24sp</item>
-        <item name="body">18sp</item>
+        <item name="heading_1">28sp</item>
+        <item name="heading_2">18sp</item>
+        <item name="heading_3">17sp</item>
+        <item name="heading_4">16sp</item>
+        <item name="title_text">28sp</item>
+        <item name="body">24sp</item>
         <item name="button_text">18sp</item>
         <item name="small_button_text">16sp</item>
-        <item name="app_bar_text">24sp</item>
+        <item name="app_bar_text">26sp</item>
 
-        <item name="button_dimen">48dp</item>
-        <item name="home_button_dimen">48dp</item>
+        <item name="button_dimen">36dp</item>
+        <item name="home_button_dimen">36dp</item>
         <item name="button_padding">0dp</item>
     </style>
 

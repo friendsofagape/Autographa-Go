@@ -12,6 +12,7 @@ import android.text.style.StyleSpan;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.bridgeconn.autographago.BuildConfig;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
@@ -53,7 +54,12 @@ public class AboutPageActivity extends AppCompatActivity {
         Spannable spannable7 = new SpannableString(getResources().getString(R.string.autographa_team));
         spannable7.setSpan(new StyleSpan(Typeface.BOLD), 0, spannable7.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         Spannable spannable8 = new SpannableString(getResources().getString(R.string.about_us_4));
+        Spannable spannable9 = new SpannableString(getResources().getString(R.string.about_us_5));
 
+        spannableStringBuilder.append(getResources().getString(R.string.version));
+        spannableStringBuilder.append(" ");
+        spannableStringBuilder.append(BuildConfig.VERSION_NAME);
+        spannableStringBuilder.append("\n\n");
         spannableStringBuilder.append(spannable1);
         spannableStringBuilder.append(" ");
         spannableStringBuilder.append(spannable2);
@@ -62,6 +68,7 @@ public class AboutPageActivity extends AppCompatActivity {
         spannableStringBuilder.append(spannable4);
         spannableStringBuilder.append(" ");
         spannableStringBuilder.append(spannable5);
+        spannableStringBuilder.append(spannable9);
         spannableStringBuilder.append(spannable6);
         spannableStringBuilder.append(spannable7);
         spannableStringBuilder.append(spannable8);
