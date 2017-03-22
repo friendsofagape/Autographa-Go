@@ -95,6 +95,36 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         getSupportActionBar().setTitle("");
         mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(this, mBookId));
 
+        mRecyclerView = (RecyclerView) findViewById(R.id.list_chapters);
+
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mAdapter = new ChapterAdapter(this, mChapterModels, SharedPrefs.getFontSize());
+        mRecyclerView.setAdapter(mAdapter);
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+                int chapterNum = findChapterNumber(firstVisibleItem);
+                if (mBookMarkNumber > 0) {
+                    if (chapterNum == mBookMarkNumber) {
+                        mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
+                    } else {
+                        mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.white));
+                    }
+                }
+            }
+        });
+
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected void onPreExecute() {
@@ -129,39 +159,10 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 String verseNumber = getIntent().getStringExtra(Constants.Keys.VERSE_NO);
                 int chapterNumber = getIntent().getIntExtra(Constants.Keys.CHAPTER_NO, 0);
 
-                mRecyclerView.scrollToPosition(findPositionToScroll(chapterNumber-1, verseNumber));
+                mLayoutManager.scrollToPositionWithOffset(findPositionToScroll(chapterNumber-1, verseNumber), 0);
+//                mRecyclerView.scrollToPosition(findPositionToScroll(chapterNumber-1, verseNumber));
             }
         }.execute();
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.list_chapters);
-
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new ChapterAdapter(this, mChapterModels, SharedPrefs.getFontSize());
-        mRecyclerView.setAdapter(mAdapter);
-
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-                int chapterNum = findChapterNumber(firstVisibleItem);
-                if (mBookMarkNumber > 0) {
-                    if (chapterNum == mBookMarkNumber) {
-                        mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
-                    } else {
-                        mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.white));
-                    }
-                }
-            }
-        });
     }
 
     private BookModel getBookModel(String bookId) {
@@ -473,7 +474,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                         mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
                     }
 
-                    mRecyclerView.scrollToPosition(findPositionToScroll(chapterNumber-1, verseNumber));
+                    mLayoutManager.scrollToPositionWithOffset(findPositionToScroll(chapterNumber-1, verseNumber), 0);
+//                    mRecyclerView.scrollToPosition(findPositionToScroll(chapterNumber-1, verseNumber));
                 }
                 break;
             }
