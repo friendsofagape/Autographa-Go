@@ -107,6 +107,9 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
+        if (mViewPager.getAdapter() == null) {
+            return;
+        }
         if (mTabLayoutHelper != null) {
             mTabLayoutHelper.release();
             mTabLayoutHelper = null;
@@ -116,6 +119,9 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        if (mViewPager.getAdapter() == null) {
+            return;
+        }
         if (mTabLayoutHelper == null) {
             mTabLayoutHelper = new TabLayoutHelper(mTabLayout, mViewPager);
             mTabLayoutHelper.setAutoAdjustTabModeEnabled(true);
@@ -125,6 +131,9 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (mViewPager.getAdapter() == null) {
+            return;
+        }
         if (mTabLayoutHelper != null) {
             mTabLayoutHelper.release();
             mTabLayoutHelper = null;

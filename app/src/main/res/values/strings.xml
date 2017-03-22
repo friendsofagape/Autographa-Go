@@ -70,6 +70,7 @@
     <string name="parsing">Parsing</string>
     <string name="download_has_started">Download has started.</string>
     <string name="open_hints">Open Hints</string>
+    <string name="hints">Hints</string>
     <string name="continue_reading">Continue reading where you last left</string>
     <string name="view_history">See all your reading history</string>
     <string name="search_text">Search for text</string>

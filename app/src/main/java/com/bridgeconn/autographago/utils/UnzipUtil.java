@@ -18,7 +18,7 @@ import java.util.zip.ZipFile;
 public class UnzipUtil {
 
     public static void unzipFile(final File zipfile1, Context context, final String languageName, final String languageCode,
-                                 final String versionCode) {
+                                 final String versionCode, final String versionName) {
         final String directory = zipfile1.getParent() + "/";
 
         File archive = zipfile1;
@@ -38,7 +38,7 @@ public class UnzipUtil {
             NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE);
 
-            UtilFunctions.startParseService(context, outputDir, languageName, languageCode, versionCode);
+            UtilFunctions.startParseService(context, outputDir, languageName, languageCode, versionCode, versionName);
 
         } catch (Exception e) {
             archive.delete();

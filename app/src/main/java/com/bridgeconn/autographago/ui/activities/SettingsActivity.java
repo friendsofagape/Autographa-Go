@@ -74,7 +74,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private String languageName, languageCode, versionCode, versionName;
 
     private static String downloadUrl;
-    private static boolean recreateNeeded = false;
+    private static boolean recreateNeeded = false, changeSpinner = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,6 +135,14 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         }
 
         downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+
+        if (getIntent().getBooleanExtra(Constants.Keys.IMPORT_BIBLE, false)) {
+            if (changeSpinner) {
+                return;
+            }
+            changeSpinner = true;
+            mTvDownload.performClick();
+        }
     }
 
     @Override
@@ -245,19 +253,19 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void showLanguageDialog(List<String> languages) {
-        Realm realm = Realm.getDefaultInstance();
-        ArrayList<LanguageModel> languageModels = query(realm, new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
-        for (Iterator<String> iterator = languages.iterator(); iterator.hasNext(); ) {
-            String lan = iterator.next();
-            for (LanguageModel languageModel : languageModels) {
-                if (languageModel.getLanguageName().equals(lan)) {
-                    if (languageModel.getVersionModels().size() == 2) {
-                        iterator.remove();
-                    }
-                }
-            }
-        }
-        realm.close();
+//        Realm realm = Realm.getDefaultInstance();
+//        ArrayList<LanguageModel> languageModels = query(realm, new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
+//        for (Iterator<String> iterator = languages.iterator(); iterator.hasNext(); ) {
+//            String lan = iterator.next();
+//            for (LanguageModel languageModel : languageModels) {
+//                if (languageModel.getLanguageName().equals(lan)) {
+//                    if (languageModel.getVersionModels().size() == 2) {
+//                        iterator.remove();
+//                    }
+//                }
+//            }
+//        }
+//        realm.close();
         if (isFinishing()) {
             return;
         }

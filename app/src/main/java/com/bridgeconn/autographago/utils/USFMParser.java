@@ -57,7 +57,7 @@ public class USFMParser {
      * @param fileName name of the usfm file to be parsed
      * @param fromAssets true if the file is stored in bundled assets or false for device storage
      */
-    public boolean parseUSFMFile(Context context, String fileName, boolean fromAssets, String languageName, String languageCode, String versionCode) {
+    public boolean parseUSFMFile(Context context, String fileName, boolean fromAssets, String languageName, String languageCode, String versionCode, String versionName) {
         BufferedReader reader = null;
         try {
             if (fromAssets) {
@@ -75,7 +75,7 @@ public class USFMParser {
             addComponentsToChapter();
             addChaptersToBook();
 
-            addBookToContainer(languageName, languageCode, versionCode);
+            addBookToContainer(languageName, languageCode, versionCode, versionName);
             realm.close();
             realm = null;
             return true;
@@ -378,10 +378,10 @@ public class USFMParser {
     /**
      * At the end, add the book to the database
      */
-    private void addBookToContainer(String languageName, String languageCode, String versionCode) {
+    private void addBookToContainer(String languageName, String languageCode, String versionCode, String versionName) {
 
         versionModel.setVersionCode(versionCode);
-        versionModel.setVersionName(UtilFunctions.getVersionNameFromCode(versionCode));
+        versionModel.setVersionName(versionName);
         versionModel.setLanguageCode(languageCode);
         versionModel.setVersionId(languageCode + "_" + versionCode);
         versionModel.getBookModels().add(bookModel);

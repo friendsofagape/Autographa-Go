@@ -173,6 +173,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 categoriesList.add(0, spinnerModelUDB);
             }
         }
+        SpinnerModel importModel = new SpinnerModel();
+        importModel.setLanguageName("Import Bible");
+        importModel.setLanguageCode("");
+        importModel.setVersionCode("");
+        categoriesList.add(importModel);
+
         realm.close();
         spinnerAdapter.notifyDataSetChanged();
     }
@@ -188,20 +194,33 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        SpinnerModel spinnerModel = categoriesList.get(position);//(SpinnerModel) parent.getItemAtPosition(position);
+        if (position == categoriesList.size() - 1) {
+            Intent settingsIntent = new Intent(HomeActivity.this, SettingsActivity.class);
+            settingsIntent.putExtra(Constants.Keys.IMPORT_BIBLE, true);
+            startActivityForResult(settingsIntent, Constants.RequestCodes.SETTINGS);
 
-        if (spinnerModel.getLanguageCode().equals(languageCode) && spinnerModel.getLanguageName().equals(languageName) && spinnerModel.getVersionCode().equals(versionCode)) {
-            // do nothing, same element selected again
+            SpinnerModel compareModel = new SpinnerModel();
+            compareModel.setLanguageName(languageName);
+            compareModel.setVersionCode(versionCode);
+            compareModel.setLanguageCode(languageCode);
+
+            int spinnerPosition = findIndex(compareModel);
+            mSpinner.setSelection(spinnerPosition);
         } else {
-            // save to shared prefs
-            languageCode = spinnerModel.getLanguageCode();
-            languageName = spinnerModel.getLanguageName();
-            versionCode = spinnerModel.getVersionCode();
-            SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, languageCode);
-            SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, languageName);
-            SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
-            new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
-            getAllBooks();
+            SpinnerModel spinnerModel = categoriesList.get(position);//(SpinnerModel) parent.getItemAtPosition(position);
+            if (spinnerModel.getLanguageCode().equals(languageCode) && spinnerModel.getLanguageName().equals(languageName) && spinnerModel.getVersionCode().equals(versionCode)) {
+                // do nothing, same element selected again
+            } else {
+                // save to shared prefs
+                languageCode = spinnerModel.getLanguageCode();
+                languageName = spinnerModel.getLanguageName();
+                versionCode = spinnerModel.getVersionCode();
+                SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, languageCode);
+                SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, languageName);
+                SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
+                new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
+                getAllBooks();
+            }
         }
     }
 

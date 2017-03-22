@@ -15,11 +15,6 @@ public class Constants {
 
     public static final String STORAGE_DIRECTORY = "/autographago-external-data-cache/";
 
-    public interface VersionNames {
-        String UDB = "Unlocked Dynamic Bible";
-        String ULB = "Unlocked Literal Bible";
-    }
-
     public interface VersionCodes {
         String UDB = "UDB";
         String ULB = "ULB";
@@ -107,6 +102,7 @@ public class Constants {
         String REFRESH_CONTAINER = "refresh_container";
 
         String TEXT = "text";
+        String IMPORT_BIBLE = "import_bible";
     }
 
     public interface RequestCodes {

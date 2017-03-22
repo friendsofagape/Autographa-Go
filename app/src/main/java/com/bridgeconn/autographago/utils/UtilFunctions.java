@@ -156,18 +156,6 @@ public class UtilFunctions {
         return Math.round(dp * context.getResources().getDisplayMetrics().density);
     }
 
-    public static String getVersionNameFromCode(String versionCode) {
-        switch (versionCode) {
-            case Constants.VersionCodes.ULB: {
-                return Constants.VersionNames.ULB;
-            }
-            case Constants.VersionCodes.UDB: {
-                return Constants.VersionNames.UDB;
-            }
-        }
-        return Constants.VersionNames.ULB;
-    }
-
     public static String getPlainVerseText(String verseText) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder("");
         if (verseText != null) {
@@ -268,7 +256,8 @@ public class UtilFunctions {
                             String languageCode = jsonObject.getString(Constants.PrefKeys.LANGUAGE_CODE);
                             String languageName = jsonObject.getString(Constants.PrefKeys.LANGUAGE_NAME);
                             String versionCode = jsonObject.getString(Constants.PrefKeys.VERSION_CODE);
-                            startParseService(context, file.getAbsolutePath(), languageName, languageCode, versionCode);
+                            String versionName = jsonObject.getString(Constants.PrefKeys.VERSION_NAME);
+                            startParseService(context, file.getAbsolutePath(), languageName, languageCode, versionCode, versionName);
                         }
                     } catch (NumberFormatException | JSONException e) {
                     }
@@ -304,13 +293,14 @@ public class UtilFunctions {
         }
     }
 
-    public static void startParseService(Context context, String directoryPath, String languageName, String languageCode, String versionCode) {
+    public static void startParseService(Context context, String directoryPath, String languageName, String languageCode, String versionCode, String versionName) {
         Intent startParse = new Intent(context, ParseService.class);
         startParse.setAction(Constants.ACTION.START_PARSE);
         startParse.putExtra(Constants.Keys.FILE_PATH, directoryPath);
         startParse.putExtra(Constants.Keys.LANGUAGE_NAME, languageName);
         startParse.putExtra(Constants.Keys.LANGUAGE_CODE, languageCode);
         startParse.putExtra(Constants.Keys.VERSION_CODE, versionCode);
+        startParse.putExtra(Constants.Keys.VERSION_NAME, versionName);
         context.startService(startParse);
     }
 }

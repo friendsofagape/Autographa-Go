@@ -81,7 +81,9 @@ public class SpinnerAdapter extends BaseAdapter {
                 notifyDataSetChanged();
             }
         });
-        if (spinnerModels.get(position).getLanguageCode().equals("ENG")) {
+        if (position == spinnerModels.size() - 1) {
+            delete.setVisibility(View.GONE);
+        } else if (spinnerModels.get(position).getLanguageCode().equals("ENG")) {
             delete.setVisibility(View.GONE);
         } else if (position == ((HomeActivity) mContext).getSelectedSpinnerPosition()) {
             delete.setVisibility(View.GONE);

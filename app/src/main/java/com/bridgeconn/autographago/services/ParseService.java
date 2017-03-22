@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.utils.Constants;
@@ -33,10 +34,11 @@ public class ParseService extends IntentService {
             String languageCode = intent.getStringExtra(Constants.Keys.LANGUAGE_CODE);
             String versionCode = intent.getStringExtra(Constants.Keys.VERSION_CODE);
             String languageName = intent.getStringExtra(Constants.Keys.LANGUAGE_NAME);
+            String versionName = intent.getStringExtra(Constants.Keys.VERSION_NAME);
 
             generateNotification(languageName, versionCode);
 
-            startParsing(zipFilePath, languageName, languageCode, versionCode);
+            startParsing(zipFilePath, languageName, languageCode, versionCode, versionName);
         }
         else if (intent.getAction().equals(Constants.ACTION.START_UNZIP)) {
 
@@ -91,7 +93,7 @@ public class ParseService extends IntentService {
     private void startUnzipping(final Context context, final String languageName, final String languageCode,
                                 final String versionCode, final String versionName, String filePath) {
 
-        UnzipUtil.unzipFile(new File(filePath), context, languageName, languageCode, versionCode);
+        UnzipUtil.unzipFile(new File(filePath), context, languageName, languageCode, versionCode, versionName);
     }
 
     private void deleteDirectory(File fileOrDir) {
@@ -104,7 +106,7 @@ public class ParseService extends IntentService {
     }
 
     private void startParsing(final String directory,
-                              final String languageName, final String languageCode, final String versionCode) {
+                              final String languageName, final String languageCode, final String versionCode, final String versionName) {
         final File zipDirectory = new File(directory);
 
         if (zipDirectory.exists()) {
@@ -122,7 +124,7 @@ public class ParseService extends IntentService {
                                 false,
                                 languageName,
                                 languageCode,
-                                versionCode);
+                                versionCode, versionName);
 
                         // delete that file
                         file.delete();
@@ -133,6 +135,7 @@ public class ParseService extends IntentService {
         }
         notificationManager.cancel(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE);
 
+        Log.i(Constants.LOG_TAG, "Parsing complete");
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction(Constants.ACTION.PARSE_COMPLETE);
         broadcastIntent.putExtra(Constants.Keys.LANGUAGE_NAME, languageName);
