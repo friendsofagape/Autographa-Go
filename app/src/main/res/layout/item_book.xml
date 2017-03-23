@@ -2,10 +2,20 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root_item"
-    android:layout_margin="@dimen/menu_item_margin"
-    android:gravity="center_vertical"
+    android:layout_margin="@dimen/book_name_margin"
     android:layout_width="match_parent"
+    android:background="@color/home_body_white"
     android:layout_height="wrap_content" >
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/tv_header"
+        android:maxLines="1"
+        android:textStyle="bold"
+        android:textSize="?attr/title_text"
+        android:ellipsize="end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <ImageView
         android:id="@+id/iv_chevron"
@@ -21,9 +31,9 @@
         android:id="@+id/tv_book_name"
         android:layout_toLeftOf="@id/iv_chevron"
         android:layout_width="match_parent"
-        android:layout_centerVertical="true"
         android:layout_height="wrap_content"
         android:maxLines="1"
+        android:layout_below="@id/tv_header"
         android:textSize="?attr/title_text"
         android:ellipsize="end"/>
 

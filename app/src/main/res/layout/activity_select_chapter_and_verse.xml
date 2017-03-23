@@ -37,6 +37,7 @@
             app:tabPaddingEnd="@dimen/tab_padding"
             app:tabPaddingStart="@dimen/tab_padding"
             app:tabSelectedTextColor="@color/colorPrimary"
+            app:tabIndicatorHeight="@dimen/tab_elevation"
             app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget"
             app:tabTextColor="@color/black" />
 

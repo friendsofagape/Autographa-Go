@@ -42,14 +42,21 @@
         android:layout_margin="@dimen/activity_horizontal_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:id="@+id/tv_about_us"
-            android:textSize="?attr/body"
-            android:layout_marginTop="@dimen/activity_horizontal_margin"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:linksClickable="true"
-            android:autoLink="web" />
+            android:scrollbars="none"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_about_us"
+                android:textSize="?attr/body"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:linksClickable="true"
+                android:autoLink="web" />
+
+        </ScrollView>
 
     </RelativeLayout>
 

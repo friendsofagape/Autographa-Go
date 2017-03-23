@@ -59,6 +59,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private SpinnerAdapter spinnerAdapter;
     private String languageCode, languageName, versionCode;
     private Constants.ReadingMode mReadingMode;
+    private Constants.FontSize mFontSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +70,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         UtilFunctions.applyReadingMode();
 
         mReadingMode = SharedPrefs.getReadingMode();
+        mFontSize = SharedPrefs.getFontSize();
 
         languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         languageName = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, "English");
@@ -315,6 +317,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case Constants.RequestCodes.SETTINGS: {
                 if (resultCode == RESULT_OK) {
                     if (mReadingMode != SharedPrefs.getReadingMode()) {
+                        this.recreate();
+                    } else if (mFontSize != SharedPrefs.getFontSize()) {
                         this.recreate();
                     }
 //                    if (data.getBooleanExtra(Constants.Keys.RECREATE_NEEDED, false)) {

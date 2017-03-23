@@ -8,6 +8,7 @@
     <TextView
         android:id="@+id/tv_chapter"
         android:textIsSelectable="false"
+        android:lineSpacingExtra="?attr/line_spacing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

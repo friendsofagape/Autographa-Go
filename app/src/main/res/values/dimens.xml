@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="menu_item_margin">16dp</dimen>
+    <dimen name="book_name_margin">12dp</dimen>
     <dimen name="shadow_height">10dp</dimen>
     <dimen name="tab_padding">20dp</dimen>
     <dimen name="tab_elevation">4dp</dimen>

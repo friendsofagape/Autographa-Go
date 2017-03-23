@@ -10,8 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -29,7 +27,6 @@ import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.adapters.ChapterAdapter;
-import com.bridgeconn.autographago.ui.customviews.BounceInterpolator;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
@@ -59,6 +56,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
     private LinearLayout mBottomBar;
     private ProgressBar mProgressBar;
+    private TextView mTvHighlight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +83,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         mIvBookMark = (ImageView) findViewById(R.id.iv_bookmark);
         mBookmarkHolder = (LinearLayout) findViewById(R.id.bookmark_holder);
         mBottomBar = (LinearLayout) findViewById(R.id.bottom_bar);
+        mTvHighlight = (TextView) findViewById(R.id.tv_highlight);
 
         mBookmarkHolder.setOnClickListener(this);
         mToolBarTitle.setOnClickListener(this);
@@ -255,15 +254,22 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void findSelectedAndHighlight() {
-        // TODO see how to do this in background
-
+        // remove highlight option also
+        boolean removeHighlight = false;
+        if (mTvHighlight.getText().equals(getResources().getString(R.string.remove_highlight))) {
+            removeHighlight = true;
+        }
         for (int i=0;  i<mChapterModels.size(); i++) {
             for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
                 if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {
                     mChapterModels.get(i).getVerseComponentsModels().get(j).setSelected(false);
-                    mChapterModels.get(i).getVerseComponentsModels().get(j).setHighlighted(true);
-
-                    mBookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(true);
+                    if (removeHighlight) {
+                        mChapterModels.get(i).getVerseComponentsModels().get(j).setHighlighted(false);
+                        mBookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(false);
+                    } else {
+                        mChapterModels.get(i).getVerseComponentsModels().get(j).setHighlighted(true);
+                        mBookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(true);
+                    }
                 }
             }
         }
@@ -421,6 +427,25 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void showBottomBar() {
+        // here see highlight and change text of bottom bar of highlight
+        int selectedCount = 0, highlightCount = 0;
+        for (int i=0;  i<mChapterModels.size(); i++) {
+            for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
+                if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {
+                    selectedCount++;
+                    if (mChapterModels.get(i).getVerseComponentsModels().get(j).isHighlighted()) {
+                        highlightCount++;
+                    }
+                }
+            }
+        }
+        if (selectedCount == highlightCount) {
+            // set text to remove highlight
+            mTvHighlight.setText(getResources().getString(R.string.remove_highlight));
+        } else {
+            mTvHighlight.setText(getResources().getString(R.string.highlight_text));
+        }
+
         mBottomBar.setVisibility(View.VISIBLE);
     }
 
@@ -442,6 +467,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (hide) {
             hideBottomBar();
+        } else {
+            showBottomBar();
         }
     }
 

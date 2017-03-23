@@ -29,10 +29,11 @@
         <attr name="button_text" format="dimension" />
         <attr name="small_button_text" format="dimension" />
         <attr name="app_bar_text" format="dimension" />
-
+        <attr name="bottom_bar_text" format="dimension" />
         <attr name="button_dimen" format="dimension" />
         <attr name="home_button_dimen" format="dimension" />
         <attr name="button_padding" format="dimension" />
+        <attr name="line_spacing" format="dimension" />
     </declare-styleable>
 
 </resources>

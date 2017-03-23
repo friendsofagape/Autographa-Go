@@ -10,8 +10,11 @@
     <color name="black_60">#9FFFFFFF</color>
     <color name="black_40">#BFFFFFFF</color>
     <color name="black_20">#DFFFFFFF</color>
+    <color name="grey">#222222</color>
 
     <color name="yellow">#77FFA500</color>
+    <color name="home_white">#FFFFFF</color>
+    <color name="home_body_white">#444444</color>
 
     <color name="black_splash">#020202</color>
 

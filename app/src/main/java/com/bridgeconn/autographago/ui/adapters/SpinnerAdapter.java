@@ -1,6 +1,7 @@
 package com.bridgeconn.autographago.ui.adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.activities.HomeActivity;
+import com.bridgeconn.autographago.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +64,11 @@ public class SpinnerAdapter extends BaseAdapter {
     public View getDropDownView(final int position, View convertView, ViewGroup parent) {
         convertView = LayoutInflater.from(mContext).inflate(R.layout.spinner_dropdown_item, parent, false);
         TextView category = (TextView) convertView.findViewById(R.id.text1);
-        category.setText(spinnerModels.get(position).getLanguageName() + "  " + spinnerModels.get(position).getVersionCode());
+        String text = spinnerModels.get(position).getLanguageName() + "  " + spinnerModels.get(position).getVersionCode();
+        if (position == spinnerModels.size() - 1) {
+            category.setTypeface(null, Typeface.BOLD);
+        }
+        category.setText(text);
         ImageView delete = (ImageView) convertView.findViewById(R.id.iv_delete);
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +89,7 @@ public class SpinnerAdapter extends BaseAdapter {
         });
         if (position == spinnerModels.size() - 1) {
             delete.setVisibility(View.GONE);
-        } else if (spinnerModels.get(position).getLanguageCode().equals("ENG")) {
+        } else if (spinnerModels.get(position).getLanguageCode().equals("ENG") && (spinnerModels.get(position).getVersionCode().equals(Constants.VersionCodes.ULB)) || spinnerModels.get(position).getVersionCode().equals(Constants.VersionCodes.UDB)) {
             delete.setVisibility(View.GONE);
         } else if (position == ((HomeActivity) mContext).getSelectedSpinnerPosition()) {
             delete.setVisibility(View.GONE);

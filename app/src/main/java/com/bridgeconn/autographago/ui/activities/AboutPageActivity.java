@@ -8,6 +8,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.style.BulletSpan;
 import android.text.style.StyleSpan;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -42,36 +43,45 @@ public class AboutPageActivity extends AppCompatActivity {
         tvAboutUs = (TextView) findViewById(R.id.tv_about_us);
 
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-        Spannable spannable1 = new SpannableString(getResources().getString(R.string.the_autographa_project));
-        spannable1.setSpan(new StyleSpan(Typeface.BOLD), 0, spannable1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        Spannable spannable2 = new SpannableString(getResources().getString(R.string.about_us_1));
-        Spannable spannable3 = new SpannableString(getResources().getString(R.string.autographa_go));
+        Spannable spannable1 = new SpannableString(getResources().getString(R.string.autographa));
+        Spannable spannable2 = new SpannableString(getResources().getString(R.string.text_1));
+        Spannable spannable3 = new SpannableString(getResources().getString(R.string.text_2));
+        Spannable spannable4 = new SpannableString(getResources().getString(R.string.text_3));
+        Spannable spannable5 = new SpannableString(getResources().getString(R.string.points_heading));
+        Spannable spannable6 = new SpannableString(getResources().getString(R.string.bullet_1));
+        Spannable spannable7 = new SpannableString(getResources().getString(R.string.bullet_2));
+        Spannable spannable8 = new SpannableString(getResources().getString(R.string.bullet_3));
+        Spannable spannable9 = new SpannableString(getResources().getString(R.string.bullet_4));
+        Spannable spannable10 = new SpannableString(getResources().getString(R.string.bullet_5));
+        Spannable spannable11 = new SpannableString(getResources().getString(R.string.publishing));
+
+        spannable1.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), 0, spannable1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannable3.setSpan(new StyleSpan(Typeface.BOLD), 0, spannable3.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        Spannable spannable4 = new SpannableString(getResources().getString(R.string.about_us_2));
-        Spannable spannable5 = new SpannableString(getResources().getString(R.string.website));
         spannable5.setSpan(new StyleSpan(Typeface.BOLD), 0, spannable5.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        Spannable spannable6 = new SpannableString(getResources().getString(R.string.about_us_3));
-        Spannable spannable7 = new SpannableString(getResources().getString(R.string.autographa_team));
-        spannable7.setSpan(new StyleSpan(Typeface.BOLD), 0, spannable7.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        Spannable spannable8 = new SpannableString(getResources().getString(R.string.about_us_4));
-        Spannable spannable9 = new SpannableString(getResources().getString(R.string.about_us_5));
+
+        spannable6.setSpan(new BulletSpan(4), 0, spannable6.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable7.setSpan(new BulletSpan(4), 0, spannable7.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable8.setSpan(new BulletSpan(4), 0, spannable8.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable9.setSpan(new BulletSpan(4), 0, spannable9.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable10.setSpan(new BulletSpan(4), 0, spannable10.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         spannableStringBuilder.append(getResources().getString(R.string.version));
-        spannableStringBuilder.append(" ");
         spannableStringBuilder.append(BuildConfig.VERSION_NAME);
         spannableStringBuilder.append("\n\n");
         spannableStringBuilder.append(spannable1);
         spannableStringBuilder.append(" ");
         spannableStringBuilder.append(spannable2);
+        spannableStringBuilder.append(" ");
         spannableStringBuilder.append(spannable3);
         spannableStringBuilder.append(" ");
         spannableStringBuilder.append(spannable4);
-        spannableStringBuilder.append(" ");
         spannableStringBuilder.append(spannable5);
-        spannableStringBuilder.append(spannable9);
         spannableStringBuilder.append(spannable6);
         spannableStringBuilder.append(spannable7);
         spannableStringBuilder.append(spannable8);
+        spannableStringBuilder.append(spannable9);
+        spannableStringBuilder.append(spannable10);
+        spannableStringBuilder.append(spannable11);
 
         tvAboutUs.setText(spannableStringBuilder);
     }

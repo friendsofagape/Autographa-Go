@@ -50,10 +50,11 @@
         <item name="button_text">14sp</item>
         <item name="small_button_text">12sp</item>
         <item name="app_bar_text">20sp</item>
-
+        <item name="bottom_bar_text">14sp</item>
         <item name="button_dimen">24dp</item>
         <item name="home_button_dimen">36dp</item>
         <item name="button_padding">6dp</item>
+        <item name="line_spacing">6dp</item>
     </style>
 
     <style name="FontSize.XSmall">
@@ -66,10 +67,11 @@
         <item name="button_text">10sp</item>
         <item name="small_button_text">8sp</item>
         <item name="app_bar_text">16sp</item>
-
-        <item name="button_dimen">12dp</item>
+        <item name="bottom_bar_text">14sp</item>
+        <item name="button_dimen">24dp</item>
         <item name="home_button_dimen">36dp</item>
-        <item name="button_padding">12dp</item>
+        <item name="button_padding">6dp</item>
+        <item name="line_spacing">2dp</item>
     </style>
 
     <style name="FontSize.Small">
@@ -82,10 +84,11 @@
         <item name="button_text">12sp</item>
         <item name="small_button_text">10sp</item>
         <item name="app_bar_text">18sp</item>
-
-        <item name="button_dimen">18dp</item>
+        <item name="bottom_bar_text">14sp</item>
+        <item name="button_dimen">24dp</item>
         <item name="home_button_dimen">36dp</item>
-        <item name="button_padding">9dp</item>
+        <item name="button_padding">6dp</item>
+        <item name="line_spacing">4dp</item>
     </style>
 
     <style name="FontSize.Large">
@@ -98,10 +101,11 @@
         <item name="button_text">16sp</item>
         <item name="small_button_text">14sp</item>
         <item name="app_bar_text">22sp</item>
-
-        <item name="button_dimen">36dp</item>
+        <item name="bottom_bar_text">14sp</item>
+        <item name="button_dimen">24dp</item>
         <item name="home_button_dimen">36dp</item>
-        <item name="button_padding">0dp</item>
+        <item name="button_padding">6dp</item>
+        <item name="line_spacing">8dp</item>
     </style>
 
     <style name="FontSize.XLarge">
@@ -114,10 +118,11 @@
         <item name="button_text">18sp</item>
         <item name="small_button_text">16sp</item>
         <item name="app_bar_text">24sp</item>
-
-        <item name="button_dimen">36dp</item>
+        <item name="bottom_bar_text">14sp</item>
+        <item name="button_dimen">24dp</item>
         <item name="home_button_dimen">36dp</item>
-        <item name="button_padding">0dp</item>
+        <item name="button_padding">6dp</item>
+        <item name="line_spacing">10dp</item>
     </style>
 
 </resources>

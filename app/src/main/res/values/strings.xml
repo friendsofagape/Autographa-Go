@@ -8,6 +8,7 @@
 
     <string name="select_all">SELECT ALL</string>
     <string name="highlight_text">HIGHLIGHT</string>
+    <string name="remove_highlight">REMOVE HIGHLIGHT</string>
     <string name="share_text">SHARE</string>
 
     <string name="share_using">Share Using</string>
@@ -80,19 +81,7 @@
     <string name="go_to_settings">Manage app settings</string>
     <string name="bible_download_finish">Bible download finished</string>
 
-    <string name="about_us_data">Friends of Agape are business professionals, church leaders, individuals and families
-        who team-up with Christians serving in challenging places of the world. Our focus is the South Asia region,
-        partnering primarily with ministries in India, Nepal and Bhutan where 35% of the of the world’s unreached
-        people groups live. \n\n http://www.autographa.com/about/ \n http://www.autographa.com/products/ \n http://www.autographa.com/contact/</string>
-
     <string name="the_autographa_project">The Autographa Project</string>
-    <string name="about_us_1">aims to equip the global church and the bible translation community with a state of the
-        art minimalistic, yet comprehensive alternative to existing bible translation software bundled with tracking systems,
-        quality checking and publishing tools with no price tag. This is part of the Church Centric Bible Translation (CCBT)
-        Initiatives in areas where Friends of Agape is serving along with other partner agencies. \n\nThe success of the beta
-        version of a cross platform, open source, minimalistic Bible Translation Desktop Tool has paved the way for more
-        comprehensive and feature rich product family which aims to provide functionality that no other commercial or free
-        Bible Translation Tool offers currently. \n\n</string>
     <string name="autographa_go">Autographa Go</string>
     <string name="about_us_2">for Android is a part of the product line which are featured at </string>
     <string name="website">www.autographa.com \n\n</string>
@@ -101,6 +90,22 @@
     <string name="about_us_4">Binu Alexander \nPrerna Singh \nJoel Mathew \nArpit Jacob \nSandeep Kumar \nSony Zacharia \nUday Kumar \n\n \u00a9 Friends of Agape 2017 under MIT License \nwww.friendsofagape.org</string>
     <string name="about_us_5">The Open Source Repo is at https://github.com/friendsofagape/Autographa_Repo . Free Bibles with no copyright or unrestricted distribution
         licenses can be added and will be considered for adding to app by repo owners. \n\nNOTE : Please do not submit copyrighted Bibles \n\n</string>
+
     <string name="version">Version</string>
+
+    <string name="autographa">Autographa</string>
+    <string name="text_1">literally refers to the original copies of the writings that now form your Bible. \n\nThe new </string>
+    <string name="text_2">Multilingual Autographa Go</string>
+    <string name="text_3">App is a part of our innovative product line-up which features at www.autographa.com. \n\nNow for the first
+        time ever, we have added nine (and counting) Indian languages that can be freely downloaded. \n\nThis Bible App is by default
+        bundled with the English Unlocked Literal Bible (ULB) and the Unlocked Dynamic (UDB) Versions
+        from https://unfoldingword.org/bible/ \n\n</string>
+    <string name="points_heading">Key Features: \n</string>
+    <string name="bullet_1">A one-stop collection of major and minor Indian language Bibles \n</string>
+    <string name="bullet_2">Minimalistic and user-friendly interface \n</string>
+    <string name="bullet_3">Bookmark and highlight your favourite verses \n</string>
+    <string name="bullet_4">Note taking feature with clickable references \n</string>
+    <string name="bullet_5">Search option \n\n</string>
+    <string name="publishing">Published by Friends of Agape 2017 (MIT License) \nwww.friendsofagape.org \n</string>
 
 </resources>

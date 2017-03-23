@@ -103,7 +103,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:textSize="?attr/heading_2"
+                android:textSize="?attr/bottom_bar_text"
                 android:id="@+id/tv_highlight"
                 android:gravity="center_vertical"
                 android:text="@string/highlight_text"
@@ -138,7 +138,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:textSize="?attr/heading_2"
+                android:textSize="?attr/bottom_bar_text"
                 android:gravity="center_vertical"
                 android:text="@string/notes"
                 android:textAllCaps="true"
@@ -172,7 +172,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:textSize="?attr/heading_2"
+                android:textSize="?attr/bottom_bar_text"
                 android:gravity="center_vertical"
                 android:text="@string/share_text"
                 android:textAllCaps="true"

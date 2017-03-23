@@ -1,16 +1,15 @@
 package com.bridgeconn.autographago.ui.viewholders;
 
 import android.app.Activity;
-import android.os.Build;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
-import android.text.style.SuperscriptSpan;
+import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.TextView;
@@ -267,16 +266,16 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                     if (appendNumber) {
                                         String [] verseNumberSplit = verseComponentsModel.getVerseNumber().split("-");
                                         if (Integer.parseInt(verseNumberSplit[0]) == 1) {
-                                            int chapterSize = (int)(getTextSize(24) * mContext.getResources().getDisplayMetrics().scaledDensity);
+                                            int chapterSize = (int)(getTextSize(26) * mContext.getResources().getDisplayMetrics().scaledDensity);
                                             SpannableString chapterNumberString = new SpannableString(chapterNumber + " ");
+                                            chapterNumberString.setSpan(new StyleSpan(Typeface.BOLD), 0, chapterNumberString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                                             chapterNumberString.setSpan(new AbsoluteSizeSpan(chapterSize), 0, chapterNumberString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                                             mTvChapter.append(chapterNumberString);
                                         } else {
-                                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                                                spannableStringBuilder.append(Html.fromHtml("<sup>" + verseComponentsModel.getVerseNumber()+" " + "</sup>"));
-                                            } else {
-                                                spannableStringBuilder.append(verseComponentsModel.getVerseNumber() + " ", new SuperscriptSpan(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                            }
+                                            int verseSize = (int)(getTextSize(10) * mContext.getResources().getDisplayMetrics().scaledDensity);
+                                            SpannableString verseString = new SpannableString(verseComponentsModel.getVerseNumber() + " ");
+                                            verseString.setSpan(new AbsoluteSizeSpan(verseSize), 0, verseString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                            mTvChapter.append(verseString);
                                         }
                                         appendNumber = false;
                                     }
@@ -322,10 +321,10 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 return prevSize;
             }
             case Large: {
-                return (prevSize + 2);
+                return (prevSize + 4);
             }
             case XLarge: {
-                return (prevSize + 8);
+                return (prevSize + 12);
             }
         }
         return prevSize;
