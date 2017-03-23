@@ -58,6 +58,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private List<SpinnerModel> categoriesList = new ArrayList<>();
     private SpinnerAdapter spinnerAdapter;
     private String languageCode, languageName, versionCode;
+    private Constants.ReadingMode mReadingMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_home);
 
         UtilFunctions.applyReadingMode();
+
+        mReadingMode = SharedPrefs.getReadingMode();
 
         languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         languageName = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, "English");
@@ -174,7 +177,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         SpinnerModel importModel = new SpinnerModel();
-        importModel.setLanguageName("Import Bible");
+        importModel.setLanguageName("Download More");
         importModel.setLanguageCode("");
         importModel.setVersionCode("");
         categoriesList.add(importModel);
@@ -311,9 +314,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         switch (requestCode) {
             case Constants.RequestCodes.SETTINGS: {
                 if (resultCode == RESULT_OK) {
-                    if (data.getBooleanExtra(Constants.Keys.RECREATE_NEEDED, false)) {
+                    if (mReadingMode != SharedPrefs.getReadingMode()) {
                         this.recreate();
                     }
+//                    if (data.getBooleanExtra(Constants.Keys.RECREATE_NEEDED, false)) {
+//                        this.recreate();
+//                    }
                 }
                 break;
             }

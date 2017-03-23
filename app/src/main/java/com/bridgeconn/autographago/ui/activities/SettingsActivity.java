@@ -74,7 +74,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private String languageName, languageCode, versionCode, versionName;
 
     private static String downloadUrl;
-    private static boolean recreateNeeded = false, changeSpinner = false;
+    private static boolean recreateNeeded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,10 +137,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
 
         if (getIntent().getBooleanExtra(Constants.Keys.IMPORT_BIBLE, false)) {
-            if (changeSpinner) {
-                return;
-            }
-            changeSpinner = true;
+            getIntent().removeExtra(Constants.Keys.IMPORT_BIBLE);
             mTvDownload.performClick();
         }
     }
@@ -624,7 +621,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     private void saveToSharedPrefs() {
         Intent output = new Intent();
-        output.putExtra(Constants.Keys.RECREATE_NEEDED, recreateNeeded);
         setResult(RESULT_OK, output);
         finish();
     }
