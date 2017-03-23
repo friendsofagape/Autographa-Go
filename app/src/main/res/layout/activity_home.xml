@@ -122,6 +122,7 @@
 
                     <ImageView
                         android:id="@+id/iv_highlight"
+                        android:visibility="gone"
                         android:layout_width="?attr/home_button_dimen"
                         android:layout_height="?attr/home_button_dimen"
                         android:tint="@color/white"

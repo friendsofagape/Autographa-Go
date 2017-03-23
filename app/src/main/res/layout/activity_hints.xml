@@ -109,6 +109,7 @@
 
                     <ImageView
                         android:id="@+id/iv_highlight"
+                        android:visibility="gone"
                         android:layout_width="?attr/home_button_dimen"
                         android:layout_height="?attr/home_button_dimen"
                         android:tint="@color/white"
@@ -209,7 +210,7 @@
                         android:maxLines="1"
                         android:ellipsize="marquee"
                         android:marqueeRepeatLimit="marquee_forever"
-                        android:visibility="invisible"
+                        android:visibility="gone"
                         android:id="@+id/tv_highlight"
                         android:layout_width="wrap_content"
                         android:layout_height="?attr/home_button_dimen"

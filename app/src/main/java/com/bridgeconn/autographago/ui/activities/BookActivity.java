@@ -93,7 +93,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.view_share).setOnClickListener(this);
 
         getSupportActionBar().setTitle("");
-        mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(this, mBookId));
+        mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(this, mBookId) + " " + getIntent().getIntExtra(Constants.Keys.CHAPTER_NO, 0));
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list_chapters);
 
@@ -122,6 +122,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                         mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.white));
                     }
                 }
+                mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(BookActivity.this, mBookId) + " " + chapterNum);
             }
         });
 
@@ -460,7 +461,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     mBookModel = getBookModel(mBookId);
 
                     if (mBookModel != null) {
-                        mToolBarTitle.setText(mBookModel.getBookName());
+                        mToolBarTitle.setText(mBookModel.getBookName() + " " + chapterNumber);
 
                         mChapterModels.clear();
                         for (ChapterModel chapterModel : mBookModel.getChapterModels()) {

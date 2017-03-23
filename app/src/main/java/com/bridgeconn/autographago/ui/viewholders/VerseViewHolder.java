@@ -267,7 +267,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                     if (appendNumber) {
                                         String [] verseNumberSplit = verseComponentsModel.getVerseNumber().split("-");
                                         if (Integer.parseInt(verseNumberSplit[0]) == 1) {
-                                            int chapterSize = (int)(22 * mContext.getResources().getDisplayMetrics().scaledDensity);
+                                            int chapterSize = (int)(getTextSize(24) * mContext.getResources().getDisplayMetrics().scaledDensity);
                                             SpannableString chapterNumberString = new SpannableString(chapterNumber + " ");
                                             chapterNumberString.setSpan(new AbsoluteSizeSpan(chapterSize), 0, chapterNumberString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                                             mTvChapter.append(chapterNumberString);
@@ -325,7 +325,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                 return (prevSize + 2);
             }
             case XLarge: {
-                return (prevSize + 4);
+                return (prevSize + 8);
             }
         }
         return prevSize;
