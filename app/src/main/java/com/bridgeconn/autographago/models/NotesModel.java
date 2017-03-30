@@ -138,8 +138,8 @@ public class NotesModel extends RealmObject implements Parcelable {
                 this.text.equals(((NotesModel) obj).text) &&
                 this.notesStyleModels.equals(((NotesModel) obj).notesStyleModels) &&
                 this.verseIds.equals(((NotesModel) obj).verseIds) &&
-                this.languageCode.equals(((NotesModel) obj).languageCode) &&
-                this.versionCode.equals(((NotesModel) obj).versionCode);
+                this.languageCode.equalsIgnoreCase(((NotesModel) obj).languageCode) &&
+                this.versionCode.equalsIgnoreCase(((NotesModel) obj).versionCode);
     }
 
 }

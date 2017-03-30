@@ -142,7 +142,7 @@ public class ParseService extends IntentService {
         broadcastIntent.putExtra(Constants.Keys.VERSION_CODE, versionCode);
         String languageCodeSharedPrefs = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         String versionCodeSharedPrefs = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
-        if (languageCodeSharedPrefs.equals(languageCode) && versionCodeSharedPrefs.equals(versionCode)) {
+        if (languageCodeSharedPrefs.equalsIgnoreCase(languageCode) && versionCodeSharedPrefs.equalsIgnoreCase(versionCode)) {
             broadcastIntent.putExtra(Constants.Keys.REFRESH_CONTAINER, true);
         } else {
             broadcastIntent.putExtra(Constants.Keys.REFRESH_CONTAINER, false);

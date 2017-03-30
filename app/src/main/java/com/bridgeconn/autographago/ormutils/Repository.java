@@ -5,6 +5,7 @@ import android.support.annotation.WorkerThread;
 
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.models.VersionModel;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public interface Repository<T extends RealmObject> {
     void updateLanguageWithVersion(Realm realm, LanguageModel languageModel, VersionModel versionModel);
 
     void updateLanguageWithBook(Realm realm, LanguageModel languageModel, int position, BookModel bookModel);
+
+    void updateBookWithHighlights(Realm realm, ArrayList<LanguageModel> languageModels, ArrayList<VerseIdModel> verseIdModels);
 
     void remove(Specification<T> specification);
 

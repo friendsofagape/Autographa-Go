@@ -5,7 +5,10 @@ import android.support.annotation.WorkerThread;
 
 import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.models.BookModel;
+import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.VerseComponentsModel;
+import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.models.VersionModel;
 import com.bridgeconn.autographago.utils.Constants;
 
@@ -131,6 +134,36 @@ public class AutographaRepository<T extends RealmObject> implements Repository<T
     }
 
     @Override
+    public void updateBookWithHighlights(Realm realm, final ArrayList<LanguageModel> languageModels, final ArrayList<VerseIdModel> verseIdModels) {
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                for (LanguageModel languageModel : languageModels) {
+                    for (VersionModel versionModel : languageModel.getVersionModels()) {
+                        for (BookModel bookModel : versionModel.getBookModels()) {
+                            for (ChapterModel chapterModel : bookModel.getChapterModels()) {
+                                for (VerseComponentsModel verseComponentsModel : chapterModel.getVerseComponentsModels()) {
+                                    for (VerseIdModel verseIdModel : verseIdModels) {
+                                        if (verseIdModel.getBookId().equals(bookModel.getBookId()) &&
+                                                verseIdModel.getChapterNumber() == chapterModel.getChapterNumber() &&
+                                                verseIdModel.getVerseNumber().equals(verseComponentsModel.getVerseNumber())) {
+                                            if (verseIdModel.getTimeStamp() > 0) {
+                                                verseComponentsModel.setHighlighted(true);
+                                            } else {
+                                                verseComponentsModel.setHighlighted(false);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
     public void remove(Specification<T> specification) {
         final Realm realm = Realm.getDefaultInstance();
         final RealmResults<T> realmResults = specification.generateResults(realm);
@@ -180,9 +213,9 @@ public class AutographaRepository<T extends RealmObject> implements Repository<T
         }
 
         for (int i=0; i<resultsToReturn.size(); i++) {
-            if (resultsToReturn.get(i).getLanguageCode().equals(language)) {
+            if (resultsToReturn.get(i).getLanguageCode().equalsIgnoreCase(language)) {
                 for (int j = 0; j < resultsToReturn.get(i).getVersionModels().size(); j++) {
-                    if (resultsToReturn.get(i).getVersionModels().get(j).getVersionCode().equals(version)) {
+                    if (resultsToReturn.get(i).getVersionModels().get(j).getVersionCode().equalsIgnoreCase(version)) {
                         for (int k = 0; k < resultsToReturn.get(i).getVersionModels().get(j).getBookModels().size(); k++) {
                             BookIdModel bookIdModel = new BookIdModel();
                             bookIdModel.setLanguageCode(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getLanguageCode());

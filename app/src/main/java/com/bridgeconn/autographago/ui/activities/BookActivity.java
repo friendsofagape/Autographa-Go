@@ -19,6 +19,7 @@ import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
+import com.bridgeconn.autographago.models.LanguageModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
@@ -169,7 +170,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         final Realm realm = Realm.getDefaultInstance();
         String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
-        ArrayList<BookModel> resultList = query(realm, new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
+        ArrayList<BookModel> resultList = queryBooks(realm, new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
         if (resultList.size() > 0) {
             BookModel bModel = resultList.get(0);
             BookModel bookModel = new BookModel();
@@ -208,10 +209,19 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         return null;
     }
 
-    public ArrayList<BookModel> query(Realm realm, Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
+    public ArrayList<BookModel> queryBooks(Realm realm, Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {
         RealmResults<BookModel> realmResults = specification.generateResults(realm);
         ArrayList<BookModel> resultsToReturn = new ArrayList<>();
         for (BookModel result : realmResults) {
+            resultsToReturn.add(mapper.map(result));
+        }
+        return resultsToReturn;
+    }
+
+    public ArrayList<LanguageModel> queryLanguage(Realm realm, Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
+        RealmResults<LanguageModel> realmResults = specification.generateResults(realm);
+        ArrayList<LanguageModel> resultsToReturn = new ArrayList<>();
+        for (LanguageModel result : realmResults) {
             resultsToReturn.add(mapper.map(result));
         }
         return resultsToReturn;
@@ -259,28 +269,44 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         if (mTvHighlight.getText().equals(getResources().getString(R.string.remove_highlight))) {
             removeHighlight = true;
         }
+        final ArrayList<VerseIdModel> verseIdModels = new ArrayList<>();
+
         for (int i=0;  i<mChapterModels.size(); i++) {
             for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
                 if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {
                     mChapterModels.get(i).getVerseComponentsModels().get(j).setSelected(false);
+                    VerseIdModel verseIdModel = new VerseIdModel();
+                    verseIdModel.setBookId(mBookModel.getBookId());
+                    verseIdModel.setBookName(mBookModel.getBookName());
+                    verseIdModel.setChapterNumber(mChapterModels.get(i).getChapterNumber());
+                    verseIdModel.setVerseNumber(mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber());
                     if (removeHighlight) {
                         mChapterModels.get(i).getVerseComponentsModels().get(j).setHighlighted(false);
-                        mBookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(false);
+                        verseIdModel.setTimeStamp(0);
+//                        mBookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(false);
                     } else {
                         mChapterModels.get(i).getVerseComponentsModels().get(j).setHighlighted(true);
-                        mBookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(true);
+                        verseIdModel.setTimeStamp(1);
+//                        mBookModel.getChapterModels().get(i).getVerseComponentsModels().get(j).setHighlighted(true);
                     }
+                    verseIdModels.add(verseIdModel);
                 }
             }
         }
         mAdapter.notifyDataSetChanged();
-        new AsyncTask<BookModel, Void, Void>() {
+        new AsyncTask<ArrayList<VerseIdModel>, Void, Void>() {
             @Override
-            protected Void doInBackground(BookModel... params) {
-                new AutographaRepository<BookModel>().update(params[0]);
+            protected Void doInBackground(ArrayList<VerseIdModel>... params) {
+//                new AutographaRepository<BookModel>().update(params[0]);
+
+                Realm realm = Realm.getDefaultInstance();
+                ArrayList<LanguageModel> languageModels = queryLanguage(realm, new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
+                new AutographaRepository<VerseComponentsModel>().updateBookWithHighlights(realm, languageModels, params[0]);
+                realm.close();
+                // update this in all versions and languages
                 return null;
             }
-        }.execute(mBookModel);
+        }.execute(verseIdModels);
     }
 
     private void findSelectedAndAddNote() {
@@ -310,17 +336,38 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void findSelectedAndShare() {
-        StringBuilder shareBody = new StringBuilder(getString(R.string.share_body));
-        shareBody.append(" ");
+        ArrayList<VerseIdModel> models = new ArrayList<>();
         for (int i=0;  i<mChapterModels.size(); i++) {
             for (int j=0; j<mChapterModels.get(i).getVerseComponentsModels().size(); j++) {
                 if (mChapterModels.get(i).getVerseComponentsModels().get(j).isSelected()) {
                     mChapterModels.get(i).getVerseComponentsModels().get(j).setSelected(false);
-                    VerseComponentsModel verseComponentsModel = mChapterModels.get(i).getVerseComponentsModels().get(j);
-                    shareBody.append(UtilFunctions.getPlainVerseText(verseComponentsModel.getText()));
+                    VerseIdModel verseIdModel = new VerseIdModel();
+                    verseIdModel.setBookId(mBookId);
+                    verseIdModel.setBookName(mBookModel.getBookName());
+                    verseIdModel.setChapterNumber(mChapterModels.get(i).getChapterNumber());
+                    verseIdModel.setVerseNumber(mChapterModels.get(i).getVerseComponentsModels().get(j).getVerseNumber());
+                    String text = mChapterModels.get(i).getVerseComponentsModels().get(j).getText();
+                    if (text == null) {
+                        text = "";
+                    }
+                    if (models.contains(verseIdModel)) {
+                        int pos = models.indexOf(verseIdModel);
+                        String appendtext = models.get(pos).getText() + text;
+                        models.get(pos).setText(appendtext);
+                    } else {
+                        verseIdModel.setText(text);
+                        models.add(verseIdModel);
+                    }
                 }
             }
         }
+        StringBuilder shareBody = new StringBuilder();
+        for (VerseIdModel verseIdModel : models) {
+            shareBody.append(verseIdModel.getBookName() + " " + verseIdModel.getChapterNumber() + ":" + verseIdModel.getVerseNumber() + " ");
+            shareBody.append(UtilFunctions.getPlainVerseText(verseIdModel.getText()));
+            shareBody.append("\n");
+        }
+
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType(Constants.SHARE_TEXT_TYPE);
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody.toString());
@@ -377,14 +424,23 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 //                myAnim.setInterpolator(interpolator);
 //                mIvBookMark.startAnimation(myAnim);
 
-                mIvBookMark.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
-
                 int position = mLayoutManager.findFirstVisibleItemPosition();
+                if (mBookMarkNumber == findChapterNumber(position)) {
+                    mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.white));
+                } else {
+                    mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
+                }
 
                 new AsyncTask<Integer, Void, Void>(){
                     @Override
                     protected Void doInBackground(Integer... params) {
-                        mBookMarkNumber = findChapterNumber(params[0]);
+                        if (mBookMarkNumber == findChapterNumber(params[0])) {
+                            // remove bookmark
+                            mBookMarkNumber = 0;
+                        } else {
+                            // add bookmark
+                            mBookMarkNumber = findChapterNumber(params[0]);
+                        }
 
                         for (BookIdModel bookIdModel : Constants.CONTAINER_BOOKS_LIST) {
                             if (bookIdModel.getBookId().equals(mBookId)) {

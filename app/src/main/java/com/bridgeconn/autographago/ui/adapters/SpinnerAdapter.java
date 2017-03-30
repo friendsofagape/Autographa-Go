@@ -89,7 +89,7 @@ public class SpinnerAdapter extends BaseAdapter {
         });
         if (position == spinnerModels.size() - 1) {
             delete.setVisibility(View.GONE);
-        } else if (spinnerModels.get(position).getLanguageCode().equals("ENG") && (spinnerModels.get(position).getVersionCode().equals(Constants.VersionCodes.ULB)) || spinnerModels.get(position).getVersionCode().equals(Constants.VersionCodes.UDB)) {
+        } else if (spinnerModels.get(position).getLanguageCode().equalsIgnoreCase("ENG") && (spinnerModels.get(position).getVersionCode().equalsIgnoreCase(Constants.VersionCodes.ULB)) || spinnerModels.get(position).getVersionCode().equalsIgnoreCase(Constants.VersionCodes.UDB)) {
             delete.setVisibility(View.GONE);
         } else if (position == ((HomeActivity) mContext).getSelectedSpinnerPosition()) {
             delete.setVisibility(View.GONE);

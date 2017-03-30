@@ -181,11 +181,11 @@ public class USFMParser {
 
         languageResults = query(new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
         for (int i=0; i<languageResults.size(); i++) {
-            if (languageResults.get(i).getLanguageName().equals(languageName)) {
+            if (languageResults.get(i).getLanguageName().equalsIgnoreCase(languageName)) {
                 languageExist = true;
                 versionPosition = i;
                 for (int j=0; j<languageResults.get(i).getVersionModels().size(); j++) {
-                    if (languageResults.get(i).getVersionModels().get(j).getVersionCode().equals(versionCode)) {
+                    if (languageResults.get(i).getVersionModels().get(j).getVersionCode().equalsIgnoreCase(versionCode)) {
                         versionExist = true;
                         bookPosition = j;
                         for (int k=0; k<languageResults.get(i).getVersionModels().get(j).getBookModels().size(); k++) {
@@ -385,6 +385,39 @@ public class USFMParser {
         versionModel.setLanguageCode(languageCode);
         versionModel.setVersionId(languageCode + "_" + versionCode);
         versionModel.getBookModels().add(bookModel);
+
+        for (LanguageModel languageModel : languageResults) {
+            if (languageModel.getLanguageCode().equalsIgnoreCase("ENG")) {
+                for (VersionModel versionModel : languageModel.getVersionModels()) {
+                    if (versionModel.getVersionCode().equalsIgnoreCase(Constants.VersionCodes.ULB)) {
+                        for (BookModel
+                                bookModel1 : versionModel.getBookModels()) {
+                            if (bookModel1.getBookId().equals(bookModel.getBookId())) {
+
+                                for (ChapterModel chapterModel1 : bookModel1.getChapterModels()) {
+                                    for (VerseComponentsModel verseComponentsModel1 : chapterModel1.getVerseComponentsModels()) {
+
+                                        for (ChapterModel chapterModel : bookModel.getChapterModels()) {
+                                            if (chapterModel.getChapterNumber() == chapterModel1.getChapterNumber()) {
+                                                for (VerseComponentsModel verseComponentsModel : chapterModel.getVerseComponentsModels()) {
+                                                    if (verseComponentsModel.getVerseNumber().equals(verseComponentsModel1.getVerseNumber())) {
+                                                        verseComponentsModel.setHighlighted(verseComponentsModel1.isHighlighted());
+                                                    }
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+        }
 
         if (!languageExist) {
             // add new all

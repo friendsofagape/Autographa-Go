@@ -321,9 +321,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         for (Iterator<String> iterator = versions.iterator(); iterator.hasNext(); ) {
             String ver = iterator.next();
             for (LanguageModel languageModel : languageModels) {
-                if (languageModel.getLanguageName().equals(language)) {
+                if (languageModel.getLanguageName().equalsIgnoreCase(language)) {
                     for (VersionModel versionModel : languageModel.getVersionModels()) {
-                        if (versionModel.getVersionCode().equals(ver)) {
+                        if (versionModel.getVersionCode().equalsIgnoreCase(ver)) {
                             iterator.remove();
                         }
                     }

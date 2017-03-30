@@ -47,7 +47,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mContinueRead;
     private ImageView mNotesView;
     private ImageView mBookmarkView;
-    private ImageView mHighlightView;
     private ImageView mSearchView;
     private ImageView mHistoryView;
     private ImageView mSettingsView;
@@ -86,7 +85,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mContinueRead = (ImageView) findViewById(R.id.iv_continue_reading);
         mNotesView = (ImageView) findViewById(R.id.iv_notes);
         mBookmarkView = (ImageView) findViewById(R.id.iv_bookmark);
-        mHighlightView = (ImageView) findViewById(R.id.iv_highlight);
         mSearchView = (ImageView) findViewById(R.id.iv_search);
         mHistoryView = (ImageView) findViewById(R.id.iv_history);
         mSettingsView = (ImageView) findViewById(R.id.iv_settings);
@@ -103,7 +101,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mContinueRead.setOnClickListener(this);
         mNotesView.setOnClickListener(this);
         mBookmarkView.setOnClickListener(this);
-        mHighlightView.setOnClickListener(this);
         mSearchView.setOnClickListener(this);
         mHistoryView.setOnClickListener(this);
         mSettingsView.setOnClickListener(this);
@@ -136,9 +133,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public int findIndex(SpinnerModel model) {
         for (int i=0; i<categoriesList.size(); i++) {
             SpinnerModel spinnerModel = categoriesList.get(i);
-            if (spinnerModel.getVersionCode().equals(model.getVersionCode()) &&
-                    spinnerModel.getLanguageName().equals(model.getLanguageName()) &&
-                    spinnerModel.getLanguageCode().equals(model.getLanguageCode())) {
+            if (spinnerModel.getVersionCode().equalsIgnoreCase(model.getVersionCode()) &&
+                    spinnerModel.getLanguageName().equalsIgnoreCase(model.getLanguageName()) &&
+                    spinnerModel.getLanguageCode().equalsIgnoreCase(model.getLanguageCode())) {
                 return i;
             }
         }
@@ -213,7 +210,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             mSpinner.setSelection(spinnerPosition);
         } else {
             SpinnerModel spinnerModel = categoriesList.get(position);//(SpinnerModel) parent.getItemAtPosition(position);
-            if (spinnerModel.getLanguageCode().equals(languageCode) && spinnerModel.getLanguageName().equals(languageName) && spinnerModel.getVersionCode().equals(versionCode)) {
+            if (spinnerModel.getLanguageCode().equalsIgnoreCase(languageCode) && spinnerModel.getLanguageName().equalsIgnoreCase(languageName) && spinnerModel.getVersionCode().equalsIgnoreCase(versionCode)) {
                 // do nothing, same element selected again
             } else {
                 // save to shared prefs
@@ -283,11 +280,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             case R.id.iv_bookmark: {
                 Intent menuIntent = new Intent(this, BookmarkActivity.class);
-                startActivity(menuIntent);
-                break;
-            }
-            case R.id.iv_highlight: {
-                Intent menuIntent = new Intent(this, HighlightActivity.class);
                 startActivity(menuIntent);
                 break;
             }

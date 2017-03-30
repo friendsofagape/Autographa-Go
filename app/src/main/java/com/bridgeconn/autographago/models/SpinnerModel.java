@@ -43,8 +43,8 @@ public class SpinnerModel {
     public boolean equals(Object obj) {
         return obj instanceof SpinnerModel &&
                 this.languageName != null && this.languageCode != null && this.versionCode != null &&
-                this.languageName.equals(((SpinnerModel) obj).languageName) &&
-                this.languageCode.equals(((SpinnerModel) obj).languageCode) &&
-                this.versionCode.equals(((SpinnerModel) obj).versionCode);
+                this.languageName.equalsIgnoreCase(((SpinnerModel) obj).languageName) &&
+                this.languageCode.equalsIgnoreCase(((SpinnerModel) obj).languageCode) &&
+                this.versionCode.equalsIgnoreCase(((SpinnerModel) obj).versionCode);
     }
 }
