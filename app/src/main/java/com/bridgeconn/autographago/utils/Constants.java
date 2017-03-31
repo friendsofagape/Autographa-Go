@@ -38,7 +38,8 @@ public class Constants {
         String NEW_LINE = "\n";
         String NEW_LINE_WITH_TAB_SPACE = "\n    ";
         String MARKER_Q = "\\q";
-        String REGEX_NUMBERS = "[^0-9]";
+        String REGEX_NOT_NUMBERS = "[^0-9]";
+        String REGEX_NUMBERS = "[0-9]";
         String TAB_SPACE = "    ";
         String REGEX_ESCAPE = "\\";
         String CHAR_COLON = ":";

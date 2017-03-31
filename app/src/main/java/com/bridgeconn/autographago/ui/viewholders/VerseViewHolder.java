@@ -249,7 +249,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                             default: {
                                 if (splitString[n].startsWith(Constants.Styling.MARKER_Q)) {
                                     String str = splitString[n];
-                                    String intString = str.replaceAll(Constants.Styling.REGEX_NUMBERS, "");
+                                    String intString = str.replaceAll(Constants.Styling.REGEX_NOT_NUMBERS, "");
                                     int number;
                                     if (intString.equals("")) {
                                         number = 1;

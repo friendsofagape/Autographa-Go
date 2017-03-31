@@ -293,8 +293,13 @@ public class USFMParser {
 
         verseComponentsModel.setType(Constants.MarkerTypes.VERSE);
         String verseNum = splitString[1];
-        String intString = verseNum.replaceAll(Constants.Styling.REGEX_NUMBERS, "");
+        String intString = verseNum.replaceAll(Constants.Styling.REGEX_NOT_NUMBERS, "");
+        String notIntString = verseNum.replaceAll(Constants.Styling.REGEX_NUMBERS, "");
         if (intString.equals("")) {
+            throw new NumberFormatException();
+        }
+        // FIXED PLAY STORE CRASH, NUMBER FORMAT EXCEPTION WITH STRING AS 10.
+        if (!(notIntString.equals("") || notIntString.equals("-"))) {
             throw new NumberFormatException();
         }
         verseComponentsModel.setVerseNumber(splitString[1]);
