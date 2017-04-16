@@ -47,6 +47,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mContinueRead;
     private ImageView mNotesView;
     private ImageView mBookmarkView;
+    private ImageView mHighlightsView;
     private ImageView mSearchView;
     private ImageView mHistoryView;
     private ImageView mSettingsView;
@@ -85,6 +86,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mContinueRead = (ImageView) findViewById(R.id.iv_continue_reading);
         mNotesView = (ImageView) findViewById(R.id.iv_notes);
         mBookmarkView = (ImageView) findViewById(R.id.iv_bookmark);
+        mHighlightsView = (ImageView) findViewById(R.id.iv_highlights);
         mSearchView = (ImageView) findViewById(R.id.iv_search);
         mHistoryView = (ImageView) findViewById(R.id.iv_history);
         mSettingsView = (ImageView) findViewById(R.id.iv_settings);
@@ -101,6 +103,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mContinueRead.setOnClickListener(this);
         mNotesView.setOnClickListener(this);
         mBookmarkView.setOnClickListener(this);
+        mHighlightsView.setOnClickListener(this);
         mSearchView.setOnClickListener(this);
         mHistoryView.setOnClickListener(this);
         mSettingsView.setOnClickListener(this);
@@ -280,6 +283,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             case R.id.iv_bookmark: {
                 Intent menuIntent = new Intent(this, BookmarkActivity.class);
+                startActivity(menuIntent);
+                break;
+            }
+            case R.id.iv_highlights: {
+                Intent menuIntent = new Intent(this, HighlightActivity.class);
                 startActivity(menuIntent);
                 break;
             }

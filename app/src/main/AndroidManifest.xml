@@ -39,6 +39,9 @@
         <activity android:name=".ui.activities.BookmarkActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity android:name=".ui.activities.HighlightActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <activity android:name=".ui.activities.NotesActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 

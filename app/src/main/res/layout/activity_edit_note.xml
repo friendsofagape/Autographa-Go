@@ -116,7 +116,7 @@
         <EditText
             android:id="@+id/editor"
             android:hint="@string/title_notes"
-            android:textSize="?attr/body"
+            android:textSize="?attr/heading_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />

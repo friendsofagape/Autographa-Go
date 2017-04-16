@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
@@ -50,7 +51,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
     private BookModel mBookModel;
     private TextView mToolBarTitle;
-    private LinearLayout mBookmarkHolder;
+    private RelativeLayout mBookmarkHolder;
     private ImageView mIvBookMark;
     private String mBookId;
     private int mBookMarkNumber;
@@ -82,7 +83,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mToolBarTitle = (TextView) findViewById(R.id.toolbar_title);
         mIvBookMark = (ImageView) findViewById(R.id.iv_bookmark);
-        mBookmarkHolder = (LinearLayout) findViewById(R.id.bookmark_holder);
+        mBookmarkHolder = (RelativeLayout) findViewById(R.id.bookmark_holder);
         mBottomBar = (LinearLayout) findViewById(R.id.bottom_bar);
         mTvHighlight = (TextView) findViewById(R.id.tv_highlight);
 
