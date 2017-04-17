@@ -150,7 +150,8 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                 mVerseList.add(model);
                 addNoteButton(model, false);
             }
-        } else {
+        }
+//        else {
             ArrayList<VerseIdModel> models = intent.getParcelableArrayListExtra(Constants.Keys.VERSE_MODELS);
             if (models != null) {
                 for (final VerseIdModel model : models) {
@@ -158,7 +159,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                     addNoteButton(model, false);
                 }
             }
-        }
+//        }
     }
 
     private void addNoteButton(final VerseIdModel model, final boolean removeFromList) {

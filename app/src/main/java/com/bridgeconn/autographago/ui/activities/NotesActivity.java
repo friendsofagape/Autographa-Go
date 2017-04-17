@@ -36,6 +36,11 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     private NotesAdapter mAdapter;
     private ArrayList<NotesModel> mNotesModels = new ArrayList<>();
     private String languageCode, versionCode;
+    private ArrayList<VerseIdModel> verseIdModels = new ArrayList<>();
+
+    public ArrayList<VerseIdModel> getVerseIdModels() {
+        return verseIdModels;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +72,11 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
         mRecyclerView.setAdapter(mAdapter);
 
         mIvNewNote.setOnClickListener(this);
+
+        ArrayList<VerseIdModel> models = getIntent().getParcelableArrayListExtra(Constants.Keys.VERSE_MODELS);
+        if (models != null) {
+            verseIdModels.addAll(models);
+        }
     }
 
     private void getNotesFromDB() {
@@ -120,6 +130,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.iv_new_note: {
                 Intent intent = new Intent(this, EditNoteActivity.class);
+                intent.putParcelableArrayListExtra(Constants.Keys.VERSE_MODELS, verseIdModels);
                 startActivity(intent);
                 break;
             }

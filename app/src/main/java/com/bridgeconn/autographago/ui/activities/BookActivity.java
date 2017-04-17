@@ -331,7 +331,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         }
         mAdapter.notifyDataSetChanged();
 
-        Intent intent = new Intent(this, EditNoteActivity.class);
+//        Intent intent = new Intent(this, EditNoteActivity.class);
+        Intent intent = new Intent(this, NotesActivity.class);
         intent.putParcelableArrayListExtra(Constants.Keys.VERSE_MODELS, models);
         startActivity(intent);
     }
