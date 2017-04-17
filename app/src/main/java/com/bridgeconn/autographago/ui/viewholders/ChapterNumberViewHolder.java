@@ -35,7 +35,7 @@ public class ChapterNumberViewHolder extends RecyclerView.ViewHolder implements 
             if (chapterModel.isSelected()) {
                 mTvChapterNumber.setBackgroundColor(mFragment.getResources().getColor(R.color.black_40, null));
             } else {
-                mTvChapterNumber.setBackground(mFragment.getResources().getDrawable(R.drawable.number_background, null));
+                mTvChapterNumber.setBackground(mFragment.getResources().getDrawable(R.drawable.border_right_bottom, null));
             }
         }
         mTvChapterNumber.setText(chapterModel.getChapterNumber() + "");

@@ -11,7 +11,7 @@
         app:layout_widthPercent="100%"
         android:gravity="center"
         android:textSize="?attr/title_text"
-        android:background="@drawable/number_background"
+        android:background="@drawable/border_right_bottom"
         android:textColor="@color/black" />
 
 </android.support.percent.PercentRelativeLayout>
