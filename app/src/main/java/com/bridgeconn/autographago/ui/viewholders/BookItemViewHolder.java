@@ -40,11 +40,11 @@ public class BookItemViewHolder extends RecyclerView.ViewHolder implements View.
         } else {
             mTvHeader.setText("Old Testament");
         }
-        if (position == 0 || position == 39) {
-            mTvHeader.setVisibility(View.VISIBLE);
-        } else {
+//        if (position == 0 || position == 39) {
+//            mTvHeader.setVisibility(View.VISIBLE);
+//        } else {
             mTvHeader.setVisibility(View.GONE);
-        }
+//        }
 
     }
 

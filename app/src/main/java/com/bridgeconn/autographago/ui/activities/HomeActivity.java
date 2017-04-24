@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +44,8 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener,
+        AdapterView.OnItemSelectedListener, RadioGroup.OnCheckedChangeListener {
 
     private TextView mToolbarTitle;
     private ImageView mContinueRead;
@@ -60,6 +64,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private String languageCode, languageName, versionCode;
     private Constants.ReadingMode mReadingMode;
     private Constants.FontSize mFontSize;
+    private RadioGroup sectionGroupView;
+    private RadioButton oldSection, newSection;
+    private LinearLayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,9 +99,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mSettingsView = (ImageView) findViewById(R.id.iv_settings);
         mRecyclerView = (RecyclerView) findViewById(R.id.list_books);
         mSpinner = (AppCompatSpinner) findViewById(R.id.spinner);
+        sectionGroupView = (RadioGroup) findViewById(R.id.section_group);
+        oldSection = (RadioButton) findViewById(R.id.oldSection);
+        newSection = (RadioButton) findViewById(R.id.newSection);
 
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new BookAdapter(this, mBookModelArrayList);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -107,6 +118,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mSearchView.setOnClickListener(this);
         mHistoryView.setOnClickListener(this);
         mSettingsView.setOnClickListener(this);
+        sectionGroupView.setOnCheckedChangeListener(this);
 
         spinnerAdapter = new SpinnerAdapter(this, categoriesList);
         mSpinner.setAdapter(spinnerAdapter);
@@ -127,6 +139,53 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         UtilFunctions.queueArchivesForUnzipping(this);
         UtilFunctions.queueDirectoriesForParsing(this);
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                sectionGroupView.setOnCheckedChangeListener(null);
+                int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+                if (mBookModelArrayList.get(firstVisibleItem).getBookNumber() > 40) {
+                    newSection.setChecked(true);
+                } else {
+                    oldSection.setChecked(true);
+                }
+                sectionGroupView.setOnCheckedChangeListener(HomeActivity.this);
+            }
+        });
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        switch (group.getId()) {
+            case R.id.section_group: {
+                switch (checkedId) {
+                    case R.id.oldSection: {
+                        mLayoutManager.scrollToPositionWithOffset(0, 0);
+                        break;
+                    }
+                    case R.id.newSection: {
+                        int position = 0;
+                        for (int i=0; i<mBookModelArrayList.size(); i++) {
+                            if (mBookModelArrayList.get(i).getBookNumber() > 40) {
+                                position = i;
+                                break;
+                            }
+                        }
+                        mLayoutManager.scrollToPositionWithOffset(position, 0);
+                        break;
+                    }
+                }
+                mAdapter.notifyDataSetChanged();
+                break;
+            }
+        }
     }
 
     public int getSelectedSpinnerPosition() {
@@ -225,6 +284,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
                 new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
                 getAllBooks();
+                mLayoutManager.scrollToPositionWithOffset(0, 0);
             }
         }
     }
@@ -239,6 +299,28 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             mBookModelArrayList.add(bookModel);
         }
         mAdapter.notifyDataSetChanged();
+
+        oldSection.setVisibility(View.GONE);
+        newSection.setVisibility(View.GONE);
+        boolean oldVis = false, newVis = false;
+        for (int i=0; i<mBookModelArrayList.size(); i++) {
+            if (mBookModelArrayList.get(i).getBookNumber() < 40) {
+                oldVis = true;
+                oldSection.setVisibility(View.VISIBLE);
+            }
+            if (mBookModelArrayList.get(i).getBookNumber() > 40) {
+                newVis = true;
+                newSection.setVisibility(View.VISIBLE);
+            }
+        }
+        if ((oldVis || newVis) && !(oldVis && newVis)) {
+            if (oldVis) {
+                oldSection.setChecked(true);
+            }
+            if (newVis) {
+                newSection.setChecked(true);
+            }
+        }
     }
 
     @Override
