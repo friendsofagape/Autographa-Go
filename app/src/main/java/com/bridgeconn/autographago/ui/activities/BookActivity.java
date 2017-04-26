@@ -21,6 +21,7 @@ import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.RealmInteger;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
@@ -54,7 +55,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     private RelativeLayout mBookmarkHolder;
     private ImageView mIvBookMark;
     private String mBookId;
-    private int mBookMarkNumber;
+//    private int mBookMarkNumber;
+    private ArrayList<Integer> mBookMarkList = new ArrayList<>();
 
     private LinearLayout mBottomBar;
     private ProgressBar mProgressBar;
@@ -116,13 +118,14 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
                 int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
                 int chapterNum = findChapterNumber(firstVisibleItem);
-                if (mBookMarkNumber > 0) {
-                    if (chapterNum == mBookMarkNumber) {
+                if (mBookMarkList.contains(chapterNum)) {
+//                if (mBookMarkNumber > 0) {
+//                    if (chapterNum == mBookMarkNumber) {
                         mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
                     } else {
                         mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.white));
                     }
-                }
+//                }
                 mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(BookActivity.this, mBookId) + " " + chapterNum);
             }
         });
@@ -143,7 +146,10 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     for (ChapterModel model : mBookModel.getChapterModels()) {
                         mChapterModels.add(model);
                     }
-                    mBookMarkNumber = mBookModel.getBookmarkChapterNumber();
+                    for (RealmInteger realmInteger : mBookModel.getBookmarksList()) {
+                        mBookMarkList.add(realmInteger.getValue());
+                    }
+//                    mBookMarkNumber = mBookModel.getBookmarkChapterNumber();
                 }
                 return null;
             }
@@ -154,7 +160,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 mProgressBar.setVisibility(View.GONE);
 
                 mToolBarTitle.setOnClickListener(BookActivity.this);
-                if (mBookMarkNumber == 1) {
+                if (mBookMarkList.contains(1)) {
+//                if (mBookMarkNumber == 1) {
                     mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
                 }
 
@@ -175,7 +182,12 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         if (resultList.size() > 0) {
             BookModel bModel = resultList.get(0);
             BookModel bookModel = new BookModel();
-            bookModel.setBookmarkChapterNumber(bModel.getBookmarkChapterNumber());
+            for (RealmInteger realmInteger : bModel.getBookmarksList()) {
+                RealmInteger realmValue = new RealmInteger();
+                realmValue.setValue(realmInteger.getValue());
+                bookModel.getBookmarksList().add(realmValue);
+            }
+//            bookModel.setBookmarkChapterNumber(bModel.getBookmarkChapterNumber());
             bookModel.setBookNumber(bModel.getBookNumber());
             bookModel.setSection(bModel.getSection());
             bookModel.setVersionCode(bModel.getVersionCode());
@@ -421,41 +433,41 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.bookmark_holder: {
 
-//                BounceInterpolator interpolator = new BounceInterpolator(0.2, 20);
-//                final Animation myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
-//                myAnim.setInterpolator(interpolator);
-//                mIvBookMark.startAnimation(myAnim);
-
                 int position = mLayoutManager.findFirstVisibleItemPosition();
-                if (mBookMarkNumber == findChapterNumber(position)) {
+                final int chapterNumber = findChapterNumber(position);
+                boolean present = false;
+                if (mBookMarkList.contains(chapterNumber)) {
+                    present = true;
+//                if (mBookMarkNumber == findChapterNumber(position)) {
                     mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.white));
+                    int index1 = mBookMarkList.indexOf(chapterNumber);
+                    mBookMarkList.remove(index1);
+
+                    for (int i=0; i<mBookModel.getBookmarksList().size(); i++) {
+                        if (mBookModel.getBookmarksList().get(i).getValue() == chapterNumber) {
+                            mBookModel.getBookmarksList().remove(i);
+                            break;
+                        }
+                    }
                 } else {
                     mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
+                    mBookMarkList.add(chapterNumber);
+                    RealmInteger realmInteger = new RealmInteger(chapterNumber);
+                    mBookModel.getBookmarksList().add(realmInteger);
                 }
+                new AutographaRepository<BookModel>().add(mBookModel, null);
 
-                new AsyncTask<Integer, Void, Void>(){
-                    @Override
-                    protected Void doInBackground(Integer... params) {
-                        if (mBookMarkNumber == findChapterNumber(params[0])) {
-                            // remove bookmark
-                            mBookMarkNumber = 0;
+                for (BookIdModel bookIdModel : Constants.CONTAINER_BOOKS_LIST) {
+                    if (bookIdModel.getBookId().equals(mBookId)) {
+                        if (present) {
+                            int index = bookIdModel.getBookmarksList().indexOf(chapterNumber);
+                            bookIdModel.getBookmarksList().remove(index);
                         } else {
-                            // add bookmark
-                            mBookMarkNumber = findChapterNumber(params[0]);
+                            bookIdModel.getBookmarksList().add(chapterNumber);
                         }
-
-                        for (BookIdModel bookIdModel : Constants.CONTAINER_BOOKS_LIST) {
-                            if (bookIdModel.getBookId().equals(mBookId)) {
-                                bookIdModel.setBookmarkChapterNumber(mBookMarkNumber);
-                                break;
-                            }
-                        }
-                        mBookModel.setBookmarkChapterNumber(mBookMarkNumber);
-                        new AutographaRepository<BookModel>().update(mBookModel);
-
-                        return null;
+                        break;
                     }
-                }.execute(position);
+                }
                 break;
             }
             case R.id.view_highlights: {
@@ -552,11 +564,16 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                         for (ChapterModel chapterModel : mBookModel.getChapterModels()) {
                             mChapterModels.add(chapterModel);
                         }
+                        mBookMarkList.clear();
+                        for (RealmInteger realmInteger : mBookModel.getBookmarksList()) {
+                            mBookMarkList.add(realmInteger.getValue());
+                        }
                         mAdapter.notifyDataSetChanged();
-                        mBookMarkNumber = mBookModel.getBookmarkChapterNumber();
+//                        mBookMarkNumber = mBookModel.getBookmarkChapterNumber();
                     }
 
-                    if (mBookMarkNumber == 1) {
+                    if (mBookMarkList.contains(1)) {
+//                    if (mBookMarkNumber == 1) {
                         mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
                     }
 

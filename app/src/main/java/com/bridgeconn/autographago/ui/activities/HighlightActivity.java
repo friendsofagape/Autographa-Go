@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
+import com.bridgeconn.autographago.models.RealmInteger;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
@@ -164,7 +165,10 @@ public class HighlightActivity extends AppCompatActivity {
         if (resultList.size() > 0) {
             BookModel bModel = resultList.get(0);
             BookModel bookModel = new BookModel();
-            bookModel.setBookmarkChapterNumber(bModel.getBookmarkChapterNumber());
+            for (RealmInteger realmInteger : bModel.getBookmarksList()) {
+                bookModel.getBookmarksList().add(realmInteger);
+            }
+//            bookModel.setBookmarkChapterNumber(bModel.getBookmarkChapterNumber());
             bookModel.setBookNumber(bModel.getBookNumber());
             bookModel.setSection(bModel.getSection());
             bookModel.setVersionCode(bModel.getVersionCode());

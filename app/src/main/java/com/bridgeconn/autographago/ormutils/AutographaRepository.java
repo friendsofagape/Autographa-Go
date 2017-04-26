@@ -7,6 +7,7 @@ import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.RealmInteger;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VerseIdModel;
 import com.bridgeconn.autographago.models.VersionModel;
@@ -164,6 +165,26 @@ public class AutographaRepository<T extends RealmObject> implements Repository<T
     }
 
     @Override
+    public void updateBookWithBookMark(Realm realm, final BookModel bookModel, final int bookMarkNumber, final boolean add) {
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                if (add) {
+                    RealmInteger realmInteger = new RealmInteger(bookMarkNumber);
+                    bookModel.getBookmarksList().add(realmInteger);
+                } else {
+                    for (int i=0; i<bookModel.getBookmarksList().size(); i++) {
+                        if (bookModel.getBookmarksList().get(i).getValue() == bookMarkNumber) {
+                            bookModel.getBookmarksList().remove(i);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
     public void remove(Specification<T> specification) {
         final Realm realm = Realm.getDefaultInstance();
         final RealmResults<T> realmResults = specification.generateResults(realm);
@@ -224,7 +245,10 @@ public class AutographaRepository<T extends RealmObject> implements Repository<T
                             bookIdModel.setBookId(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getBookId());
                             bookIdModel.setBookName(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getBookName());
                             bookIdModel.setBookNumber(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getBookNumber());
-                            bookIdModel.setBookmarkChapterNumber(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getBookmarkChapterNumber());
+                            for (int l=0; l<resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getBookmarksList().size(); l++) {
+                                bookIdModel.getBookmarksList().add(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getBookmarksList().get(l).getValue());
+                            }
+//                            bookIdModel.setBookmarkChapterNumber(resultsToReturn.get(i).getVersionModels().get(j).getBookModels().get(k).getBookmarkChapterNumber());
                             Constants.CONTAINER_BOOKS_LIST.add(bookIdModel);
                         }
                     }

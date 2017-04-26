@@ -156,24 +156,6 @@ public class AllSpecifications {
         }
     }
 
-    public static class AllBookmarks implements Specification<BookModel> {
-        private String language, version;
-
-        public AllBookmarks(String language, String version) {
-            this.language = language;
-            this.version = version;
-        }
-
-        @Override
-        public RealmResults<BookModel> generateResults(Realm realm) {
-            RealmQuery<BookModel> query = realm.where(BookModel.class);
-            query = query.equalTo("languageCode", language);
-            query = query.equalTo("versionCode", version);
-            query = query.greaterThan("bookmarkChapterNumber", 0);
-            return query.findAll();
-        }
-    }
-
     public static class AllNotes implements Specification<NotesModel> {
         private String language, version;
 

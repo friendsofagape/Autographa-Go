@@ -1,5 +1,6 @@
 package com.bridgeconn.autographago.models;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 public class BookIdModel {
@@ -12,6 +13,7 @@ public class BookIdModel {
     private int bookNumber;
     private boolean selected;
     private int bookmarkChapterNumber;
+    private ArrayList<Integer> bookmarksList = new ArrayList<>();
 
     public BookIdModel(BookIdModel model) {
         bookId = model.getBookId();
@@ -22,6 +24,7 @@ public class BookIdModel {
         bookNumber = model.getBookNumber();
         selected = model.isSelected();
         bookmarkChapterNumber = model.getBookmarkChapterNumber();
+        bookmarksList = model.getBookmarksList();
     }
 
     public BookIdModel() {
@@ -89,6 +92,14 @@ public class BookIdModel {
 
     public void setBookmarkChapterNumber(int bookmarkChapterNumber) {
         this.bookmarkChapterNumber = bookmarkChapterNumber;
+    }
+
+    public ArrayList<Integer> getBookmarksList() {
+        return bookmarksList;
+    }
+
+    public void setBookmarksList(ArrayList<Integer> bookmarksList) {
+        this.bookmarksList = bookmarksList;
     }
 
     public static class BookNumberComparator implements Comparator<BookIdModel> {

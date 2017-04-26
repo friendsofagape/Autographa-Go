@@ -13,6 +13,7 @@ import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
+import com.bridgeconn.autographago.models.RealmInteger;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
@@ -70,9 +71,10 @@ public class BookmarkActivity extends AppCompatActivity {
     private void getBookmarks() {
         mBookmarkModels.clear();
         for (BookIdModel bookIdModel : Constants.CONTAINER_BOOKS_LIST) {
-            if (bookIdModel.getBookmarkChapterNumber() > 0) {
+            for (Integer integer : bookIdModel.getBookmarksList()) {
+//            if (bookIdModel.getBookmarkChapterNumber() > 0) {
                 BookIdModel bookIdModel1 = new BookIdModel();
-                bookIdModel1.setBookmarkChapterNumber(bookIdModel.getBookmarkChapterNumber());
+                bookIdModel1.setBookmarkChapterNumber(integer);
                 bookIdModel1.setBookNumber(bookIdModel.getBookNumber());
                 bookIdModel1.setLanguageCode(bookIdModel.getLanguageCode());
                 bookIdModel1.setBookName(bookIdModel.getBookName());
@@ -97,68 +99,29 @@ public class BookmarkActivity extends AppCompatActivity {
     }
 
     public void refreshBookMarkList(int position) {
-        mBookmarkModels.get(position).setBookmarkChapterNumber(0);
+        int bookMarkNumber = mBookmarkModels.get(position).getBookmarkChapterNumber();
+//        mBookmarkModels.get(position).setBookmarkChapterNumber(0);
         for (BookIdModel bookIdModel : Constants.CONTAINER_BOOKS_LIST) {
             if (bookIdModel.getBookId().equals(mBookmarkModels.get(position).getBookId())) {
                 bookIdModel.setBookmarkChapterNumber(0);
+                int pos = bookIdModel.getBookmarksList().indexOf(bookMarkNumber);
+                bookIdModel.getBookmarksList().remove(pos);
             }
         }
         String bookId = mBookmarkModels.get(position).getBookId();
         mBookmarkModels.remove(position);
         mBookmarkAdapter.notifyItemRemoved(position);
         mBookmarkAdapter.notifyItemRangeChanged(position, mBookmarkModels.size(), null);
-        new AsyncTask<String, Void, Void>() {
-            @Override
-            protected Void doInBackground(String... params) {
-                BookModel bookModel = getBookModel(params[0]);
-                bookModel.setBookmarkChapterNumber(0);
-                new AutographaRepository<BookModel>().update(bookModel);
-                return null;
-            }
-        }.execute(bookId);
-    }
 
-    private BookModel getBookModel(String bookId) {
         final Realm realm = Realm.getDefaultInstance();
         String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
         String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
         ArrayList<BookModel> resultList = query(realm, new AllSpecifications.BookModelById(languageCode, versionCode, bookId), new AllMappers.BookMapper());
         if (resultList.size() > 0) {
             BookModel bModel = resultList.get(0);
-            BookModel bookModel = new BookModel();
-            bookModel.setBookmarkChapterNumber(bModel.getBookmarkChapterNumber());
-            bookModel.setBookNumber(bModel.getBookNumber());
-            bookModel.setSection(bModel.getSection());
-            bookModel.setVersionCode(bModel.getVersionCode());
-            bookModel.setLanguageCode(bModel.getLanguageCode());
-            bookModel.setBookId(bModel.getBookId());
-            bookModel.setBookPrimaryId(bModel.getBookPrimaryId());
-            bookModel.setBookName(bModel.getBookName());
-            for (ChapterModel cModel : bModel.getChapterModels()) {
-                ChapterModel chapterModel = new ChapterModel();
-                chapterModel.setChapterNumber(cModel.getChapterNumber());
-                chapterModel.setLanguageCode(cModel.getLanguageCode());
-                chapterModel.setVersionCode(cModel.getVersionCode());
-                chapterModel.setChapterId(cModel.getChapterId());
-                chapterModel.setNumberOfVerses(cModel.getNumberOfVerses());
-                for (VerseComponentsModel vModel : cModel.getVerseComponentsModels()) {
-                    VerseComponentsModel verseComponentsModel = new VerseComponentsModel();
-                    verseComponentsModel.setChapterId(vModel.getChapterId());
-                    verseComponentsModel.setHighlighted(vModel.isHighlighted());
-                    verseComponentsModel.setVersionCode(vModel.getVersionCode());
-                    verseComponentsModel.setLanguageCode(vModel.getLanguageCode());
-                    verseComponentsModel.setText(vModel.getText());
-                    verseComponentsModel.setVerseNumber(vModel.getVerseNumber());
-                    verseComponentsModel.setType(vModel.getType());
-                    chapterModel.getVerseComponentsModels().add(verseComponentsModel);
-                }
-                bookModel.getChapterModels().add(chapterModel);
-            }
-            realm.close();
-            return bookModel;
+            new AutographaRepository<BookModel>().updateBookWithBookMark(realm, bModel, bookMarkNumber, false);
         }
         realm.close();
-        return null;
     }
 
     public ArrayList<BookModel> query(Realm realm, Specification<BookModel> specification, Mapper<BookModel, BookModel> mapper) {

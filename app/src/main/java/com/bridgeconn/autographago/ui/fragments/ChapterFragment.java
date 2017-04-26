@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
-import com.bridgeconn.autographago.models.VerseComponentsModel;
+import com.bridgeconn.autographago.models.RealmInteger;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.Mapper;
@@ -75,7 +75,10 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
         if (resultList.size() > 0) {
             BookModel bModel = resultList.get(0);
             BookModel bookModel = new BookModel();
-            bookModel.setBookmarkChapterNumber(bModel.getBookmarkChapterNumber());
+            for (RealmInteger realmInteger : bModel.getBookmarksList()) {
+                bookModel.getBookmarksList().add(realmInteger);
+            }
+//            bookModel.setBookmarkChapterNumber(bModel.getBookmarkChapterNumber());
             bookModel.setBookNumber(bModel.getBookNumber());
             bookModel.setSection(bModel.getSection());
             bookModel.setVersionCode(bModel.getVersionCode());

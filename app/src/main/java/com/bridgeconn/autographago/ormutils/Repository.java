@@ -32,6 +32,8 @@ public interface Repository<T extends RealmObject> {
 
     void updateBookWithHighlights(Realm realm, ArrayList<LanguageModel> languageModels, ArrayList<VerseIdModel> verseIdModels);
 
+    void updateBookWithBookMark(Realm realm, BookModel bookModel, int bookMarkNumber, boolean add);
+
     void remove(Specification<T> specification);
 
     ArrayList<T> query(Specification<T> specification, Mapper<T, T> mapper);
