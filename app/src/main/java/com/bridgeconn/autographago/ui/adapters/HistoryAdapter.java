@@ -25,14 +25,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new HistoryItemViewHolder(mLayoutInflater.inflate(R.layout.item_history, parent, false), mContext, mHistoryModels);
+        return null;
+//        return new HistoryItemViewHolder(mLayoutInflater.inflate(R.layout.item_history, parent, false), mContext, mHistoryModels);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof HistoryItemViewHolder) {
-            ((HistoryItemViewHolder) holder).onBind(position);
-        }
+//        if (holder instanceof HistoryItemViewHolder) {
+//            ((HistoryItemViewHolder) holder).onBind(position);
+//        }
     }
 
     @Override

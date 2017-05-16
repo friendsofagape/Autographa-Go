@@ -110,4 +110,10 @@
 
     <string name="download_more">More Languages</string>
 
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="one_week_ago">1 week ago</string>
+    <string name="one_month_ago">1 month ago</string>
+    <string name="two_months_ago">2 months ago</string>
+
 </resources>
