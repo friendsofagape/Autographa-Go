@@ -51,7 +51,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<ChapterModel> mChapterModels = new ArrayList<>();
 
     private BookModel mBookModel;
-    private TextView mToolBarTitle;
+    private TextView mToolBarTitle, mToolbarBookVersion;
     private RelativeLayout mBookmarkHolder;
     private ImageView mIvBookMark;
     private String mBookId;
@@ -84,6 +84,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mToolBarTitle = (TextView) findViewById(R.id.toolbar_title);
+        mToolbarBookVersion = (TextView) findViewById(R.id.book_version);
         mIvBookMark = (ImageView) findViewById(R.id.iv_bookmark);
         mBookmarkHolder = (RelativeLayout) findViewById(R.id.bookmark_holder);
         mBottomBar = (LinearLayout) findViewById(R.id.bottom_bar);
@@ -97,6 +98,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
         getSupportActionBar().setTitle("");
         mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(this, mBookId) + " " + getIntent().getIntExtra(Constants.Keys.CHAPTER_NO, 0));
+        mToolbarBookVersion.setText(SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list_chapters);
 
@@ -127,6 +129,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     }
 //                }
                 mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(BookActivity.this, mBookId) + " " + chapterNum);
+                mToolbarBookVersion.setText(SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
             }
         });
 
@@ -559,6 +562,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
                     if (mBookModel != null) {
                         mToolBarTitle.setText(mBookModel.getBookName() + " " + chapterNumber);
+                        mToolbarBookVersion.setText(SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
 
                         mChapterModels.clear();
                         for (ChapterModel chapterModel : mBookModel.getChapterModels()) {

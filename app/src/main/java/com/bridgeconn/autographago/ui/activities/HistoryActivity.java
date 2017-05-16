@@ -65,8 +65,6 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void getAllHistory() {
-        // TODO FIX CRASH HERE
-        // io.realm.exceptions.RealmError: Unrecoverable error. mmap() failed: Out of memory size: 1342177280 offset: 0 in io_realm_internal_SharedGroup.cpp line 113
         mHistoryModels.clear();
         final Realm realm = Realm.getDefaultInstance();
         ArrayList<SearchModel> models = query(realm, new AllSpecifications.AllHistory(languageCode, versionCode), new AllMappers.HistoryMapper());
@@ -76,6 +74,7 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
             searchModel.setBookId(model.getBookId());
             searchModel.setChapterNumber(model.getChapterNumber());
             searchModel.setVerseNumber(model.getVerseNumber());
+            searchModel.setTimeStamp(model.getTimeStamp());
             mHistoryModels.add(searchModel);
         }
         realm.close();

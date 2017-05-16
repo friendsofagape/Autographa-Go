@@ -13,13 +13,16 @@ import com.bridgeconn.autographago.ui.activities.EditNoteActivity;
 import com.bridgeconn.autographago.ui.activities.NotesActivity;
 import com.bridgeconn.autographago.utils.Constants;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private View mView;
     private TextView mTvTitle;
     private TextView mTvText;
+    private TextView mTvTime;
     private ImageView mDelete;
     private Context mContext;
     private ArrayList<NotesModel> mNotesModels;
@@ -31,6 +34,7 @@ public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         mContext = context;
         mTvTitle = (TextView) itemView.findViewById(R.id.note_title);
         mTvText = (TextView) itemView.findViewById(R.id.note_text);
+        mTvTime = (TextView) itemView.findViewById(R.id.time);
         mDelete = (ImageView) itemView.findViewById(R.id.iv_delete_note);
         mNotesModels = notesModels;
     }
@@ -38,6 +42,10 @@ public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     public void onBind(final int position) {
         mTvTitle.setText(mNotesModels.get(position).getTitle());
         mTvText.setText(mNotesModels.get(position).getText());
+        long yourmilliseconds = mNotesModels.get(position).getTimestamp();
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm");
+        Date resultdate = new Date(yourmilliseconds);
+        mTvTime.setText(sdf.format(resultdate));
         mDelete.setTag(position);
         mDelete.setOnClickListener(this);
         mView.setTag(position);

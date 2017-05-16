@@ -238,7 +238,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         SpinnerModel importModel = new SpinnerModel();
-        importModel.setLanguageName("Download More");
+        importModel.setLanguageName(getResources().getString(R.string.download_more));
         importModel.setLanguageCode("");
         importModel.setVersionCode("");
         categoriesList.add(importModel);

@@ -81,14 +81,14 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         mEditor.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                menu.add(R.string.bold);
+                menu.add(R.string.italics);
+                menu.add(R.string.underline);
                 return true;
             }
 
             @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                menu.add(R.string.bold);
-                menu.add(R.string.italics);
-                menu.add(R.string.underline);
                 return true;
             }
 

@@ -33,6 +33,15 @@
         android:layout_width="?attr/button_dimen"
         android:layout_height="?attr/button_dimen" />
 
+    <TextView
+        android:id="@+id/time"
+        android:layout_below="@id/note_text"
+        android:textSize="?attr/body"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <View
         android:layout_below="@id/iv_delete_note"
         android:background="@color/black_40"

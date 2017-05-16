@@ -3,6 +3,8 @@ package com.bridgeconn.autographago.ui.viewholders;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -15,13 +17,16 @@ import java.util.ArrayList;
 
 public class HistoryItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    private TextView mTvBookName;
+    private View mView;
+    private TextView mTvBookName, mTvTime;
     private Context mContext;
     private ArrayList<SearchModel> mHistoryModels;
 
     public HistoryItemViewHolder(View itemView, Context context, ArrayList<SearchModel> historyModels) {
         super(itemView);
+        mView = itemView;
         mTvBookName = (TextView) itemView.findViewById(R.id.tv_text);
+        mTvTime = (TextView) itemView.findViewById(R.id.time);
 
         mContext = context;
         mHistoryModels = historyModels;
@@ -31,14 +36,15 @@ public class HistoryItemViewHolder extends RecyclerView.ViewHolder implements Vi
         SearchModel searchModel = mHistoryModels.get(position);
         mTvBookName.setText(searchModel.getBookName() + "  " +
                 searchModel.getChapterNumber() + Constants.Styling.CHAR_COLON + searchModel.getVerseNumber());
-        mTvBookName.setOnClickListener(this);
-        mTvBookName.setTag(position);
+        mTvTime.setText(DateUtils.getRelativeTimeSpanString(searchModel.getTimeStamp(), System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE));
+        mView.setTag(position);
+        mView.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.tv_text: {
+            case R.id.item_history_view: {
                 int position = (int) v.getTag();
 
                 Intent intent = new Intent(mContext, BookActivity.class);
