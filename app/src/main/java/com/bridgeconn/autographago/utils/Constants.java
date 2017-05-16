@@ -63,6 +63,7 @@ public class Constants {
         String BOLD = "BOLD";
         String ITALICS = "ITALICS";
         String UNDERLINE = "UNDERLINE";
+        String BULLETS = "BULLETS";
     }
 
     public interface TextEditorStyles {

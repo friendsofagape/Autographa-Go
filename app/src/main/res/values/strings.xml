@@ -17,6 +17,7 @@
     <string name="bold">BOLD</string>
     <string name="italics">ITALICS</string>
     <string name="underline">UNDERLINE</string>
+    <string name="bullets">BULLETS</string>
     <string name="cut">CUT</string>
     <string name="copy">COPY</string>
     <string name="paste">PASTE</string>

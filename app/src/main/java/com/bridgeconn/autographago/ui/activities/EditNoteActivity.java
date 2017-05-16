@@ -84,6 +84,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                 menu.add(R.string.bold);
                 menu.add(R.string.italics);
                 menu.add(R.string.underline);
+                menu.add(R.string.bullets);
                 return true;
             }
 
@@ -111,6 +112,11 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                         Spannable spannable = new SpannableString(mEditor.getText());
                         spannable.setSpan(new UnderlineSpan(), findMin(), findMax(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         mEditor.setText(spannable);
+                        break;
+                    }
+                    case Constants.TextEditor.BULLETS: {
+                        mEditor.getText().insert(findMin(), "\n    \u2022");
+//                        mEditor.append("\\n\\u2022", findMin(), findMin() + 8);
                         break;
                     }
                 }
