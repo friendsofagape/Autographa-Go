@@ -105,6 +105,7 @@ public class Constants {
 
         String TEXT = "text";
         String IMPORT_BIBLE = "import_bible";
+        String NOTES_TIMESTAMPS = "notes_timestamps";
     }
 
     public interface RequestCodes {

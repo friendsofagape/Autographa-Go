@@ -23,6 +23,7 @@ import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.LanguageModel;
+import com.bridgeconn.autographago.models.NotesModel;
 import com.bridgeconn.autographago.models.RealmInteger;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VerseIdModel;
@@ -59,6 +60,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     private String mBookId;
 //    private int mBookMarkNumber;
     private ArrayList<Integer> mBookMarkList = new ArrayList<>();
+    private ArrayList<NotesModel> mNotesModels = new ArrayList<>();
 
     private LinearLayout mBottomBar;
     private ProgressBar mProgressBar;
@@ -147,6 +149,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             protected Void doInBackground(Void... params) {
+                getNotesFromDB();
+
                 mBookModel = getBookModel(mBookId);
 
                 if (mBookModel != null) {
@@ -181,6 +185,38 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         }.execute();
 
         addGesture();
+    }
+
+    private void getNotesFromDB() {
+        final Realm realm = Realm.getDefaultInstance();
+        mNotesModels.clear();
+        String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+        String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
+        ArrayList<NotesModel> models = query(realm, new AllSpecifications.AllNotes(languageCode, versionCode), new AllMappers.NotesMapper());
+        for (NotesModel model : models) {
+            for (VerseIdModel verseIdModel : model.getVerseIds()) {
+                if (verseIdModel.getBookId().equals(mBookId)) {
+                    NotesModel notesModel = new NotesModel();
+                    notesModel.setTimestamp(model.getTimestamp());
+
+                    VerseIdModel vIdModel = new VerseIdModel();
+                    vIdModel.setChapterNumber(verseIdModel.getChapterNumber());
+                    vIdModel.setVerseNumber(verseIdModel.getVerseNumber());
+                    notesModel.getVerseIds().add(vIdModel);
+                    mNotesModels.add(notesModel);
+                }
+            }
+        }
+        realm.close();
+    }
+
+    private ArrayList<NotesModel> query(Realm realm, Specification<NotesModel> specification, Mapper<NotesModel, NotesModel> mapper) {
+        RealmResults<NotesModel> realmResults = specification.generateResults(realm);
+        ArrayList<NotesModel> resultsToReturn = new ArrayList<>();
+        for (NotesModel result : realmResults) {
+            resultsToReturn.add(mapper.map(result));
+        }
+        return resultsToReturn;
     }
 
     private void addGesture() {
@@ -295,6 +331,12 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     verseComponentsModel.setText(vModel.getText());
                     verseComponentsModel.setVerseNumber(vModel.getVerseNumber());
                     verseComponentsModel.setType(vModel.getType());
+                    for (NotesModel notesModel : mNotesModels) {
+                        if (notesModel.getVerseIds().get(0).getChapterNumber() == cModel.getChapterNumber()
+                                && notesModel.getVerseIds().get(0).getVerseNumber().equals(vModel.getVerseNumber())) {
+                            verseComponentsModel.getNotesTimestamps().add(notesModel.getTimestamp());
+                        }
+                    }
                     chapterModel.getVerseComponentsModels().add(verseComponentsModel);
                 }
                 bookModel.getChapterModels().add(chapterModel);

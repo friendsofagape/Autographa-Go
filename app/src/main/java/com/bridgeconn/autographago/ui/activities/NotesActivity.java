@@ -37,6 +37,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     private ArrayList<NotesModel> mNotesModels = new ArrayList<>();
     private String languageCode, versionCode;
     private ArrayList<VerseIdModel> verseIdModels = new ArrayList<>();
+    private ArrayList<Long> notesTimestamps = new ArrayList<>();
 
     public ArrayList<VerseIdModel> getVerseIdModels() {
         return verseIdModels;
@@ -76,6 +77,43 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
         ArrayList<VerseIdModel> models = getIntent().getParcelableArrayListExtra(Constants.Keys.VERSE_MODELS);
         if (models != null) {
             verseIdModels.addAll(models);
+        }
+        notesTimestamps = (ArrayList<Long>) getIntent().getSerializableExtra(Constants.Keys.NOTES_TIMESTAMPS);
+    }
+
+    private void getNotesWithTimestampFromDB() {
+        final Realm realm = Realm.getDefaultInstance();
+        mNotesModels.clear();
+        for (Long timestamp : notesTimestamps) {
+            ArrayList<NotesModel> models = query(realm, new AllSpecifications.NotesById(timestamp, languageCode, versionCode), new AllMappers.NotesMapper());
+            for (NotesModel model : models) {
+                NotesModel notesModel = new NotesModel();
+                notesModel.setTitle(model.getTitle());
+                notesModel.setText(model.getText());
+                for (NotesStyleModel styleModel : model.getNotesStyleModels()) {
+                    NotesStyleModel nsModel = new NotesStyleModel();
+                    nsModel.setStyle(styleModel.getStyle());
+                    nsModel.setStart(styleModel.getStart());
+                    nsModel.setEnd(styleModel.getEnd());
+                    notesModel.getNotesStyleModels().add(nsModel);
+                }
+                notesModel.setLanguageCode(model.getLanguageCode());
+                notesModel.setVersionCode(model.getVersionCode());
+                for (VerseIdModel verseIdModel : model.getVerseIds()) {
+                    VerseIdModel vIdModel = new VerseIdModel();
+                    vIdModel.setChapterNumber(verseIdModel.getChapterNumber());
+                    vIdModel.setVerseNumber(verseIdModel.getVerseNumber());
+                    vIdModel.setBookId(verseIdModel.getBookId());
+                    vIdModel.setBookName(verseIdModel.getBookName());
+                    notesModel.getVerseIds().add(vIdModel);
+                }
+                notesModel.setTimestamp(model.getTimestamp());
+                mNotesModels.add(notesModel);
+            }
+        }
+        realm.close();
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
         }
     }
 
@@ -152,7 +190,11 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     protected void onResume() {
         super.onResume();
 
-        getNotesFromDB();
+        if (notesTimestamps != null && notesTimestamps.size() > 0) {
+            getNotesWithTimestampFromDB();
+        } else {
+            getNotesFromDB();
+        }
     }
 
     public void refreshList(int position) {

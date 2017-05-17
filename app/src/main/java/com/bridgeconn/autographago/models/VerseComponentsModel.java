@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 
 import com.bridgeconn.autographago.utils.Constants;
 
+import java.util.ArrayList;
+
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.Index;
@@ -27,6 +29,8 @@ public class VerseComponentsModel extends RealmObject {
     private boolean highlighted;
     private String languageCode;
     private String versionCode;
+    @Ignore
+    private ArrayList<Long> notesTimestamps = new ArrayList<>();
 
     public VerseComponentsModel(VerseComponentsModel model) {
         chapterId = model.getChapterId();
@@ -39,6 +43,7 @@ public class VerseComponentsModel extends RealmObject {
         highlighted = model.isHighlighted();
         languageCode = model.getLanguageCode();
         versionCode = model.getVersionCode();
+        notesTimestamps = model.getNotesTimestamps();
     }
 
     public VerseComponentsModel() {
@@ -124,4 +129,11 @@ public class VerseComponentsModel extends RealmObject {
         this.versionCode = versionCode;
     }
 
+    public ArrayList<Long> getNotesTimestamps() {
+        return notesTimestamps;
+    }
+
+    public void setNotesTimestamps(ArrayList<Long> notesTimestamps) {
+        this.notesTimestamps = notesTimestamps;
+    }
 }

@@ -1,14 +1,18 @@
 package com.bridgeconn.autographago.ui.viewholders;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
+import android.text.style.ClickableSpan;
+import android.text.style.ImageSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.view.View;
@@ -18,6 +22,7 @@ import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.ui.activities.BookActivity;
+import com.bridgeconn.autographago.ui.activities.NotesActivity;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 
@@ -190,7 +195,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
      * call removeAllViews() on linear layout before adding any new views
      * @param verseComponentsModels
      */
-    private void addAllContent(ArrayList<VerseComponentsModel> verseComponentsModels, int chapterNumber, boolean underLine) {
+    private void addAllContent(final ArrayList<VerseComponentsModel> verseComponentsModels, int chapterNumber, boolean underLine) {
         mTvChapter.setText("");
 
         for (int i=0; i<verseComponentsModels.size(); i++) {
@@ -307,6 +312,25 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
             }
             mTvChapter.append(spannableStringBuilder);
         }
+        if (verseComponentsModels.get(0).getNotesTimestamps().size() > 0) {
+            int textLength = mTvChapter.getText().length();
+            Spannable spannable = new SpannableString(mTvChapter.getText());
+            ImageSpan ispan = new ImageSpan(mContext, R.drawable.ic_note_book);
+            ispan.getDrawable().setBounds(0, 0, 24, 24);
+            spannable.setSpan(ispan, textLength-1, textLength, 0);
+
+            spannable.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    Intent intent = new Intent(mContext, NotesActivity.class);
+                    intent.putExtra(Constants.Keys.NOTES_TIMESTAMPS, verseComponentsModels.get(0).getNotesTimestamps());
+                    mContext.startActivity(intent);
+                }
+            }, textLength-1, textLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            mTvChapter.setText(spannable);
+        }
+
+        mTvChapter.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private int getTextSize(int prevSize) {
