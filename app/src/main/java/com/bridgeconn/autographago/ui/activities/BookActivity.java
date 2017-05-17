@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -61,6 +63,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout mBottomBar;
     private ProgressBar mProgressBar;
     private TextView mTvHighlight;
+
+    private ScaleGestureDetector mScaleGestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +179,83 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 //                mRecyclerView.scrollToPosition(findPositionToScroll(chapterNumber-1, verseNumber));
             }
         }.execute();
+
+        addGesture();
+    }
+
+    private void addGesture() {
+        //set scale gesture detector
+        mScaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                if (detector.getCurrentSpan() > 200 && detector.getTimeDelta() > 200) {
+                    if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
+                        switch (SharedPrefs.getFontSize()) {
+                            case XSmall: {
+                                return false;
+                            }
+                            case Small: {
+                                SharedPrefs.putFontSize(Constants.FontSize.XSmall);
+                                recreate();
+                                return true;
+                            }
+                            case Medium: {
+                                SharedPrefs.putFontSize(Constants.FontSize.Small);
+                                recreate();
+                                return true;
+                            }
+                            case Large: {
+                                SharedPrefs.putFontSize(Constants.FontSize.Medium);
+                                recreate();
+                                return true;
+                            }
+                            case XLarge: {
+                                SharedPrefs.putFontSize(Constants.FontSize.Large);
+                                recreate();
+                                return true;
+                            }
+                        }
+                    } else if(detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
+                        switch (SharedPrefs.getFontSize()) {
+                            case XSmall: {
+                                SharedPrefs.putFontSize(Constants.FontSize.Small);
+                                recreate();
+                                return true;
+                            }
+                            case Small: {
+                                SharedPrefs.putFontSize(Constants.FontSize.Medium);
+                                recreate();
+                                return true;
+                            }
+                            case Medium: {
+                                SharedPrefs.putFontSize(Constants.FontSize.Large);
+                                recreate();
+                                return true;
+                            }
+                            case Large: {
+                                SharedPrefs.putFontSize(Constants.FontSize.XLarge);
+                                recreate();
+                                return true;
+                            }
+                            case XLarge: {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+
+        //set touch listener on recycler view
+        mRecyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mScaleGestureDetector.onTouchEvent(event);
+                return false;
+            }
+        });
     }
 
     private BookModel getBookModel(String bookId) {

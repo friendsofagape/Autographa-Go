@@ -115,7 +115,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                         break;
                     }
                     case Constants.TextEditor.BULLETS: {
-                        mEditor.getText().insert(findMin(), "\n    \u2022");
+                        mEditor.getText().insert(findMin(), "\n \u2022 ");
 //                        mEditor.append("\\n\\u2022", findMin(), findMin() + 8);
                         break;
                     }
