@@ -12,6 +12,9 @@ public class VersionModel extends RealmObject {
     @PrimaryKey
     private String versionId;
     private RealmList<BookModel> bookModels = new RealmList<>();
+    private String source;
+    private String license;
+    private int year;
 
     public VersionModel(VersionModel model) {
         versionName = model.getVersionName();
@@ -19,6 +22,9 @@ public class VersionModel extends RealmObject {
         bookModels = model.getBookModels();
         languageCode = model.getLanguageCode();
         versionId = model.getVersionId();
+        source = model.getSource();
+        license = model.getLicense();
+        year = model.getYear();
     }
 
     public VersionModel() {
@@ -62,5 +68,29 @@ public class VersionModel extends RealmObject {
 
     public void setVersionId(String versionId) {
         this.versionId = versionId;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getLicense() {
+        return license;
+    }
+
+    public void setLicense(String license) {
+        this.license = license;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
 }

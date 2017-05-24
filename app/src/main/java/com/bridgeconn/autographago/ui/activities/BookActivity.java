@@ -27,6 +27,7 @@ import com.bridgeconn.autographago.models.NotesModel;
 import com.bridgeconn.autographago.models.RealmInteger;
 import com.bridgeconn.autographago.models.VerseComponentsModel;
 import com.bridgeconn.autographago.models.VerseIdModel;
+import com.bridgeconn.autographago.models.VersionModel;
 import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
@@ -52,6 +53,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayoutManager mLayoutManager;
     private ChapterAdapter mAdapter;
     private ArrayList<ChapterModel> mChapterModels = new ArrayList<>();
+    private String mVersionName, mLicense;
+    private int mYear;
 
     private BookModel mBookModel;
     private TextView mToolBarTitle, mToolbarBookVersion;
@@ -106,12 +109,14 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(this, mBookId) + " " + getIntent().getIntExtra(Constants.Keys.CHAPTER_NO, 0));
         mToolbarBookVersion.setText(SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
 
+        findCopyrightData();
+
         mRecyclerView = (RecyclerView) findViewById(R.id.list_chapters);
 
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new ChapterAdapter(this, mChapterModels, SharedPrefs.getFontSize());
+        mAdapter = new ChapterAdapter(this, mChapterModels, SharedPrefs.getFontSize(), mVersionName, mLicense, mYear);
         mRecyclerView.setAdapter(mAdapter);
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -187,6 +192,21 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         addGesture();
     }
 
+    private void findCopyrightData() {
+        final Realm realm = Realm.getDefaultInstance();
+
+        String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+        String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
+        ArrayList<VersionModel> results = queryVersion(realm, new AllSpecifications.VersionModelByCode(languageCode, versionCode), new AllMappers.VersionMapper());
+
+        if (results.size() > 0) {
+            mVersionName = results.get(0).getVersionName();
+            mLicense = results.get(0).getLicense();
+            mYear = results.get(0).getYear();
+        }
+        realm.close();
+    }
+
     private void getNotesFromDB() {
         final Realm realm = Realm.getDefaultInstance();
         mNotesModels.clear();
@@ -210,6 +230,15 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         realm.close();
     }
 
+    private ArrayList<VersionModel> queryVersion(Realm realm, Specification<VersionModel> specification, Mapper<VersionModel, VersionModel> mapper) {
+        RealmResults<VersionModel> realmResults = specification.generateResults(realm);
+        ArrayList<VersionModel> resultsToReturn = new ArrayList<>();
+        for (VersionModel result : realmResults) {
+            resultsToReturn.add(mapper.map(result));
+        }
+        return resultsToReturn;
+    }
+
     private ArrayList<NotesModel> query(Realm realm, Specification<NotesModel> specification, Mapper<NotesModel, NotesModel> mapper) {
         RealmResults<NotesModel> realmResults = specification.generateResults(realm);
         ArrayList<NotesModel> resultsToReturn = new ArrayList<>();
@@ -225,7 +254,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
-                if (detector.getCurrentSpan() > 200 && detector.getTimeDelta() > 200) {
+//                if (detector.getCurrentSpan() > 200 && detector.getTimeDelta() > 200) {
                     if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
                         switch (SharedPrefs.getFontSize()) {
                             case XSmall: {
@@ -279,7 +308,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         }
                     }
-                }
+//                }
                 return false;
             }
         });

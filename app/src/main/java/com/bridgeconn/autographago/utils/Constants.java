@@ -106,6 +106,10 @@ public class Constants {
         String TEXT = "text";
         String IMPORT_BIBLE = "import_bible";
         String NOTES_TIMESTAMPS = "notes_timestamps";
+
+        String SOURCE = "source";
+        String LICENSE = "license";
+        String YEAR = "year";
     }
 
     public interface RequestCodes {
@@ -139,6 +143,10 @@ public class Constants {
         String TIMESTAMP_ = "timestamp_";
 
         String FIRST_LAUNCH = "first_launch";
+
+        String SOURCE = "source";
+        String LICENSE = "license";
+        String YEAR = "year";
     }
 
     public enum ReadingMode {

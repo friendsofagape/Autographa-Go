@@ -32,8 +32,8 @@
                     <ImageView
                         android:id="@+id/iv_bookmark"
                         android:layout_centerInParent="true"
-                        android:layout_width="?attr/button_dimen"
-                        android:layout_height="?attr/button_dimen"
+                        android:layout_width="@dimen/button_m"
+                        android:layout_height="@dimen/button_m"
                         android:src="@drawable/ic_bookmark_white" />
 
                 </RelativeLayout>
@@ -44,7 +44,7 @@
                     android:ellipsize="end"
                     android:textColor="@color/white"
                     android:gravity="bottom|center"
-                    android:textSize="?attr/small_button_text"
+                    android:textSize="@dimen/small_button_text"
                     android:textAllCaps="true"
                     android:layout_toLeftOf="@id/bookmark_holder"
                     android:layout_alignParentLeft="true"
@@ -60,7 +60,7 @@
                     android:textColor="@color/white"
                     android:gravity="center"
                     android:layout_centerInParent="true"
-                    android:textSize="?attr/title_text"
+                    android:textSize="@dimen/title_text"
                     android:textAllCaps="true"
                     android:layout_toLeftOf="@id/bookmark_holder"
                     android:layout_alignParentLeft="true"

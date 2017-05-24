@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.ChapterModel;
+import com.bridgeconn.autographago.ui.viewholders.CopyrightViewHolder;
 import com.bridgeconn.autographago.ui.viewholders.VerseViewHolder;
 import com.bridgeconn.autographago.utils.Constants;
 
@@ -18,23 +19,33 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private LayoutInflater mLayoutInflater;
     private ArrayList<ChapterModel> mChapterModels;
     private Constants.FontSize mFontSize;
+    private String mVersionName;
+    private String mLicense;
+    private int mYear;
 
     private interface ViewTypes {
         int VERSE = 0;
         int DUMMY = 1;
+        int COPYRIGHT = 2;
     }
 
-    public ChapterAdapter(Activity context, ArrayList<ChapterModel> chapterModels, Constants.FontSize fontSize) {
+    public ChapterAdapter(Activity context, ArrayList<ChapterModel> chapterModels, Constants.FontSize fontSize,
+                          String versionName, String license, int year) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         mChapterModels = chapterModels;
         mFontSize = fontSize;
+        mVersionName = versionName;
+        mLicense = license;
+        mYear = year;
     }
 
     @Override
     public int getItemViewType(int position) {
         if (position == getItemCount() - 1) {
             return ViewTypes.DUMMY;
+        } else if (position == getItemCount() - 2) {
+            return ViewTypes.COPYRIGHT;
         }
         return ViewTypes.VERSE;
 
@@ -50,6 +61,9 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             viewHolder = new RecyclerView.ViewHolder(mLayoutInflater.inflate
                     (R.layout.item_dummy, parent, false)) {
             };
+        } else if (viewType == ViewTypes.COPYRIGHT) {
+            viewHolder = new CopyrightViewHolder(mLayoutInflater.inflate
+                    (R.layout.item_copyright, parent, false), mContext, mFontSize, mVersionName, mLicense, mYear);
         }
         return viewHolder;
     }
@@ -58,6 +72,8 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof VerseViewHolder) {
             ((VerseViewHolder) holder).onBind(position);
+        } else if (holder instanceof CopyrightViewHolder) {
+            ((CopyrightViewHolder) holder).onBind();
         }
     }
 
@@ -78,7 +94,7 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             }
         }
-        return size + 1;
+        return size + 2;
     }
 
 }

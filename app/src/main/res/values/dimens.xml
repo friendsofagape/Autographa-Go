@@ -33,9 +33,9 @@
     <!--<dimen name="heading_2">16sp</dimen>-->
     <!--<dimen name="heading_3">15sp</dimen>-->
     <!--<dimen name="heading_4">14sp</dimen>-->
-    <!--<dimen name="title_text">20sp</dimen>-->
+    <dimen name="title_text">20sp</dimen>
     <!--<dimen name="button_text">14sp</dimen>-->
-    <!--<dimen name="small_button_text">12sp</dimen>-->
+    <dimen name="small_button_text">12sp</dimen>
     <!--<dimen name="app_bar_text">20sp</dimen>-->
 
 </resources>

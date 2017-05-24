@@ -43,7 +43,7 @@ public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         mTvTitle.setText(mNotesModels.get(position).getTitle());
         mTvText.setText(mNotesModels.get(position).getText());
         long yourmilliseconds = mNotesModels.get(position).getTimestamp();
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
         Date resultdate = new Date(yourmilliseconds);
         mTvTime.setText(sdf.format(resultdate));
         mDelete.setTag(position);

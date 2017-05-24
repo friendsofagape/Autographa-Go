@@ -36,9 +36,13 @@ public class ParseService extends IntentService {
             String languageName = intent.getStringExtra(Constants.Keys.LANGUAGE_NAME);
             String versionName = intent.getStringExtra(Constants.Keys.VERSION_NAME);
 
+            String source = intent.getStringExtra(Constants.Keys.SOURCE);
+            String license = intent.getStringExtra(Constants.Keys.LICENSE);
+            int year = intent.getIntExtra(Constants.Keys.YEAR, 2017);
+
             generateNotification(languageName, versionCode);
 
-            startParsing(zipFilePath, languageName, languageCode, versionCode, versionName);
+            startParsing(zipFilePath, languageName, languageCode, versionCode, versionName, source, license, year);
         }
         else if (intent.getAction().equals(Constants.ACTION.START_UNZIP)) {
 
@@ -48,9 +52,13 @@ public class ParseService extends IntentService {
             String languageName = intent.getStringExtra(Constants.Keys.LANGUAGE_NAME);
             String versionName = intent.getStringExtra(Constants.Keys.VERSION_NAME);
 
+            String source = intent.getStringExtra(Constants.Keys.SOURCE);
+            String license = intent.getStringExtra(Constants.Keys.LICENSE);
+            int year = intent.getIntExtra(Constants.Keys.YEAR, 2017);
+
             generateNotification(languageName, versionCode);
 
-            startUnzipping(this, languageName, languageCode, versionCode, versionName, zipFilePath);
+            startUnzipping(this, languageName, languageCode, versionCode, versionName, zipFilePath, source, license, year);
         }
     }
 
@@ -91,9 +99,10 @@ public class ParseService extends IntentService {
     }
 
     private void startUnzipping(final Context context, final String languageName, final String languageCode,
-                                final String versionCode, final String versionName, String filePath) {
+                                final String versionCode, final String versionName, String filePath,
+                                String source, String license, int year) {
 
-        UnzipUtil.unzipFile(new File(filePath), context, languageName, languageCode, versionCode, versionName);
+        UnzipUtil.unzipFile(new File(filePath), context, languageName, languageCode, versionCode, versionName, source, license, year);
     }
 
     private void deleteDirectory(File fileOrDir) {
@@ -105,8 +114,10 @@ public class ParseService extends IntentService {
         fileOrDir.delete();
     }
 
-    private void startParsing(final String directory,
-                              final String languageName, final String languageCode, final String versionCode, final String versionName) {
+    private void startParsing(final String directory, final String languageName,
+                              final String languageCode, final String versionCode,
+                              final String versionName, String source,
+                              String license, int year) {
         final File zipDirectory = new File(directory);
 
         if (zipDirectory.exists()) {
@@ -124,7 +135,7 @@ public class ParseService extends IntentService {
                                 false,
                                 languageName,
                                 languageCode,
-                                versionCode, versionName);
+                                versionCode, versionName, source, license, year);
 
                         // delete that file
                         file.delete();

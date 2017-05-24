@@ -74,6 +74,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private String languageName, languageCode, versionCode, versionName;
 
     private static String downloadUrl;
+    private String source, license;
+    private int year;
     private static boolean recreateNeeded = false;
 
     @Override
@@ -474,6 +476,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             jsonObject2.put(Constants.PrefKeys.LANGUAGE_CODE, languageCode);
             jsonObject2.put(Constants.PrefKeys.VERSION_NAME, versionName);
             jsonObject2.put(Constants.PrefKeys.VERSION_CODE, versionCode);
+            jsonObject2.put(Constants.PrefKeys.SOURCE, source);
+            jsonObject2.put(Constants.PrefKeys.LICENSE, license);
+            jsonObject2.put(Constants.PrefKeys.YEAR, year);
 
             SharedPrefs.putString(Constants.PrefKeys.TIMESTAMP_ + time, jsonObject2.toString());
         } catch (JSONException je) {
@@ -496,6 +501,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             languageCode = model.getMetaData().getLanguageCode();
                             versionCode = model.getMetaData().getVersionCode();
                             versionName = model.getMetaData().getVersionName();
+                            source = model.getMetaData().getSource();
+                            license = model.getMetaData().getLicense();
+                            year = model.getMetaData().getYear();
 
                             TextView tv = new TextView(SettingsActivity.this);
                             tv.setText(model.getMetaData().getSource() + " :: " +

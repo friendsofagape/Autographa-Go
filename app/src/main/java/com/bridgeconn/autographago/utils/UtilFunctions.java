@@ -257,7 +257,12 @@ public class UtilFunctions {
                             String languageName = jsonObject.getString(Constants.PrefKeys.LANGUAGE_NAME);
                             String versionCode = jsonObject.getString(Constants.PrefKeys.VERSION_CODE);
                             String versionName = jsonObject.getString(Constants.PrefKeys.VERSION_NAME);
-                            startParseService(context, file.getAbsolutePath(), languageName, languageCode, versionCode, versionName);
+                            String source = jsonObject.getString(Constants.PrefKeys.SOURCE);
+                            String license = jsonObject.getString(Constants.PrefKeys.LICENSE);
+                            int year = jsonObject.getInt(Constants.PrefKeys.YEAR);
+
+                            startParseService(context, file.getAbsolutePath(), languageName, languageCode,
+                                    versionCode, versionName, source, license, year);
                         }
                     } catch (NumberFormatException | JSONException e) {
                     }
@@ -276,6 +281,9 @@ public class UtilFunctions {
                 String languageName = jsonObject.getString(Constants.PrefKeys.LANGUAGE_NAME);
                 String versionName = jsonObject.getString(Constants.PrefKeys.VERSION_NAME);
                 String versionCode = jsonObject.getString(Constants.PrefKeys.VERSION_CODE);
+                String source = jsonObject.getString(Constants.PrefKeys.SOURCE);
+                String license = jsonObject.getString(Constants.PrefKeys.LICENSE);
+                int year = jsonObject.getInt(Constants.PrefKeys.YEAR);
 
                 String file = Environment.getExternalStorageDirectory() + Constants.STORAGE_DIRECTORY + time + "/" + Constants.USFM_ZIP_FILE_NAME;
 //              SharedPrefs.removeKey(Constants.PrefKeys.DOWNLOAD_ID_ + id);
@@ -286,6 +294,9 @@ public class UtilFunctions {
                 startIntent.putExtra(Constants.Keys.LANGUAGE_CODE, languageCode);
                 startIntent.putExtra(Constants.Keys.VERSION_NAME, versionName);
                 startIntent.putExtra(Constants.Keys.VERSION_CODE, versionCode);
+                startIntent.putExtra(Constants.Keys.SOURCE, source);
+                startIntent.putExtra(Constants.Keys.LICENSE, license);
+                startIntent.putExtra(Constants.Keys.YEAR, year);
                 startIntent.setAction(Constants.ACTION.START_UNZIP);
                 context.startService(startIntent);
             }
@@ -293,7 +304,8 @@ public class UtilFunctions {
         }
     }
 
-    public static void startParseService(Context context, String directoryPath, String languageName, String languageCode, String versionCode, String versionName) {
+    public static void startParseService(Context context, String directoryPath, String languageName, String languageCode,
+                                         String versionCode, String versionName, String source, String license, int year) {
         Intent startParse = new Intent(context, ParseService.class);
         startParse.setAction(Constants.ACTION.START_PARSE);
         startParse.putExtra(Constants.Keys.FILE_PATH, directoryPath);
@@ -301,6 +313,9 @@ public class UtilFunctions {
         startParse.putExtra(Constants.Keys.LANGUAGE_CODE, languageCode);
         startParse.putExtra(Constants.Keys.VERSION_CODE, versionCode);
         startParse.putExtra(Constants.Keys.VERSION_NAME, versionName);
+        startParse.putExtra(Constants.Keys.SOURCE, source);
+        startParse.putExtra(Constants.Keys.LICENSE, license);
+        startParse.putExtra(Constants.Keys.YEAR, year);
         context.startService(startParse);
     }
 }
