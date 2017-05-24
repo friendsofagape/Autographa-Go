@@ -74,7 +74,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private String languageName, languageCode, versionCode, versionName;
 
     private static String downloadUrl;
-    private String source, license;
+    private String source, license, available;
     private int year;
     private static boolean recreateNeeded = false;
 
@@ -504,6 +504,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             source = model.getMetaData().getSource();
                             license = model.getMetaData().getLicense();
                             year = model.getMetaData().getYear();
+                            available = (model.getMetaData().getAvailable() == null) ? "" : model.getMetaData().getAvailable();
 
                             TextView tv = new TextView(SettingsActivity.this);
                             tv.setText(model.getMetaData().getSource() + " :: " +
@@ -512,9 +513,24 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                     model.getMetaData().getYear() + " :: " +
                                     model.getMetaData().getVersionName()
                             );
+                            String sctionText = "";
+                            switch (available) {
+                                case "all": {
+                                    sctionText = "All";
+                                    break;
+                                }
+                                case "OT": {
+                                    sctionText = "Old Testament";
+                                    break;
+                                }
+                                case "NT": {
+                                    sctionText = "New Testament";
+                                    break;
+                                }
+                            }
                             Button button = new Button(SettingsActivity.this);
                             button.setText(getResources().getString(R.string.download) + " " +
-                                    model.getMetaData().getLanguageName() + " " + model.getMetaData().getVersionCode() + " Bible");
+                                    model.getMetaData().getLanguageName() + " " + model.getMetaData().getVersionCode() + " " + sctionText + " Bible");
                             button.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {

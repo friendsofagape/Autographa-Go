@@ -9,8 +9,9 @@ public class MetaDataResponseModel {
     private String source;
     private String license;
     private int year;
+    private String available;
 
-    public MetaDataResponseModel(String languageName, String languageCode, String versionCode, String versionName, String source, String license, int year) {
+    public MetaDataResponseModel(String languageName, String languageCode, String versionCode, String versionName, String source, String license, int year, String available) {
         this.languageName = languageName;
         this.languageCode = languageCode;
         this.versionCode = versionCode;
@@ -18,6 +19,7 @@ public class MetaDataResponseModel {
         this.source = source;
         this.license = license;
         this.year = year;
+        this.available = available;
     }
 
     public MetaDataResponseModel() {
@@ -31,6 +33,7 @@ public class MetaDataResponseModel {
         source = model.getSource();
         license = model.getLicense();
         year = model.getYear();
+        available = model.getAvailable();
     }
 
     public String getLanguageName() {
@@ -87,5 +90,13 @@ public class MetaDataResponseModel {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    public String getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(String available) {
+        this.available = available;
     }
 }
