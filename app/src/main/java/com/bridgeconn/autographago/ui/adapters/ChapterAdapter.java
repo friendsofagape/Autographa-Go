@@ -94,7 +94,11 @@ public class ChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             }
         }
-        return size + 2;
+        if (mChapterModels.size() > 0) {
+            return size + 2;
+        } else {
+            return size;
+        }
     }
 
 }

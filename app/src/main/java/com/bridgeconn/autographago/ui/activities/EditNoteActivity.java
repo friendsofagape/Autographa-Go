@@ -7,12 +7,15 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -78,6 +81,42 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         mSave.setOnClickListener(this);
         mAddVerse.setOnClickListener(this);
 
+        mEditor.addTextChangedListener(new TextWatcher() {
+            int prevStart = 0, prevBefore = 0, prevCount = 0;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.i("mytag", "ttt= "+ s.toString().charAt(mEditor.getSelectionStart()-1) +"en");
+                if ("\n".equals(s.toString().charAt(mEditor.getSelectionStart()-1))) {
+                    Log.i("mytag", "newline char");
+                }
+//                if (mEditor.getSelectionStart()
+                Log.i("mytag", "start=" +start + " befor=" + before+ " count=" + count);
+                if (before == 0 && count == 1 && start > prevStart && start != prevStart+1) {
+                    String bullet_string = s.toString().substring(prevStart, prevStart + prevCount);
+                    if (bullet_string.contains("\u2022")) {
+                        Log.i("mytag", "insert bullet");
+                        mEditor.getText().insert(start+1, " \u2022 ");
+                    }
+                }
+                String [] split = s.toString().split("\n");
+//                for (int i=0; i<split.length; i++) {
+//                    Log.i("mytag_split", split[i] + "  len=" + split[i].length());
+//                }
+                prevStart = start;
+                prevBefore = before;
+                prevCount = count;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
         mEditor.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -116,7 +155,6 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                     }
                     case Constants.TextEditor.BULLETS: {
                         mEditor.getText().insert(findMin(), "\n \u2022 ");
-//                        mEditor.append("\\n\\u2022", findMin(), findMin() + 8);
                         break;
                     }
                 }
@@ -158,13 +196,13 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
             }
         }
 //        else {
-            ArrayList<VerseIdModel> models = intent.getParcelableArrayListExtra(Constants.Keys.VERSE_MODELS);
-            if (models != null) {
-                for (final VerseIdModel model : models) {
-                    mVerseList.add(model);
-                    addNoteButton(model, false);
-                }
+        ArrayList<VerseIdModel> models = intent.getParcelableArrayListExtra(Constants.Keys.VERSE_MODELS);
+        if (models != null) {
+            for (final VerseIdModel model : models) {
+                mVerseList.add(model);
+                addNoteButton(model, false);
             }
+        }
 //        }
     }
 

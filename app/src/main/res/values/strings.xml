@@ -118,5 +118,7 @@
     <string name="two_months_ago">2 months ago</string>
 
     <string name="copyright">\u00a9 %1$d %2$s %3$s \n</string>
+    <string name="backup">Backup</string>
+    <string name="restore">Restore</string>
 
 </resources>

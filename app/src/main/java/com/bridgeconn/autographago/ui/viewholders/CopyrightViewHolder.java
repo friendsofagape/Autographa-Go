@@ -40,7 +40,7 @@ public class CopyrightViewHolder extends RecyclerView.ViewHolder {
         int px = (int) (textSize * mContext.getResources().getDisplayMetrics().scaledDensity);
         spannableStringBuilder.setSpan(new AbsoluteSizeSpan(px), 0, spannableStringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        mTvCopyright.append(spannableStringBuilder);
+        mTvCopyright.setText(spannableStringBuilder);
     }
 
     private int getTextSize(int prevSize) {

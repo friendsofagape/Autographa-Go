@@ -30,7 +30,6 @@ public class NotificationReceiver extends BroadcastReceiver {
                 if (cursor.getCount() > 0) {
                     int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
                     if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                        String file = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
 
                         long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
                         // DO THIS IN SERVICE
