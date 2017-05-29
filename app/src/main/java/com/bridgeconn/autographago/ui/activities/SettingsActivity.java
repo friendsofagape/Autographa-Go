@@ -18,7 +18,6 @@ import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -76,7 +75,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private static String downloadUrl;
     private String source, license, available;
     private int year;
-    private static boolean recreateNeeded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +113,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         mDayMode.setOnClickListener(this);
         mNightMode.setOnClickListener(this);
         findViewById(R.id.tv_about_us).setOnClickListener(this);
+        findViewById(R.id.backup).setOnClickListener(this);
+        findViewById(R.id.restore).setOnClickListener(this);
 
         mFontSize = SharedPrefs.getFontSize();
         mReadingMode = SharedPrefs.getReadingMode();
@@ -147,7 +147,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (fromUser) {
-            recreateNeeded = true;
             mFontSize = getFontSizeEnum(progress);
             SharedPrefs.putFontSize(mFontSize);
         }
@@ -212,7 +211,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 break;
             }
             case R.id.iv_day_mode: {
-                recreateNeeded = true;
                 mReadingMode = Constants.ReadingMode.Day;
                 mDayMode.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
                 mNightMode.setColorFilter(ContextCompat.getColor(this, R.color.black_40));
@@ -221,7 +219,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 break;
             }
             case R.id.iv_night_mode: {
-                recreateNeeded = true;
                 mReadingMode = Constants.ReadingMode.Night;
                 mDayMode.setColorFilter(ContextCompat.getColor(this, R.color.black_40));
                 mNightMode.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
@@ -237,6 +234,36 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             case R.id.open_hints: {
                 Intent intent = new Intent(this, HintsActivity.class);
                 startActivity(intent);
+                break;
+            }
+            case R.id.backup: {
+                if (ContextCompat.checkSelfPermission(SettingsActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(SettingsActivity.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            Constants.RequestCodes.PERMISSION_STORAGE_BACKUP);
+                    return;
+                }
+                UtilFunctions.backup(
+                        Constants.EXPORT_REALM_PATH,
+                        Constants.EXPORT_REALM_FILE_NAME
+                );
+                break;
+            }
+            case R.id.restore: {
+                if (ContextCompat.checkSelfPermission(SettingsActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(SettingsActivity.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            Constants.RequestCodes.PERMISSION_STORAGE_RESTORE);
+                    return;
+                }
+                UtilFunctions.restore(
+                        this,
+                        Constants.EXPORT_REALM_PATH,
+                        Constants.EXPORT_REALM_FILE_NAME,
+                        Constants.IMPORT_REALM_FILE_NAME
+                );
                 break;
             }
         }
@@ -514,16 +541,16 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                     model.getMetaData().getVersionName()
                             );
                             String sctionText = "";
-                            switch (available) {
+                            switch (available.toLowerCase()) {
                                 case "all": {
                                     sctionText = "All";
                                     break;
                                 }
-                                case "OT": {
+                                case "ot": {
                                     sctionText = "Old Testament";
                                     break;
                                 }
-                                case "NT": {
+                                case "nt": {
                                     sctionText = "New Testament";
                                     break;
                                 }
@@ -541,7 +568,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                             Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                                         ActivityCompat.requestPermissions(SettingsActivity.this,
                                                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                                Constants.RequestCodes.PERMISSION_STORAGE);
+                                                Constants.RequestCodes.PERMISSION_STORAGE_DOWNLOAD_BIBLE);
                                         return;
                                     }
                                     startDownload(downloadUrl);
@@ -568,7 +595,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case Constants.RequestCodes.PERMISSION_STORAGE: {
+            case Constants.RequestCodes.PERMISSION_STORAGE_DOWNLOAD_BIBLE: {
                 if (ContextCompat.checkSelfPermission(SettingsActivity.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
@@ -591,7 +618,95 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                 Intent myAppSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                                         Uri.parse("package:" + SettingsActivity.this.getPackageName()));
                                 myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);
-                                startActivityForResult(myAppSettings, Constants.RequestCodes.APP_SETTINGS_STORAGE);
+                                startActivityForResult(myAppSettings, Constants.RequestCodes.APP_SETTINGS_STORAGE_DOWNLOAD_BIBLE);
+                            } else {
+                                ActivityCompat.requestPermissions(SettingsActivity.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
+                            }
+                        }
+                    });
+                    builder.setNegativeButton(getString(R.string.cancel).toUpperCase(), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.show();
+                }
+                break;
+            }
+            case Constants.RequestCodes.PERMISSION_STORAGE_BACKUP: {
+                if (ContextCompat.checkSelfPermission(SettingsActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+
+                    UtilFunctions.backup(
+                            Constants.EXPORT_REALM_PATH,
+                            Constants.EXPORT_REALM_FILE_NAME
+                    );
+
+                } else {
+                    String positiveButton;
+                    if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        positiveButton = getString(R.string.take_me_to_settings).toUpperCase();
+                    } else {
+                        positiveButton = getString(R.string.try_again).toUpperCase();
+                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this, R.style.DialogThemeLight);
+                    builder.setMessage(getString(R.string.storage_permission_message));
+                    builder.setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                                Intent myAppSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                        Uri.parse("package:" + SettingsActivity.this.getPackageName()));
+                                myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);
+                                startActivityForResult(myAppSettings, Constants.RequestCodes.APP_SETTINGS_STORAGE_BACKUP);
+                            } else {
+                                ActivityCompat.requestPermissions(SettingsActivity.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
+                            }
+                        }
+                    });
+                    builder.setNegativeButton(getString(R.string.cancel).toUpperCase(), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.show();
+                }
+                break;
+            }
+            case Constants.RequestCodes.PERMISSION_STORAGE_RESTORE: {
+                if (ContextCompat.checkSelfPermission(SettingsActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+
+                    UtilFunctions.restore(
+                            SettingsActivity.this,
+                            Constants.EXPORT_REALM_PATH,
+                            Constants.EXPORT_REALM_FILE_NAME,
+                            Constants.IMPORT_REALM_FILE_NAME
+                    );
+
+                } else {
+                    String positiveButton;
+                    if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        positiveButton = getString(R.string.take_me_to_settings).toUpperCase();
+                    } else {
+                        positiveButton = getString(R.string.try_again).toUpperCase();
+                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this, R.style.DialogThemeLight);
+                    builder.setMessage(getString(R.string.storage_permission_message));
+                    builder.setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                                Intent myAppSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                        Uri.parse("package:" + SettingsActivity.this.getPackageName()));
+                                myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);
+                                startActivityForResult(myAppSettings, Constants.RequestCodes.APP_SETTINGS_STORAGE_RESTORE);
                             } else {
                                 ActivityCompat.requestPermissions(SettingsActivity.this,
                                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
@@ -616,17 +731,45 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case Constants.RequestCodes.APP_SETTINGS_STORAGE: {
+            case Constants.RequestCodes.APP_SETTINGS_STORAGE_DOWNLOAD_BIBLE: {
 
                 if (ContextCompat.checkSelfPermission(SettingsActivity.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            Constants.RequestCodes.PERMISSION_STORAGE);
+                            Constants.RequestCodes.PERMISSION_STORAGE_DOWNLOAD_BIBLE);
                     return;
                 }
 
                 startDownload(downloadUrl);
 
+                break;
+            }
+            case Constants.RequestCodes.APP_SETTINGS_STORAGE_BACKUP: {
+                if (ContextCompat.checkSelfPermission(SettingsActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            Constants.RequestCodes.PERMISSION_STORAGE_DOWNLOAD_BIBLE);
+                    return;
+                }
+                UtilFunctions.backup(
+                        Constants.EXPORT_REALM_PATH,
+                        Constants.EXPORT_REALM_FILE_NAME
+                );
+                break;
+            }
+            case Constants.RequestCodes.APP_SETTINGS_STORAGE_RESTORE: {
+                if (ContextCompat.checkSelfPermission(SettingsActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            Constants.RequestCodes.PERMISSION_STORAGE_DOWNLOAD_BIBLE);
+                    return;
+                }
+                UtilFunctions.restore(
+                        SettingsActivity.this,
+                        Constants.EXPORT_REALM_PATH,
+                        Constants.EXPORT_REALM_FILE_NAME,
+                        Constants.IMPORT_REALM_FILE_NAME
+                );
                 break;
             }
         }
