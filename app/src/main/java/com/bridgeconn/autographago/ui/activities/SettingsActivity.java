@@ -4,12 +4,15 @@ import android.Manifest;
 import android.app.DownloadManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -40,10 +43,16 @@ import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.adapters.DownloadDialogAdapter;
+import com.bridgeconn.autographago.utils.BackupRestoreUtil;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.DownloadUtil;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.Drive;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,7 +66,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener,
-        SeekBar.OnSeekBarChangeListener {
+        SeekBar.OnSeekBarChangeListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private TextView mTvDownload, mOpenHints;
     private ImageView mDayMode, mNightMode;
@@ -76,6 +85,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private String source, license, available;
     private int year;
 
+    private GoogleApiClient mGoogleApiClient;
+
+    // TODO remove download button when download is in progress
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
@@ -244,10 +256,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             Constants.RequestCodes.PERMISSION_STORAGE_BACKUP);
                     return;
                 }
-                UtilFunctions.backup(
-                        Constants.EXPORT_REALM_PATH,
-                        Constants.EXPORT_REALM_FILE_NAME
-                );
+                checkGooglePlayServicesVersion();
+                BackupRestoreUtil.backup();
                 break;
             }
             case R.id.restore: {
@@ -258,15 +268,24 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             Constants.RequestCodes.PERMISSION_STORAGE_RESTORE);
                     return;
                 }
-                UtilFunctions.restore(
-                        this,
-                        Constants.EXPORT_REALM_PATH,
-                        Constants.EXPORT_REALM_FILE_NAME,
-                        Constants.IMPORT_REALM_FILE_NAME
-                );
+                checkGooglePlayServicesVersion();
+                BackupRestoreUtil.restore(this);
                 break;
             }
         }
+    }
+
+    private void checkGooglePlayServicesVersion() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Drive.API)
+                .addScope(Drive.SCOPE_FILE)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        mGoogleApiClient.connect();
+
+        GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
     }
 
     private ArrayList<LanguageModel> query(Realm realm, Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
@@ -639,10 +658,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 if (ContextCompat.checkSelfPermission(SettingsActivity.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
-                    UtilFunctions.backup(
-                            Constants.EXPORT_REALM_PATH,
-                            Constants.EXPORT_REALM_FILE_NAME
-                    );
+                    BackupRestoreUtil.backup();
 
                 } else {
                     String positiveButton;
@@ -682,12 +698,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 if (ContextCompat.checkSelfPermission(SettingsActivity.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
-                    UtilFunctions.restore(
-                            SettingsActivity.this,
-                            Constants.EXPORT_REALM_PATH,
-                            Constants.EXPORT_REALM_FILE_NAME,
-                            Constants.IMPORT_REALM_FILE_NAME
-                    );
+                    BackupRestoreUtil.restore(SettingsActivity.this);
 
                 } else {
                     String positiveButton;
@@ -751,10 +762,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             Constants.RequestCodes.PERMISSION_STORAGE_DOWNLOAD_BIBLE);
                     return;
                 }
-                UtilFunctions.backup(
-                        Constants.EXPORT_REALM_PATH,
-                        Constants.EXPORT_REALM_FILE_NAME
-                );
+                BackupRestoreUtil.backup();
                 break;
             }
             case Constants.RequestCodes.APP_SETTINGS_STORAGE_RESTORE: {
@@ -764,12 +772,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             Constants.RequestCodes.PERMISSION_STORAGE_DOWNLOAD_BIBLE);
                     return;
                 }
-                UtilFunctions.restore(
-                        SettingsActivity.this,
-                        Constants.EXPORT_REALM_PATH,
-                        Constants.EXPORT_REALM_FILE_NAME,
-                        Constants.IMPORT_REALM_FILE_NAME
-                );
+                BackupRestoreUtil.restore(SettingsActivity.this);
+                break;
+            }
+            case Constants.RequestCodes.RESOLVE_CONNECTION_REQUEST_CODE: {
+                if (resultCode == RESULT_OK) {
+                    mGoogleApiClient.connect();
+                }
                 break;
             }
         }
@@ -797,4 +806,26 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         saveToSharedPrefs();
     }
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(this, Constants.RequestCodes.RESOLVE_CONNECTION_REQUEST_CODE);
+            } catch (IntentSender.SendIntentException e) {
+                // Unable to resolve, message user appropriately
+            }
+        } else {
+            GooglePlayServicesUtil.getErrorDialog(connectionResult.getErrorCode(), this, 0).show();
+        }
+    }
 }

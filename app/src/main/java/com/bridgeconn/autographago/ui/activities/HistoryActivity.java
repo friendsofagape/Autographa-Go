@@ -74,6 +74,7 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
             if (mHistoryModels.size() > 0) {
                 mAdapter = new HistoryExpandableAdapter(this, mHistoryModels);
                 mRecyclerView.setAdapter(mAdapter);
+                mAdapter.onGroupClick(0);
 //                mAdapter.notifyDataSetChanged();
             }
         }

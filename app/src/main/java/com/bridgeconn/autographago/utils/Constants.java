@@ -128,6 +128,7 @@ public class Constants {
         int PERMISSION_STORAGE_RESTORE = 6;
         int APP_SETTINGS_STORAGE_BACKUP = 7;
         int APP_SETTINGS_STORAGE_RESTORE = 8;
+        int RESOLVE_CONNECTION_REQUEST_CODE = 9;
     }
 
     public interface PrefKeys {

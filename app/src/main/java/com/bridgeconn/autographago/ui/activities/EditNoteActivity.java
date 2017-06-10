@@ -81,6 +81,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         mSave.setOnClickListener(this);
         mAddVerse.setOnClickListener(this);
 
+        /*
         mEditor.addTextChangedListener(new TextWatcher() {
             int prevStart = 0, prevBefore = 0, prevCount = 0;
 
@@ -116,6 +117,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
             public void afterTextChanged(Editable s) {
             }
         });
+        */
 
         mEditor.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
             @Override

@@ -62,8 +62,8 @@ public class AutographaGoApplication extends Application {
                                 }
                             });
                             */
-                        }
-                        if (oldVersion == 2) {
+//                        }
+//                        if (oldVersion == 2) {
                             // add columns to version model
                             RealmObjectSchema versionSchema = schema.get("VersionModel");
 
@@ -84,7 +84,7 @@ public class AutographaGoApplication extends Application {
                     }
                 })
                 .assetFile("default.realm")
-                .schemaVersion(2) // TODO increment schema version here
+                .schemaVersion(3) // TODO increment schema version here
                 .build();
         Realm.setDefaultConfiguration(config);
 

@@ -157,7 +157,7 @@ public class VerseFragment extends Fragment implements SelectChapterAndVerseActi
         View view = inflater.inflate(R.layout.fragment_chapter_verse, container, false);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list_numbers);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 4);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 5);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {

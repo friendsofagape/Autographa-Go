@@ -71,6 +71,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
     private ScaleGestureDetector mScaleGestureDetector;
 
+    // TODO BUG: when click on toolbar title, book name, then select book/chapter/verse this does not change the title of the activity
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getTheme().applyStyle(SharedPrefs.getFontSize().getResId(), true);
@@ -106,7 +108,9 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.view_share).setOnClickListener(this);
 
         getSupportActionBar().setTitle("");
-        mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(this, mBookId) + " " + getIntent().getIntExtra(Constants.Keys.CHAPTER_NO, 0));
+        mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(this, mBookId) + " " + getIntent().getIntExtra(Constants.Keys.CHAPTER_NO, 0)
+//                + " " + SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
+        );
         mToolbarBookVersion.setText(SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
 
         findCopyrightData();
@@ -139,7 +143,9 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                         mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.white));
                     }
 //                }
-                mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(BookActivity.this, mBookId) + " " + chapterNum);
+                mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(BookActivity.this, mBookId) + " " + chapterNum
+//                        + " " + SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
+                );
                 mToolbarBookVersion.setText(SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
             }
         });
@@ -713,7 +719,9 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     mBookModel = getBookModel(mBookId);
 
                     if (mBookModel != null) {
-                        mToolBarTitle.setText(mBookModel.getBookName() + " " + chapterNumber);
+                        mToolBarTitle.setText(mBookModel.getBookName() + " " + chapterNumber
+//                                + " " + SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
+                        );
                         mToolbarBookVersion.setText(SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
 
                         mChapterModels.clear();
