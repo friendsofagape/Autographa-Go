@@ -506,8 +506,13 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
 //        Intent intent = new Intent(this, EditNoteActivity.class);
         Intent intent = new Intent(this, NotesActivity.class);
+        int position = mLayoutManager.findFirstVisibleItemPosition();
+        int chapterNumber = findChapterNumber(position);
+        String verseNo = findVerseNumber(position);
+        intent.putExtra(Constants.Keys.CHAPTER_NO, chapterNumber);
+        intent.putExtra(Constants.Keys.VERSE_NO, verseNo);
         intent.putParcelableArrayListExtra(Constants.Keys.VERSE_MODELS, models);
-        startActivity(intent);
+        startActivityForResult(intent, Constants.RequestCodes.ADD_TO_NOTE);
     }
 
     private void findSelectedAndShare() {
@@ -716,6 +721,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     int chapterNumber = model.getChapterNumber();
                     mBookId = model.getBookId();
 
+                    getNotesFromDB();
+
                     mBookModel = getBookModel(mBookId);
 
                     if (mBookModel != null) {
@@ -742,6 +749,39 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     }
 
                     mLayoutManager.scrollToPositionWithOffset(findPositionToScroll(chapterNumber-1, verseNumber), 0);
+//                    mRecyclerView.scrollToPosition(findPositionToScroll(chapterNumber-1, verseNumber));
+                }
+                break;
+            }
+            case Constants.RequestCodes.ADD_TO_NOTE: {
+                if (resultCode == RESULT_OK) {
+                    getNotesFromDB();
+                    mBookModel = getBookModel(mBookId);
+
+                    if (mBookModel != null) {
+                        mToolBarTitle.setText(mBookModel.getBookName() + " " + data.getIntExtra(Constants.Keys.CHAPTER_NO, 1)
+//                                + " " + SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
+                        );
+                        mToolbarBookVersion.setText(SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
+
+                        mChapterModels.clear();
+                        for (ChapterModel chapterModel : mBookModel.getChapterModels()) {
+                            mChapterModels.add(chapterModel);
+                        }
+                        mBookMarkList.clear();
+                        for (RealmInteger realmInteger : mBookModel.getBookmarksList()) {
+                            mBookMarkList.add(realmInteger.getValue());
+                        }
+                        mAdapter.notifyDataSetChanged();
+//                        mBookMarkNumber = mBookModel.getBookmarkChapterNumber();
+                    }
+
+                    if (mBookMarkList.contains(1)) {
+//                    if (mBookMarkNumber == 1) {
+                        mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
+                    }
+
+                    mLayoutManager.scrollToPositionWithOffset(findPositionToScroll(data.getIntExtra(Constants.Keys.CHAPTER_NO, 1)-1, data.getStringExtra(Constants.Keys.VERSE_NO)), 0);
 //                    mRecyclerView.scrollToPosition(findPositionToScroll(chapterNumber-1, verseNumber));
                 }
                 break;

@@ -118,7 +118,22 @@
     <string name="two_months_ago">2 months ago</string>
 
     <string name="copyright">\u00a9 %1$d %2$s %3$s \n</string>
-    <string name="backup">Backup</string>
-    <string name="restore">Restore</string>
+    <string name="backup_restore">Backup and Restore</string>
+
+    <string name="activity_backup_drive_desc">Backing up your data to Google Drive allows you to restore all your readings in case you lose or change devices.</string>
+    <string name="activity_backup_drive_button_backup">Backup now</string>
+    <string name="activity_backup_drive_last">Last backup:</string>
+    <string name="activity_backup_drive_folder">Backup folder</string>
+    <string name="activity_backup_drive_button_open_drive">Manage on Drive</string>
+    <string name="activity_backup_drive_recent">Recent backups</string>
+    <string name="activity_backup_drive_dialog_restore_button_restore">Restore backup</string>
+    <string name="activity_backup_drive_dialog_restore_button_cancel">Cancel</string>
+    <string name="activity_backup_drive_dialog_restore_title">Revert to previous version</string>
+    <string name="activity_backup_drive_dialog_restore_desc">Restoring the backup will overwrite all the existing data with the backup.</string>
+    <string name="activity_backup_drive_dialog_restore_details">Backup details</string>
+    <string name="title_activity_backup_drive">Google Drive Backup</string>
+    <string name="activity_backup_drive_failed">Something went wrong. Please try again :/</string>
+    <string name="activity_backup_drive_success">Database successfully backed up to Drive</string>
+    <string name="activity_backup_drive_message_restart">Restarting to apply changes...</string>
 
 </resources>

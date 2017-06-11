@@ -17,7 +17,7 @@ public class Constants {
     public static final String USFM_ZIP_FILE_NAME = "Archive.zip";
 
     public static final String STORAGE_DIRECTORY = "/autographago-external-data-cache/";
-    public static final String EXPORT_REALM_FILE_NAME = "backup.realm";
+    public static final String EXPORT_REALM_FILE_NAME = "autographagobackup.realm";
     public static final String IMPORT_REALM_FILE_NAME = "default.realm";
     public static final File EXPORT_REALM_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
@@ -125,10 +125,8 @@ public class Constants {
         int APP_SETTINGS_STORAGE_DOWNLOAD_BIBLE = 3;
         int CHANGE_BOOK = 4;
         int PERMISSION_STORAGE_BACKUP = 5;
-        int PERMISSION_STORAGE_RESTORE = 6;
-        int APP_SETTINGS_STORAGE_BACKUP = 7;
-        int APP_SETTINGS_STORAGE_RESTORE = 8;
-        int RESOLVE_CONNECTION_REQUEST_CODE = 9;
+        int APP_SETTINGS_STORAGE_BACKUP = 6;
+        int ADD_TO_NOTE = 7;
     }
 
     public interface PrefKeys {

@@ -1,21 +1,21 @@
-package com.bridgeconn.autographago.utils;
+package com.bridgeconn.autographago.utils.backup;
 
 import android.app.Activity;
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
+import com.google.firebase.crash.FirebaseCrash;
 
 import java.lang.ref.WeakReference;
 
-public class GoogleDriveBackup extends AppCompatActivity implements Backup, GoogleApiClient.OnConnectionFailedListener {
+public class GoogleDriveBackup implements Backup, GoogleApiClient.OnConnectionFailedListener {
 
     @Nullable
     private GoogleApiClient googleApiClient;
@@ -47,7 +47,7 @@ public class GoogleDriveBackup extends AppCompatActivity implements Backup, Goog
     }
 
     @Override
-    public GoogleApiClient getClient(){
+    public GoogleApiClient getClient() {
         return googleApiClient;
     }
 
@@ -79,6 +79,8 @@ public class GoogleDriveBackup extends AppCompatActivity implements Backup, Goog
             try {
                 result.startResolutionForResult(a, 1);
             } catch (IntentSender.SendIntentException e) {
+                FirebaseCrash.log("Drive connection failed");
+                FirebaseCrash.report(e);
                 e.printStackTrace();
                 GoogleApiAvailability.getInstance().getErrorDialog(a, result.getErrorCode(), 0).show();
             }
@@ -86,4 +88,5 @@ public class GoogleDriveBackup extends AppCompatActivity implements Backup, Goog
             Log.d("error", "cannot resolve connection issue");
         }
     }
+
 }

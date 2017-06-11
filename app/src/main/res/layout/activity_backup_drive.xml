@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:text="@string/title_activity_backup_drive"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:textSize="?attr/title_text"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:text="@string/activity_backup_drive_desc"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
+
+                <Button
+                    android:id="@+id/activity_backup_drive_button_backup"
+                    android:padding="@dimen/activity_horizontal_margin"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black_60"
+                    android:text="@string/activity_backup_drive_button_backup"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                        android:text="@string/activity_backup_drive_last"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/default_content_padding"
+                        android:text="N/A"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginTop="@dimen/default_content_padding"
+                    android:background="@color/black_40"/>
+
+                <LinearLayout
+                    android:id="@+id/activity_backup_drive_button_folder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:paddingTop="@dimen/default_content_padding"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/default_content_padding"
+                        android:layout_marginBottom="@dimen/default_content_padding"
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:text="@string/activity_backup_drive_folder"
+                        />
+
+                    <TextView
+                        android:id="@+id/activity_backup_drive_textview_folder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/default_content_padding"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        android:gravity="right"
+                        android:text="N/A"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/activity_backup_drive_button_manage_drive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:layout_marginLeft="@dimen/book_name_margin"
+                    android:padding="@dimen/tab_elevation"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:text="@string/activity_backup_drive_button_open_drive"
+                    android:textAllCaps="true"
+                    android:textSize="@dimen/small_button_text"
+                    android:textColor="@color/black_60"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginBottom="@dimen/default_content_padding"
+                    android:layout_marginTop="@dimen/default_content_padding"
+                    android:background="@color/black_40"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:textAllCaps="true"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:text="@string/activity_backup_drive_recent"
+                    />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/activity_backup_drive_recyclerview_restore"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/item_backup"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

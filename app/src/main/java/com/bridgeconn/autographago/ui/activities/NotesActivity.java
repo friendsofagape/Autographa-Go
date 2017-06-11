@@ -179,11 +179,26 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                finishActivity();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finishActivity();
+    }
+
+    private void finishActivity() {
+        String verse = getIntent().getStringExtra(Constants.Keys.VERSE_NO);
+        int chapter = getIntent().getIntExtra(Constants.Keys.CHAPTER_NO, 1);
+        Intent output = new Intent();
+        output.putExtra(Constants.Keys.VERSE_NO, verse);
+        output.putExtra(Constants.Keys.CHAPTER_NO, chapter);
+        setResult(RESULT_OK, output);
+        finish();
     }
 
     @Override

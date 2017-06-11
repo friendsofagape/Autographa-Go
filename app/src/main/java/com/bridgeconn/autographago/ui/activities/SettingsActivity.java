@@ -4,15 +4,12 @@ import android.Manifest;
 import android.app.DownloadManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -43,16 +40,10 @@ import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.adapters.DownloadDialogAdapter;
-import com.bridgeconn.autographago.utils.BackupRestoreUtil;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.DownloadUtil;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,7 +57,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener,
-        SeekBar.OnSeekBarChangeListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        SeekBar.OnSeekBarChangeListener {
 
     private TextView mTvDownload, mOpenHints;
     private ImageView mDayMode, mNightMode;
@@ -84,8 +75,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private static String downloadUrl;
     private String source, license, available;
     private int year;
-
-    private GoogleApiClient mGoogleApiClient;
 
     // TODO remove download button when download is in progress
     @Override
@@ -126,7 +115,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         mNightMode.setOnClickListener(this);
         findViewById(R.id.tv_about_us).setOnClickListener(this);
         findViewById(R.id.backup).setOnClickListener(this);
-        findViewById(R.id.restore).setOnClickListener(this);
 
         mFontSize = SharedPrefs.getFontSize();
         mReadingMode = SharedPrefs.getReadingMode();
@@ -256,36 +244,12 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             Constants.RequestCodes.PERMISSION_STORAGE_BACKUP);
                     return;
                 }
-                checkGooglePlayServicesVersion();
-                BackupRestoreUtil.backup();
-                break;
-            }
-            case R.id.restore: {
-                if (ContextCompat.checkSelfPermission(SettingsActivity.this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(SettingsActivity.this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            Constants.RequestCodes.PERMISSION_STORAGE_RESTORE);
-                    return;
-                }
-                checkGooglePlayServicesVersion();
-                BackupRestoreUtil.restore(this);
+                // TODO open new activity for backup or restore
+                Intent backupIntent = new Intent(SettingsActivity.this, BackupActivity.class);
+                startActivity(backupIntent);
                 break;
             }
         }
-    }
-
-    private void checkGooglePlayServicesVersion() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Drive.API)
-                .addScope(Drive.SCOPE_FILE)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-
-        mGoogleApiClient.connect();
-
-        GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
     }
 
     private ArrayList<LanguageModel> query(Realm realm, Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
@@ -658,7 +622,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 if (ContextCompat.checkSelfPermission(SettingsActivity.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
-                    BackupRestoreUtil.backup();
+                    // TODO open new activity for backup or restore
+                    Intent backupIntent = new Intent(SettingsActivity.this, BackupActivity.class);
+                    startActivity(backupIntent);
 
                 } else {
                     String positiveButton;
@@ -678,46 +644,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                                         Uri.parse("package:" + SettingsActivity.this.getPackageName()));
                                 myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);
                                 startActivityForResult(myAppSettings, Constants.RequestCodes.APP_SETTINGS_STORAGE_BACKUP);
-                            } else {
-                                ActivityCompat.requestPermissions(SettingsActivity.this,
-                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
-                            }
-                        }
-                    });
-                    builder.setNegativeButton(getString(R.string.cancel).toUpperCase(), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    builder.show();
-                }
-                break;
-            }
-            case Constants.RequestCodes.PERMISSION_STORAGE_RESTORE: {
-                if (ContextCompat.checkSelfPermission(SettingsActivity.this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-
-                    BackupRestoreUtil.restore(SettingsActivity.this);
-
-                } else {
-                    String positiveButton;
-                    if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        positiveButton = getString(R.string.take_me_to_settings).toUpperCase();
-                    } else {
-                        positiveButton = getString(R.string.try_again).toUpperCase();
-                    }
-                    AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this, R.style.DialogThemeLight);
-                    builder.setMessage(getString(R.string.storage_permission_message));
-                    builder.setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                                Intent myAppSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                        Uri.parse("package:" + SettingsActivity.this.getPackageName()));
-                                myAppSettings.addCategory(Intent.CATEGORY_DEFAULT);
-                                startActivityForResult(myAppSettings, Constants.RequestCodes.APP_SETTINGS_STORAGE_RESTORE);
                             } else {
                                 ActivityCompat.requestPermissions(SettingsActivity.this,
                                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
@@ -762,23 +688,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             Constants.RequestCodes.PERMISSION_STORAGE_DOWNLOAD_BIBLE);
                     return;
                 }
-                BackupRestoreUtil.backup();
-                break;
-            }
-            case Constants.RequestCodes.APP_SETTINGS_STORAGE_RESTORE: {
-                if (ContextCompat.checkSelfPermission(SettingsActivity.this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            Constants.RequestCodes.PERMISSION_STORAGE_DOWNLOAD_BIBLE);
-                    return;
-                }
-                BackupRestoreUtil.restore(SettingsActivity.this);
-                break;
-            }
-            case Constants.RequestCodes.RESOLVE_CONNECTION_REQUEST_CODE: {
-                if (resultCode == RESULT_OK) {
-                    mGoogleApiClient.connect();
-                }
+                // TODO open new activity for backup or restore
+                Intent backupIntent = new Intent(SettingsActivity.this, BackupActivity.class);
+                startActivity(backupIntent);
                 break;
             }
         }
@@ -804,28 +716,5 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onBackPressed() {
         saveToSharedPrefs();
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        if (connectionResult.hasResolution()) {
-            try {
-                connectionResult.startResolutionForResult(this, Constants.RequestCodes.RESOLVE_CONNECTION_REQUEST_CODE);
-            } catch (IntentSender.SendIntentException e) {
-                // Unable to resolve, message user appropriately
-            }
-        } else {
-            GooglePlayServicesUtil.getErrorDialog(connectionResult.getErrorCode(), this, 0).show();
-        }
     }
 }

@@ -71,6 +71,11 @@
         <service android:name=".services.BackgroundService"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.activities.BackupActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
     </application>
 
 </manifest>
