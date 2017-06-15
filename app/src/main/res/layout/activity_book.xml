@@ -38,56 +38,39 @@
 
                 </RelativeLayout>
 
-                <!--<TextView-->
-                    <!--android:id="@+id/book_version"-->
-                    <!--android:maxLines="1"-->
-                    <!--android:ellipsize="end"-->
-                    <!--android:textColor="@color/white"-->
-                    <!--android:gravity="bottom|center"-->
-                    <!--android:textSize="@dimen/small_button_text"-->
-                    <!--android:textAllCaps="true"-->
-                    <!--android:layout_toLeftOf="@id/bookmark_holder"-->
-                    <!--android:layout_alignParentLeft="true"-->
-                    <!--android:layout_alignParentBottom="true"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content" />-->
-
                 <LinearLayout
                     android:layout_toLeftOf="@id/bookmark_holder"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:gravity="center"
-                    android:weightSum="4"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:layout_weight="3"
-                    android:ellipsize="middle"
-                    android:textColor="@color/white"
-                    android:padding="8dp"
-                    android:textSize="@dimen/button_text"
-                    android:textAllCaps="true"
-                    android:gravity="center"
-                    android:background="@drawable/border_all"
-                    android:id="@+id/toolbar_title" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:ellipsize="middle"
+                        android:textColor="@color/white"
+                        android:padding="8dp"
+                        android:textSize="@dimen/button_text"
+                        android:textAllCaps="true"
+                        android:gravity="center"
+                        android:background="@drawable/border_all"
+                        android:id="@+id/toolbar_title" />
 
-                <TextView
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:padding="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/button_text"
-                    android:textAllCaps="true"
-                    android:background="@drawable/border_all"
-                    android:id="@+id/book_version" />
+                    <TextView
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/button_text"
+                        android:textAllCaps="true"
+                        android:background="@drawable/border_all"
+                        android:id="@+id/book_version" />
 
                 </LinearLayout>
             </RelativeLayout>

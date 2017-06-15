@@ -84,7 +84,7 @@ public class AutographaGoApplication extends Application {
                     }
                 })
                 .assetFile("default.realm")
-                .schemaVersion(3) // TODO increment schema version here
+                .schemaVersion(2) // TODO increment schema version here
                 .build();
         Realm.setDefaultConfiguration(config);
 

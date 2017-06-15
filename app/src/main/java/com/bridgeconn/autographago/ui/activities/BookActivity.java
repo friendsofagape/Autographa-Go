@@ -1,22 +1,28 @@
 package com.bridgeconn.autographago.ui.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookIdModel;
@@ -34,6 +40,7 @@ import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.adapters.ChapterAdapter;
+import com.bridgeconn.autographago.ui.adapters.DownloadDialogAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
@@ -43,6 +50,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -61,7 +69,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
     private RelativeLayout mBookmarkHolder;
     private ImageView mIvBookMark;
     private String mBookId;
-//    private int mBookMarkNumber;
+    //    private int mBookMarkNumber;
     private ArrayList<Integer> mBookMarkList = new ArrayList<>();
     private ArrayList<NotesModel> mNotesModels = new ArrayList<>();
 
@@ -103,6 +111,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
         mBookmarkHolder.setOnClickListener(this);
         mToolBarTitle.setOnClickListener(this);
+        mToolbarBookVersion.setOnClickListener(this);
         findViewById(R.id.view_highlights).setOnClickListener(this);
         findViewById(R.id.view_notes).setOnClickListener(this);
         findViewById(R.id.view_share).setOnClickListener(this);
@@ -138,10 +147,10 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 if (mBookMarkList.contains(chapterNum)) {
 //                if (mBookMarkNumber > 0) {
 //                    if (chapterNum == mBookMarkNumber) {
-                        mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
-                    } else {
-                        mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.white));
-                    }
+                    mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
+                } else {
+                    mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.white));
+                }
 //                }
                 mToolBarTitle.setText(UtilFunctions.getBookNameFromMapping(BookActivity.this, mBookId) + " " + chapterNum
 //                        + " " + SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
@@ -261,59 +270,59 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
 //                if (detector.getCurrentSpan() > 200 && detector.getTimeDelta() > 200) {
-                    if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
-                        switch (SharedPrefs.getFontSize()) {
-                            case XSmall: {
-                                return false;
-                            }
-                            case Small: {
-                                SharedPrefs.putFontSize(Constants.FontSize.XSmall);
-                                recreate();
-                                return true;
-                            }
-                            case Medium: {
-                                SharedPrefs.putFontSize(Constants.FontSize.Small);
-                                recreate();
-                                return true;
-                            }
-                            case Large: {
-                                SharedPrefs.putFontSize(Constants.FontSize.Medium);
-                                recreate();
-                                return true;
-                            }
-                            case XLarge: {
-                                SharedPrefs.putFontSize(Constants.FontSize.Large);
-                                recreate();
-                                return true;
-                            }
+                if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
+                    switch (SharedPrefs.getFontSize()) {
+                        case XSmall: {
+                            return false;
                         }
-                    } else if(detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
-                        switch (SharedPrefs.getFontSize()) {
-                            case XSmall: {
-                                SharedPrefs.putFontSize(Constants.FontSize.Small);
-                                recreate();
-                                return true;
-                            }
-                            case Small: {
-                                SharedPrefs.putFontSize(Constants.FontSize.Medium);
-                                recreate();
-                                return true;
-                            }
-                            case Medium: {
-                                SharedPrefs.putFontSize(Constants.FontSize.Large);
-                                recreate();
-                                return true;
-                            }
-                            case Large: {
-                                SharedPrefs.putFontSize(Constants.FontSize.XLarge);
-                                recreate();
-                                return true;
-                            }
-                            case XLarge: {
-                                return false;
-                            }
+                        case Small: {
+                            SharedPrefs.putFontSize(Constants.FontSize.XSmall);
+                            recreate();
+                            return true;
+                        }
+                        case Medium: {
+                            SharedPrefs.putFontSize(Constants.FontSize.Small);
+                            recreate();
+                            return true;
+                        }
+                        case Large: {
+                            SharedPrefs.putFontSize(Constants.FontSize.Medium);
+                            recreate();
+                            return true;
+                        }
+                        case XLarge: {
+                            SharedPrefs.putFontSize(Constants.FontSize.Large);
+                            recreate();
+                            return true;
                         }
                     }
+                } else if(detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
+                    switch (SharedPrefs.getFontSize()) {
+                        case XSmall: {
+                            SharedPrefs.putFontSize(Constants.FontSize.Small);
+                            recreate();
+                            return true;
+                        }
+                        case Small: {
+                            SharedPrefs.putFontSize(Constants.FontSize.Medium);
+                            recreate();
+                            return true;
+                        }
+                        case Medium: {
+                            SharedPrefs.putFontSize(Constants.FontSize.Large);
+                            recreate();
+                            return true;
+                        }
+                        case Large: {
+                            SharedPrefs.putFontSize(Constants.FontSize.XLarge);
+                            recreate();
+                            return true;
+                        }
+                        case XLarge: {
+                            return false;
+                        }
+                    }
+                }
 //                }
                 return false;
             }
@@ -659,7 +668,92 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(intent, Constants.RequestCodes.CHANGE_BOOK);
                 break;
             }
+            case R.id.book_version: {
+                String languageName = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, "English");
+                showAvailableVersionsDialog(languageName);
+                break;
+            }
         }
+    }
+
+    private ArrayList<LanguageModel> queryVersions(Realm realm, Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
+        RealmResults<LanguageModel> realmResults = specification.generateResults(realm);
+        ArrayList<LanguageModel> resultsToReturn = new ArrayList<>();
+        for (LanguageModel result : realmResults) {
+            resultsToReturn.add(mapper.map(result));
+        }
+        return resultsToReturn;
+    }
+
+    private void showAvailableVersionsDialog(String language) {
+        List<String> versions = new ArrayList<>();
+        Realm realm = Realm.getDefaultInstance();
+        ArrayList<LanguageModel> languageModels = queryVersions(realm, new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
+        for (LanguageModel languageModel : languageModels) {
+            if (languageModel.getLanguageName().equalsIgnoreCase(language)) {
+                for (VersionModel versionModel : languageModel.getVersionModels()) {
+                    versions.add(versionModel.getVersionCode());
+                }
+            }
+        }
+        realm.close();
+        if (isFinishing()) {
+            return;
+        }
+
+        if (versions.size() == 0) {
+            Toast.makeText(this, getResources().getString(R.string.no_new_versions_available), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AlertDialog.Builder builder = null;
+        switch (SharedPrefs.getReadingMode()) {
+            case Day: {
+                builder = new AlertDialog.Builder(this, R.style.DialogThemeLight);
+                break;
+            }
+            case Night: {
+                builder = new AlertDialog.Builder(this, R.style.DialogThemeDark);
+                break;
+            }
+        }
+
+        final View view = LayoutInflater.from(this).inflate(R.layout.dialog_languages, (ViewGroup) findViewById(android.R.id.content), false);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_items);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        builder.setView(view);
+
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            int maxHeight = UtilFunctions.dpToPx(BookActivity.this, 300);
+
+            @Override
+            public void onGlobalLayout() {
+                if (view.getHeight() > maxHeight)
+                    view.getLayoutParams().height = maxHeight;
+            }
+        });
+
+        builder.setNegativeButton(getString(R.string.cancel).toUpperCase(), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.setTitle(getString(R.string.select_version));
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        DownloadDialogAdapter dialogAdapter = new DownloadDialogAdapter(this, dialog, null, versions, language);
+        recyclerView.setAdapter(dialogAdapter);
+    }
+
+    public void changeLanguageVersionOfBook(String language, String version) {
+        // TODO here change vesion in book
+        // TODO also save last open version to shared orefs
+        // TODO also update home activity about this
     }
 
     public void showBottomBar() {

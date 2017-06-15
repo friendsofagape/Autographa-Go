@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
+import com.bridgeconn.autographago.ui.activities.BookActivity;
 import com.bridgeconn.autographago.ui.activities.SettingsActivity;
 
 import java.util.List;
@@ -41,7 +42,11 @@ public class DownloadVersionViewHolder extends RecyclerView.ViewHolder implement
             case R.id.tv_book_name: {
                 int position = (int) v.getTag();
                 mDialog.dismiss();
-                ((SettingsActivity) mActivity).getMetaData(mLanguage, mVersions.get(position));
+                if (mActivity instanceof SettingsActivity) {
+                    ((SettingsActivity) mActivity).getMetaData(mLanguage, mVersions.get(position));
+                } else if (mActivity instanceof BookActivity) {
+                    ((BookActivity) mActivity).changeLanguageVersionOfBook(mLanguage, mVersions.get(position));
+                }
                 break;
             }
         }
