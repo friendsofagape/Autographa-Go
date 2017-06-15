@@ -63,7 +63,7 @@ public class HintsActivity extends AppCompatActivity implements View.OnClickList
         ivHighlights.setOnClickListener(this);
         ivSettings.setOnClickListener(this);
 
-        Toast.makeText(this, "Click on any icon to see hint", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.click_on_any_icon_to_see_hint), Toast.LENGTH_LONG).show();
     }
 
     @Override

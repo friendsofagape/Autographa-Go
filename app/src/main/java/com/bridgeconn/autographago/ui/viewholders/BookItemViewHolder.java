@@ -35,11 +35,6 @@ public class BookItemViewHolder extends RecyclerView.ViewHolder implements View.
         mTvBookName.setText(bookModel.getBookName());
         mView.setTag(position);
         mView.setOnClickListener(this);
-        if (bookModel.getBookNumber() > 40) {
-            mTvHeader.setText("New Testament");
-        } else {
-            mTvHeader.setText("Old Testament");
-        }
 //        if (position == 0 || position == 39) {
 //            mTvHeader.setVisibility(View.VISIBLE);
 //        } else {

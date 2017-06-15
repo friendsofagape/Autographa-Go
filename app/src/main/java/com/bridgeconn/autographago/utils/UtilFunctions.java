@@ -1,6 +1,8 @@
 package com.bridgeconn.autographago.utils;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.bridgeconn.autographago.receivers.AlarmReceiver;
 import com.bridgeconn.autographago.services.ParseService;
 
 import org.json.JSONException;
@@ -21,8 +24,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
+import java.util.Calendar;
 
-import io.realm.Realm;
+import static android.content.Context.ALARM_SERVICE;
 
 public class UtilFunctions {
 
@@ -321,7 +325,23 @@ public class UtilFunctions {
         context.startService(startParse);
     }
 
-    public static void setUpAlarmFOrBackup() {
-        // TODO check if any previous alarms already set, then do not set
+    public static void setUpAlarmForBackup(Context context) {
+        SharedPrefs.putBoolean(Constants.PrefKeys.BACKUP_ALARM, true);
+
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context.getApplicationContext(),
+                Constants.RequestCodes.BACKUP_ALARM,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+
+        // Set the alarm to start at approximately 4:00 a.m.
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(System.currentTimeMillis());
+        cal.set(Calendar.HOUR_OF_DAY, 4);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
+                7*AlarmManager.INTERVAL_DAY, pendingIntent);
+
     }
 }

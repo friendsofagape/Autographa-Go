@@ -136,4 +136,7 @@
     <string name="activity_backup_drive_success">Database successfully backed up to Drive</string>
     <string name="activity_backup_drive_message_restart">Restarting to apply changes...</string>
 
+    <string name="click_on_any_icon_to_see_hint">Click on any icon to see hint</string>
+    <string name="client_not_connected_to_server">Client not connected to server</string>
+
 </resources>

@@ -37,7 +37,7 @@ public class GoogleDriveBackup implements Backup, GoogleApiClient.OnConnectionFa
                         // Do nothing
                         Log.i("mytsg", "connect = " + googleApiClient.isConnected());
                         if (googleApiClient.isConnected()) {
-                            UtilFunctions.setUpAlarmFOrBackup();
+                            UtilFunctions.setUpAlarmForBackup(activity);
                         }
                     }
 

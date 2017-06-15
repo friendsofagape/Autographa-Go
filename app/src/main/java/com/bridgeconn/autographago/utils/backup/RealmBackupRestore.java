@@ -61,7 +61,6 @@ public class RealmBackupRestore {
         }
 
         String msg = "File exported to Path: " + EXPORT_REALM_PATH + "/" + EXPORT_REALM_FILE_NAME;
-        Toast.makeText(activity.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
         Log.d(TAG, msg);
 
         realm.close();

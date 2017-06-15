@@ -171,7 +171,7 @@ public class BackupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void showConnectionError() {
-        Toast.makeText(getApplicationContext(), "Client not connected to server", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), getString(R.string.client_not_connected_to_server), Toast.LENGTH_SHORT).show();
     }
 
     public void downloadFromDrive(DriveFile file) {
@@ -340,10 +340,6 @@ public class BackupActivity extends AppCompatActivity implements View.OnClickLis
     public boolean onOptionsItemSelected(MenuItem item) {
         finish();
         return true;
-    }
-
-    private void setUpAlarmManagerForWeeklyBackup() {
-
     }
 
 }

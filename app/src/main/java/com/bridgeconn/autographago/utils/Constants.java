@@ -127,6 +127,7 @@ public class Constants {
         int PERMISSION_STORAGE_BACKUP = 5;
         int APP_SETTINGS_STORAGE_BACKUP = 6;
         int ADD_TO_NOTE = 7;
+        int BACKUP_ALARM = 8765;
     }
 
     public interface PrefKeys {
@@ -156,6 +157,8 @@ public class Constants {
         String SOURCE = "source";
         String LICENSE = "license";
         String YEAR = "year";
+
+        String BACKUP_ALARM = "backup_alarm";
     }
 
     public enum ReadingMode {
@@ -210,6 +213,7 @@ public class Constants {
 
         String ADD_TO_HISTORY = "com.bridgeconn.autographago.action.addtohistory";
         String UPDATE_SEARCH_HISTORY = "com.bridgeconn.autographago.action.updatesearchhistory";
+        String BACKUP = "com.bridgeconn.autographago.action.backup";
     }
 
     public interface NOTIFICATION_ID {
