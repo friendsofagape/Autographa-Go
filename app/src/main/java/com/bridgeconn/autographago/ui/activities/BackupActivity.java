@@ -5,21 +5,16 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,11 +34,9 @@ import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
-import com.google.android.gms.drive.DriveResource;
 import com.google.android.gms.drive.Metadata;
 import com.google.android.gms.drive.MetadataBuffer;
 import com.google.android.gms.drive.MetadataChangeSet;
-import com.google.android.gms.drive.OpenFileActivityBuilder;
 import com.google.android.gms.drive.query.Filters;
 import com.google.android.gms.drive.query.Query;
 import com.google.android.gms.drive.query.SearchableField;
@@ -66,22 +59,16 @@ import io.realm.Realm;
 
 public class BackupActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final int REQUEST_CODE_PICKER = 2;
-    private static final int REQUEST_CODE_PICKER_FOLDER = 4;
-
-    private static final String TAG = "autographago_drive_backup";
-    private static final String BACKUP_FOLDER_KEY = "backup_folder";
+    private static final String TAG = "drive_backup";
 
     private Backup backup;
     private GoogleApiClient mGoogleApiClient;
     private TextView folderTextView;
-    private IntentSender intentPicker;
     private Realm realm;
-    private String backupFolder;
     private RecyclerView backupRecyclerView;
     private BackupAdapter mAdapter;
 
-    private SharedPreferences sharedPref;
+    // TODO set up weekly alarm for backup at 4.00 am
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -99,222 +86,152 @@ public class BackupActivity extends AppCompatActivity implements View.OnClickLis
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
-        sharedPref = getPreferences(Context.MODE_PRIVATE);
         realm = Realm.getDefaultInstance();
 
         backup = new GoogleDriveBackup();
         backup.init(this);
-        connectClient();
+        backup.start();
         mGoogleApiClient = backup.getClient();
 
         Button backupButton = (Button) findViewById(R.id.activity_backup_drive_button_backup);
-        TextView manageButton = (TextView) findViewById(R.id.activity_backup_drive_button_manage_drive);
         folderTextView = (TextView) findViewById(R.id.activity_backup_drive_textview_folder);
-        LinearLayout selectFolderButton = (LinearLayout) findViewById(R.id.activity_backup_drive_button_folder);
         backupRecyclerView = (RecyclerView) findViewById(R.id.activity_backup_drive_recyclerview_restore);
 
         backupRecyclerView.setHasFixedSize(true);
         backupRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         backupButton.setOnClickListener(this);
-        selectFolderButton.setOnClickListener(this);
+        findViewById(R.id.recent_backups).setOnClickListener(this);
 
-        manageButton.setOnClickListener(this);
-
-        // Show backup folder, if exists
-        backupFolder = sharedPref.getString(BACKUP_FOLDER_KEY, "");
-        if (!("").equals(backupFolder)) {
-            setBackupFolderTitle(DriveId.decodeFromString(backupFolder));
-            manageButton.setVisibility(View.VISIBLE);
-        }
-
-        // Populate backup list
-        if (!("").equals(backupFolder)) {
-            getBackupsFromDrive(DriveId.decodeFromString(backupFolder).asDriveFolder());
-        }
+        getBackupsFromDrive();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.activity_backup_drive_button_backup: {
-                // Open Folder picker, then upload the file on Drive
-                openFolderPicker(true);
+                uploadToDrive();
                 break;
             }
-            case R.id.activity_backup_drive_button_folder: {
-                // Check first if a folder is already selected
-                if (!"".equals(backupFolder)) {
-                    //Start the picker to choose a folder
-                    //False because we don't want to upload the backup on drive then
-                    openFolderPicker(false);
-                }
-                break;
-            }
-            case R.id.activity_backup_drive_button_manage_drive: {
-                openOnDrive(DriveId.decodeFromString(backupFolder));
+            case R.id.recent_backups: {
+                getBackupsFromDrive();
                 break;
             }
         }
     }
 
-    private void setBackupFolderTitle(DriveId id) {
-        id.asDriveFolder().getMetadata((mGoogleApiClient)).setResultCallback(
-                new ResultCallback<DriveResource.MetadataResult>() {
-                    @Override
-                    public void onResult(@NonNull DriveResource.MetadataResult result) {
-                        if (!result.getStatus().isSuccess()) {
-                            showErrorDialog();
-                            return;
-                        }
-                        Metadata metadata = result.getMetadata();
-                        folderTextView.setText(metadata.getTitle());
-                    }
-                }
-        );
-    }
-
-    private void reinitializeGoogleApiClient() {
+    private void reinitializeGoogleApiClient(boolean getBackup, boolean download, boolean upload, DriveFile file) {
+        Log.i("mytag", "call reiniitailize");
         if (mGoogleApiClient != null) {
             Log.i("mytag", "reinitializing, isconnected=" + mGoogleApiClient.isConnected());
             mGoogleApiClient.reconnect();
         } else {
             backup.init(this);
-            connectClient();
+            backup.start();
             mGoogleApiClient = backup.getClient();
         }
     }
 
-    private void openFolderPicker(boolean uploadToDrive) {
-        if (uploadToDrive) {
-            // First we check if a backup folder is set
-            if (TextUtils.isEmpty(backupFolder)) {
-                try {
-                    if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-                        if (intentPicker == null)
-                            intentPicker = buildIntent();
-                        //Start the picker to choose a folder
-                        startIntentSenderForResult(
-                                intentPicker, REQUEST_CODE_PICKER, null, 0, 0, 0);
-                    } else {
-                        reinitializeGoogleApiClient();
-                    }
-                } catch (IntentSender.SendIntentException e) {
-                    Log.e(TAG, "Unable to send intent", e);
-                    showErrorDialog();
-                }
-            } else {
-                uploadToDrive(DriveId.decodeFromString(backupFolder));
-            }
+    private void getBackupsFromDrive() {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+
+            final Activity activity = this;
+            SortOrder sortOrder = new SortOrder.Builder()
+                    .addSortDescending(SortableField.MODIFIED_DATE).build();
+            Query query = new Query.Builder()
+                    .addFilter(Filters.eq(SearchableField.TITLE, Constants.EXPORT_REALM_FILE_NAME))
+                    .addFilter(Filters.eq(SearchableField.TRASHED, false))
+                    .setSortOrder(sortOrder)
+                    .build();
+            Drive.DriveApi.getAppFolder(mGoogleApiClient)
+                    .queryChildren(mGoogleApiClient, query)
+                    .setResultCallback(new ResultCallback<DriveApi.MetadataBufferResult>() {
+
+                        private ArrayList<AutographaGoBackup> backupsArray = new ArrayList<>();
+
+                        @Override
+                        public void onResult(@NonNull DriveApi.MetadataBufferResult result) {
+                            MetadataBuffer buffer = result.getMetadataBuffer();
+                            int size = buffer.getCount();
+                            for (int i = 0; i < size; i++) {
+                                Metadata metadata = buffer.get(i);
+                                DriveId driveId = metadata.getDriveId();
+                                Date modifiedDate = metadata.getModifiedDate();
+                                long backupSize = metadata.getFileSize();
+                                backupsArray.add(new AutographaGoBackup(driveId, modifiedDate, backupSize));
+                            }
+                            mAdapter = new BackupAdapter(BackupActivity.this, backupsArray);
+                            backupRecyclerView.setAdapter(mAdapter);
+                        }
+                    });
         } else {
-            try {
-                intentPicker = null;
-                if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-                    if (intentPicker == null)
-                        intentPicker = buildIntent();
-                    //Start the picker to choose a folder
-                    startIntentSenderForResult(
-                            intentPicker, REQUEST_CODE_PICKER_FOLDER, null, 0, 0, 0);
-                } else {
-                    reinitializeGoogleApiClient();
-                }
-            } catch (IntentSender.SendIntentException e) {
-                Log.e(TAG, "Unable to send intent", e);
-                showErrorDialog();
-            }
+            showConnectionError();
+            reinitializeGoogleApiClient(true, false, false, null);
         }
     }
 
-    private IntentSender buildIntent() {
-        return Drive.DriveApi
-                .newOpenFileActivityBuilder()
-                .setMimeType(new String[]{DriveFolder.MIME_TYPE})
-                .build(mGoogleApiClient);
-    }
-
-    private void getBackupsFromDrive(DriveFolder folder) {
-        final Activity activity = this;
-        SortOrder sortOrder = new SortOrder.Builder()
-                .addSortDescending(SortableField.MODIFIED_DATE).build();
-        Query query = new Query.Builder()
-                .addFilter(Filters.eq(SearchableField.TITLE, Constants.EXPORT_REALM_FILE_NAME))
-                .addFilter(Filters.eq(SearchableField.TRASHED, false))
-                .setSortOrder(sortOrder)
-                .build();
-        folder.queryChildren(mGoogleApiClient, query)
-                .setResultCallback(new ResultCallback<DriveApi.MetadataBufferResult>() {
-
-                    private ArrayList<AutographaGoBackup> backupsArray = new ArrayList<>();
-
-                    @Override
-                    public void onResult(@NonNull DriveApi.MetadataBufferResult result) {
-                        MetadataBuffer buffer = result.getMetadataBuffer();
-                        int size = buffer.getCount();
-                        for (int i = 0; i < size; i++) {
-                            Metadata metadata = buffer.get(i);
-                            DriveId driveId = metadata.getDriveId();
-                            Date modifiedDate = metadata.getModifiedDate();
-                            long backupSize = metadata.getFileSize();
-                            backupsArray.add(new AutographaGoBackup(driveId, modifiedDate, backupSize));
-                        }
-                        mAdapter = new BackupAdapter(BackupActivity.this, backupsArray);
-                        backupRecyclerView.setAdapter(mAdapter);
-                    }
-                });
+    private void showConnectionError() {
+        Toast.makeText(getApplicationContext(), "Client not connected to server", Toast.LENGTH_SHORT).show();
     }
 
     public void downloadFromDrive(DriveFile file) {
-        file.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null)
-                .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
-                    @Override
-                    public void onResult(@NonNull DriveApi.DriveContentsResult result) {
-                        if (!result.getStatus().isSuccess()) {
-                            showErrorDialog();
-                            return;
-                        }
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
 
-                        // DriveContents object contains pointers
-                        // to the actual byte stream
-                        DriveContents contents = result.getDriveContents();
-                        InputStream input = contents.getInputStream();
-
-                        try {
-                            File file = new File(realm.getPath());
-                            OutputStream output = new FileOutputStream(file);
-                            try {
-                                try {
-                                    byte[] buffer = new byte[4 * 1024]; // or other buffer size
-                                    int read;
-
-                                    while ((read = input.read(buffer)) != -1) {
-                                        output.write(buffer, 0, read);
-                                    }
-                                    output.flush();
-                                } finally {
-                                    safeCloseClosable(input);
-                                }
-                            } catch (Exception e) {
-                                reportToFirebase(e, "Error downloading backup from drive");
-                                e.printStackTrace();
+            file.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null)
+                    .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
+                        @Override
+                        public void onResult(@NonNull DriveApi.DriveContentsResult result) {
+                            if (!result.getStatus().isSuccess()) {
+                                showErrorDialog();
+                                return;
                             }
-                        } catch (FileNotFoundException e) {
-                            reportToFirebase(e, "Error downloading backup from drive, file not found");
-                            e.printStackTrace();
-                        } finally {
-                            safeCloseClosable(input);
+
+                            // DriveContents object contains pointers
+                            // to the actual byte stream
+                            DriveContents contents = result.getDriveContents();
+                            InputStream input = contents.getInputStream();
+
+                            try {
+                                File file = new File(realm.getPath());
+                                OutputStream output = new FileOutputStream(file);
+                                try {
+                                    try {
+                                        byte[] buffer = new byte[4 * 1024]; // or other buffer size
+                                        int read;
+
+                                        while ((read = input.read(buffer)) != -1) {
+                                            output.write(buffer, 0, read);
+                                        }
+                                        output.flush();
+                                    } finally {
+                                        safeCloseClosable(input);
+                                    }
+                                } catch (Exception e) {
+                                    reportToFirebase(e, "Error downloading backup from drive");
+                                    e.printStackTrace();
+                                }
+                            } catch (FileNotFoundException e) {
+                                reportToFirebase(e, "Error downloading backup from drive, file not found");
+                                e.printStackTrace();
+                            } finally {
+                                safeCloseClosable(input);
+                            }
+
+                            Toast.makeText(getApplicationContext(), R.string.activity_backup_drive_message_restart, Toast.LENGTH_LONG).show();
+
+                            // Reboot app
+                            Intent mStartActivity = new Intent(getApplicationContext(), HomeActivity.class);
+                            int mPendingIntentId = 123456;
+                            PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+                            AlarmManager mgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                            System.exit(0);
                         }
-
-                        Toast.makeText(getApplicationContext(), R.string.activity_backup_drive_message_restart, Toast.LENGTH_LONG).show();
-
-                        // Reboot app
-                        Intent mStartActivity = new Intent(getApplicationContext(), HomeActivity.class);
-                        int mPendingIntentId = 123456;
-                        PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
-                        AlarmManager mgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-                        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
-                        System.exit(0);
-                    }
-                });
+                    });
+        } else {
+            showConnectionError();
+            reinitializeGoogleApiClient(false, true, false, file);
+        }
     }
 
     private void safeCloseClosable(Closeable closeable) {
@@ -326,10 +243,9 @@ public class BackupActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void uploadToDrive(DriveId mFolderDriveId) {
-        if (mFolderDriveId != null) {
-            //Create the file on GDrive
-            final DriveFolder folder = mFolderDriveId.asDriveFolder();
+    private void uploadToDrive() {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+
             Drive.DriveApi.newDriveContents(mGoogleApiClient)
                     .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
                         @Override
@@ -377,8 +293,10 @@ public class BackupActivity extends AppCompatActivity implements View.OnClickLis
                                             .setMimeType("text/plain")
                                             .build();
 
-                                    // create a file in selected folder
-                                    folder.createFile(mGoogleApiClient, changeSet, driveContents)
+                                    // create a file in app folder
+                                    Drive.DriveApi
+                                            .getAppFolder(mGoogleApiClient)
+                                            .createFile(mGoogleApiClient, changeSet, driveContents)
                                             .setResultCallback(new ResultCallback<DriveFolder.DriveFileResult>() {
                                                 @Override
                                                 public void onResult(@NonNull DriveFolder.DriveFileResult result) {
@@ -396,87 +314,10 @@ public class BackupActivity extends AppCompatActivity implements View.OnClickLis
                             }.start();
                         }
                     });
+        } else {
+            showConnectionError();
+            reinitializeGoogleApiClient(false, false, true, null);
         }
-    }
-
-    private void openOnDrive(DriveId driveId) {
-        driveId.asDriveFolder().getMetadata((mGoogleApiClient)).setResultCallback(
-                new ResultCallback<DriveResource.MetadataResult>() {
-                    @Override
-                    public void onResult(@NonNull DriveResource.MetadataResult result) {
-                        if (!result.getStatus().isSuccess()) {
-                            showErrorDialog();
-                            return;
-                        }
-                        Metadata metadata = result.getMetadata();
-                        String url = metadata.getAlternateLink();
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse(url));
-                        startActivity(i);
-                    }
-                }
-        );
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        switch (requestCode) {
-            case 1:
-                if (resultCode == RESULT_OK) {
-                    backup.start();
-                }
-                break;
-            // REQUEST_CODE_PICKER
-            case 2:
-                intentPicker = null;
-
-                if (resultCode == RESULT_OK) {
-                    //Get the folder drive id
-                    DriveId mFolderDriveId = data.getParcelableExtra(
-                            OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
-
-                    saveBackupFolder(mFolderDriveId.encodeToString());
-
-                    uploadToDrive(mFolderDriveId);
-                }
-                break;
-
-            // REQUEST_CODE_SELECT
-            case 3:
-                if (resultCode == RESULT_OK) {
-                    // get the selected item's ID
-                    DriveId driveId = data.getParcelableExtra(
-                            OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
-
-                    DriveFile file = driveId.asDriveFile();
-                    downloadFromDrive(file);
-
-                } else {
-                    showErrorDialog();
-                }
-                finish();
-                break;
-            // REQUEST_CODE_PICKER_FOLDER
-            case 4:
-                if (resultCode == RESULT_OK) {
-                    //Get the folder drive id
-                    DriveId mFolderDriveId = data.getParcelableExtra(
-                            OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
-
-                    saveBackupFolder(mFolderDriveId.encodeToString());
-                    // Restart activity to apply changes
-                    Intent intent = getIntent();
-                    finish();
-                    startActivity(intent);
-                }
-                break;
-        }
-    }
-
-    private void saveBackupFolder(String folderPath) {
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(BACKUP_FOLDER_KEY, folderPath);
-        editor.apply();
     }
 
     private void showSuccessDialog() {
@@ -492,10 +333,6 @@ public class BackupActivity extends AppCompatActivity implements View.OnClickLis
         FirebaseCrash.report(e);
     }
 
-    public void connectClient() {
-        backup.start();
-    }
-
     public void disconnectClient() {
         backup.stop();
     }
@@ -503,6 +340,10 @@ public class BackupActivity extends AppCompatActivity implements View.OnClickLis
     public boolean onOptionsItemSelected(MenuItem item) {
         finish();
         return true;
+    }
+
+    private void setUpAlarmManagerForWeeklyBackup() {
+
     }
 
 }

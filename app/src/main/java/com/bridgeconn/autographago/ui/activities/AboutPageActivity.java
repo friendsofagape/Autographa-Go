@@ -65,7 +65,7 @@ public class AboutPageActivity extends AppCompatActivity {
         spannable9.setSpan(new BulletSpan(4), 0, spannable9.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannable10.setSpan(new BulletSpan(4), 0, spannable10.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        spannableStringBuilder.append(getResources().getString(R.string.version));
+        spannableStringBuilder.append(getResources().getString(R.string.version) + " ");
         spannableStringBuilder.append(BuildConfig.VERSION_NAME);
         spannableStringBuilder.append("\n\n");
         spannableStringBuilder.append(spannable1);

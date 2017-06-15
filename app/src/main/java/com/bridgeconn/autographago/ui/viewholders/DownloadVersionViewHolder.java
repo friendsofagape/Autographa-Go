@@ -45,7 +45,7 @@ public class DownloadVersionViewHolder extends RecyclerView.ViewHolder implement
                 if (mActivity instanceof SettingsActivity) {
                     ((SettingsActivity) mActivity).getMetaData(mLanguage, mVersions.get(position));
                 } else if (mActivity instanceof BookActivity) {
-                    ((BookActivity) mActivity).changeLanguageVersionOfBook(mLanguage, mVersions.get(position));
+                    ((BookActivity) mActivity).changeLanguageVersionOfBook(mVersions.get(position));
                 }
                 break;
             }

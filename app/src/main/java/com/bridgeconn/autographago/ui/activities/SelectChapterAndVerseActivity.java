@@ -1,6 +1,5 @@
 package com.bridgeconn.autographago.ui.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -73,13 +72,7 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
 
         if (bookId != null) {
 
-            String bookName = getBookName(this, bookId);
-            if (bookName != null) {
-                getSupportActionBar().setTitle(bookName);
-            }
-            if (!mOpenBook) {
-                getSupportActionBar().setTitle(getString(R.string.title_books));
-            }
+            getSupportActionBar().setTitle(getString(R.string.title_books));
 
             mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), Tabs, bookId, mOpenBook, mSelectVerse);
             mViewPager.setAdapter(mAdapter);
@@ -87,10 +80,6 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
             mTabLayoutHelper = new TabLayoutHelper(mTabLayout, mViewPager);
             mTabLayoutHelper.setAutoAdjustTabModeEnabled(true);
         }
-    }
-
-    private String getBookName(Context context, String bookId) {
-        return UtilFunctions.getBookNameFromMapping(context, bookId);
     }
 
     @Override

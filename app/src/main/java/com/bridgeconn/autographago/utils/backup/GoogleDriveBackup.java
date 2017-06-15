@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.bridgeconn.autographago.utils.UtilFunctions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -29,11 +30,15 @@ public class GoogleDriveBackup implements Backup, GoogleApiClient.OnConnectionFa
 
         googleApiClient = new GoogleApiClient.Builder(activity)
                 .addApi(Drive.API)
-                .addScope(Drive.SCOPE_FILE)
+                .addScope(Drive.SCOPE_APPFOLDER)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
                     public void onConnected(Bundle bundle) {
                         // Do nothing
+                        Log.i("mytsg", "connect = " + googleApiClient.isConnected());
+                        if (googleApiClient.isConnected()) {
+                            UtilFunctions.setUpAlarmFOrBackup();
+                        }
                     }
 
                     @Override

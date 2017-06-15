@@ -244,7 +244,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             Constants.RequestCodes.PERMISSION_STORAGE_BACKUP);
                     return;
                 }
-                // TODO open new activity for backup or restore
                 Intent backupIntent = new Intent(SettingsActivity.this, BackupActivity.class);
                 startActivity(backupIntent);
                 break;
@@ -622,7 +621,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 if (ContextCompat.checkSelfPermission(SettingsActivity.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
-                    // TODO open new activity for backup or restore
                     Intent backupIntent = new Intent(SettingsActivity.this, BackupActivity.class);
                     startActivity(backupIntent);
 
@@ -688,7 +686,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             Constants.RequestCodes.PERMISSION_STORAGE_DOWNLOAD_BIBLE);
                     return;
                 }
-                // TODO open new activity for backup or restore
                 Intent backupIntent = new Intent(SettingsActivity.this, BackupActivity.class);
                 startActivity(backupIntent);
                 break;

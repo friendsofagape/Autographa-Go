@@ -422,6 +422,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
 
+        if (!SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB).equals(versionCode)) {
+            versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
+
+            SpinnerModel compareModel = new SpinnerModel();
+            compareModel.setLanguageName(languageName);
+            compareModel.setVersionCode(versionCode);
+            compareModel.setLanguageCode(languageCode);
+
+            int spinnerPosition = findIndex(compareModel);
+            mSpinner.setSelection(spinnerPosition);
+        }
         if (Constants.CONTAINER_BOOKS_LIST.size() == 0) {
             // memory might be cleared, load all data again
             languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");

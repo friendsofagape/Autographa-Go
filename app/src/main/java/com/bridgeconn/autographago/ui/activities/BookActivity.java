@@ -608,6 +608,9 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.bookmark_holder: {
 
+                if (mBookModel == null) {
+                    return;
+                }
                 int position = mLayoutManager.findFirstVisibleItemPosition();
                 final int chapterNumber = findChapterNumber(position);
                 boolean present = false;
@@ -670,7 +673,8 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
             }
             case R.id.book_version: {
                 String languageName = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, "English");
-                showAvailableVersionsDialog(languageName);
+                String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.UDB);
+                showAvailableVersionsDialog(languageName, versionCode);
                 break;
             }
         }
@@ -685,14 +689,18 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         return resultsToReturn;
     }
 
-    private void showAvailableVersionsDialog(String language) {
+    private void showAvailableVersionsDialog(String language, String currentVersionCode) {
         List<String> versions = new ArrayList<>();
         Realm realm = Realm.getDefaultInstance();
         ArrayList<LanguageModel> languageModels = queryVersions(realm, new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
         for (LanguageModel languageModel : languageModels) {
             if (languageModel.getLanguageName().equalsIgnoreCase(language)) {
                 for (VersionModel versionModel : languageModel.getVersionModels()) {
-                    versions.add(versionModel.getVersionCode());
+                    if (currentVersionCode.equals(versionModel.getVersionCode())) {
+                        continue;
+                    } else {
+                        versions.add(versionModel.getVersionCode());
+                    }
                 }
             }
         }
@@ -750,10 +758,16 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setAdapter(dialogAdapter);
     }
 
-    public void changeLanguageVersionOfBook(String language, String version) {
-        // TODO here change vesion in book
-        // TODO also save last open version to shared orefs
-        // TODO also update home activity about this
+    public void changeLanguageVersionOfBook(String versionCode) {
+        SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
+        String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+        new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
+
+        Intent intent = new Intent(this, SelectChapterAndVerseActivity.class);
+        intent.putExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, true);
+        intent.putExtra(Constants.Keys.OPEN_BOOK, true);
+        intent.putExtra(Constants.Keys.BOOK_ID, Constants.CONTAINER_BOOKS_LIST.get(0).getBookId());
+        startActivityForResult(intent, Constants.RequestCodes.CHANGE_BOOK);
     }
 
     public void showBottomBar() {

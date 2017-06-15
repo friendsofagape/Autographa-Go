@@ -98,6 +98,7 @@
                     android:layout_height="wrap_content"
                     android:background="?android:attr/selectableItemBackground"
                     android:paddingTop="@dimen/default_content_padding"
+                    android:visibility="gone"
                     android:orientation="horizontal">
 
                     <TextView
@@ -139,16 +140,21 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="1px"
+                    android:visibility="gone"
                     android:layout_marginBottom="@dimen/default_content_padding"
                     android:layout_marginTop="@dimen/default_content_padding"
                     android:background="@color/black_40"/>
 
                 <TextView
+                    android:id="@+id/recent_backups"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/activity_horizontal_margin"
                     android:textAllCaps="true"
                     android:textColor="@color/black"
+                    android:drawableRight="@drawable/ic_refresh"
+                    android:drawableTint="@color/colorAccent"
+                    android:drawablePadding="@dimen/default_content_padding"
                     android:textStyle="bold"
                     android:text="@string/activity_backup_drive_recent"
                     />

@@ -320,4 +320,8 @@ public class UtilFunctions {
         startParse.putExtra(Constants.Keys.YEAR, year);
         context.startService(startParse);
     }
+
+    public static void setUpAlarmFOrBackup() {
+        // TODO check if any previous alarms already set, then do not set
+    }
 }
