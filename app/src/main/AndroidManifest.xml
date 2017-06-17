@@ -9,7 +9,7 @@
 
     <application
         android:name=".AutographaGoApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@drawable/ic_autographa_go"
         android:label="@string/app_name"
         android:supportsRtl="false"

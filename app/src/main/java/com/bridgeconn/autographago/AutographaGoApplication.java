@@ -44,24 +44,6 @@ public class AutographaGoApplication extends Application {
                                     })
                                     .removeField("bookmarkChapterNumber");
 
-                            /*
-                            // add columns to version model
-                            RealmObjectSchema versionSchema = schema.get("VersionModel");
-
-                            // Combine 'firstName' and 'lastName' in a new field called 'fullName'
-                            versionSchema
-                                    .addField("source", String.class)
-                                    .addField("license", String.class)
-                                    .addField("year", int.class)
-                            .transform(new RealmObjectSchema.Function() {
-                                @Override
-                                public void apply(DynamicRealmObject obj) {
-                                    obj.set("source", "Unfolding Word");
-                                    obj.set("license", "CCSA");
-                                    obj.set("year", 2017);
-                                }
-                            });
-                            */
 //                        }
 //                        if (oldVersion == 2) {
                             // add columns to version model
@@ -84,7 +66,7 @@ public class AutographaGoApplication extends Application {
                     }
                 })
                 .assetFile("default.realm")
-                .schemaVersion(2) // TODO increment schema version here
+                .schemaVersion(2) // TODO increment schema version
                 .build();
         Realm.setDefaultConfiguration(config);
 
