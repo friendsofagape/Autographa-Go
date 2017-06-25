@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "214462916323",
+    "firebase_url": "https://autographago.firebaseio.com",
+    "project_id": "autographago",
+    "storage_bucket": "autographago.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:214462916323:android:fa8faf2c8d286806",
+        "android_client_info": {
+          "package_name": "com.bridgeconn.autographago"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "214462916323-8kgfmpccrv5vu2470m0bh3tbus1tj59e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdLRd24cgVirkyfQDrQ9ImOmjGuKLZWl8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
