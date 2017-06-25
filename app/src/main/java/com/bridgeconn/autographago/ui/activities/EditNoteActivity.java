@@ -49,6 +49,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
     private HashSet<VerseIdModel> mVerseList = new HashSet<>();
     private long mTimeStamp = 0;
     private String languageCode, versionCode;
+    private TextView placeholderText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,9 +78,11 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
         mSave = (TextView) findViewById(R.id.iv_save);
         mButtonLayout = (FlowLayout) findViewById(R.id.button_layout);
         mAddVerse = (ImageView) findViewById(R.id.iv_add_verse);
+        placeholderText = (TextView) findViewById(R.id.placeholder_text);
 
         mSave.setOnClickListener(this);
         mAddVerse.setOnClickListener(this);
+        placeholderText.setVisibility(View.VISIBLE);
 
         /*
         mEditor.addTextChangedListener(new TextWatcher() {
@@ -192,17 +195,23 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                 mEditor.setText(spannable);
             }
             mTimeStamp = notesModel.getTimestamp();
+            if (notesModel.getVerseIds().size() > 0) {
+                placeholderText.setVisibility(View.GONE);
+            }
             for (final VerseIdModel model : notesModel.getVerseIds()) {
                 mVerseList.add(model);
-                addNoteButton(model, false);
+                addNoteButton(model, true);
             }
         }
 //        else {
         ArrayList<VerseIdModel> models = intent.getParcelableArrayListExtra(Constants.Keys.VERSE_MODELS);
         if (models != null) {
+            if (models.size() > 0) {
+                placeholderText.setVisibility(View.GONE);
+            }
             for (final VerseIdModel model : models) {
                 mVerseList.add(model);
-                addNoteButton(model, false);
+                addNoteButton(model, true);
             }
         }
 //        }
@@ -232,6 +241,9 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                     mVerseList.remove(model);
                 }
                 mButtonLayout.removeView(view);
+                if (mVerseList.size() == 0) {
+                    placeholderText.setVisibility(View.VISIBLE);
+                }
             }
         });
         mButtonLayout.addView(view);
@@ -335,6 +347,7 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
                 if (resultCode == RESULT_OK) {
                     final VerseIdModel model = data.getParcelableExtra(Constants.Keys.VERSE_NOTE_MODEL);
                     if (mVerseList.add(model)) {
+                        placeholderText.setVisibility(View.GONE);
                         addNoteButton(model, true);
                     }
                 }

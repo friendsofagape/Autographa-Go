@@ -2,6 +2,7 @@ package com.bridgeconn.autographago.models;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 public class VersionModel extends RealmObject {
@@ -15,6 +16,8 @@ public class VersionModel extends RealmObject {
     private String source;
     private String license;
     private int year;
+    @Ignore
+    private boolean selected;
 
     public VersionModel(VersionModel model) {
         versionName = model.getVersionName();
@@ -25,6 +28,7 @@ public class VersionModel extends RealmObject {
         source = model.getSource();
         license = model.getLicense();
         year = model.getYear();
+        selected = model.isSelected();
     }
 
     public VersionModel() {
@@ -92,5 +96,13 @@ public class VersionModel extends RealmObject {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

@@ -138,5 +138,7 @@
 
     <string name="click_on_any_icon_to_see_hint">Click on any icon to see hint</string>
     <string name="client_not_connected_to_server">Client not connected to server</string>
+    <string name="click_to_add_references">Tap button to add references</string>
+    <string name="language_and_versions">Language and Versions</string>
 
 </resources>

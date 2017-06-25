@@ -672,9 +672,12 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case R.id.book_version: {
-                String languageName = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, "English");
-                String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.UDB);
-                showAvailableVersionsDialog(languageName, versionCode);
+                Intent intent = new Intent(this, SelectLanguageAndVersionActivity.class);
+                intent.putExtra(Constants.Keys.SELECT_BOOK, false);
+                startActivityForResult(intent, Constants.RequestCodes.CHANGE_LANGUAGE_VERSION);
+//                String languageName = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, "English");
+//                String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.UDB);
+//                showAvailableVersionsDialog(languageName, versionCode);
                 break;
             }
         }
@@ -891,6 +894,26 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
 
                     mLayoutManager.scrollToPositionWithOffset(findPositionToScroll(data.getIntExtra(Constants.Keys.CHAPTER_NO, 1)-1, data.getStringExtra(Constants.Keys.VERSE_NO)), 0);
 //                    mRecyclerView.scrollToPosition(findPositionToScroll(chapterNumber-1, verseNumber));
+                }
+                break;
+            }
+            case Constants.RequestCodes.CHANGE_LANGUAGE_VERSION: {
+                if (resultCode == RESULT_OK) {
+                    String languageCode = data.getStringExtra(Constants.Keys.LANGUAGE_CODE);
+                    String versionCode = data.getStringExtra(Constants.Keys.VERSION_CODE);
+                    String languageName = data.getStringExtra(Constants.Keys.LANGUAGE_NAME);
+
+                    SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
+                    SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, languageCode);
+                    SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, languageName);
+
+                    new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
+
+                    Intent intent = new Intent(this, SelectChapterAndVerseActivity.class);
+                    intent.putExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, true);
+                    intent.putExtra(Constants.Keys.OPEN_BOOK, true);
+                    intent.putExtra(Constants.Keys.BOOK_ID, Constants.CONTAINER_BOOKS_LIST.get(0).getBookId());
+                    startActivityForResult(intent, Constants.RequestCodes.CHANGE_BOOK);
                 }
                 break;
             }

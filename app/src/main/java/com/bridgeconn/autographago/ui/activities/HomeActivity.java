@@ -5,14 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -22,15 +19,10 @@ import android.widget.Toast;
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookIdModel;
 import com.bridgeconn.autographago.models.LanguageModel;
-import com.bridgeconn.autographago.models.SpinnerModel;
-import com.bridgeconn.autographago.models.VersionModel;
-import com.bridgeconn.autographago.ormutils.AllMappers;
-import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.adapters.BookAdapter;
-import com.bridgeconn.autographago.ui.adapters.SpinnerAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
@@ -39,13 +31,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener,
-        AdapterView.OnItemSelectedListener, RadioGroup.OnCheckedChangeListener {
+//        AdapterView.OnItemSelectedListener,
+        RadioGroup.OnCheckedChangeListener {
 
     private TextView mToolbarTitle;
     private ImageView mContinueRead;
@@ -58,15 +50,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView mRecyclerView;
     private BookAdapter mAdapter;
     private ArrayList<BookIdModel> mBookModelArrayList = new ArrayList<>();
-    private AppCompatSpinner mSpinner;
-    private List<SpinnerModel> categoriesList = new ArrayList<>();
-    private SpinnerAdapter spinnerAdapter;
+    //    private AppCompatSpinner mSpinner;
+//    private List<SpinnerModel> categoriesList = new ArrayList<>();
+//    private SpinnerAdapter spinnerAdapter;
     private String languageCode, languageName, versionCode;
     private Constants.ReadingMode mReadingMode;
     private Constants.FontSize mFontSize;
     private RadioGroup sectionGroupView;
     private RadioButton oldSection, newSection;
     private LinearLayoutManager mLayoutManager;
+    private TextView mTvLanguageVersion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,10 +91,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mHistoryView = (ImageView) findViewById(R.id.iv_history);
         mSettingsView = (ImageView) findViewById(R.id.iv_settings);
         mRecyclerView = (RecyclerView) findViewById(R.id.list_books);
-        mSpinner = (AppCompatSpinner) findViewById(R.id.spinner);
+//        mSpinner = (AppCompatSpinner) findViewById(R.id.spinner);
         sectionGroupView = (RadioGroup) findViewById(R.id.section_group);
         oldSection = (RadioButton) findViewById(R.id.oldSection);
         newSection = (RadioButton) findViewById(R.id.newSection);
+        mTvLanguageVersion = (TextView) findViewById(R.id.tv_language_version);
 
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
@@ -109,7 +103,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mAdapter = new BookAdapter(this, mBookModelArrayList);
         mRecyclerView.setAdapter(mAdapter);
 
-        mSpinner.setOnItemSelectedListener(this);
+//        mSpinner.setOnItemSelectedListener(this);
         mToolbarTitle.setOnClickListener(this);
         mContinueRead.setOnClickListener(this);
         mNotesView.setOnClickListener(this);
@@ -119,19 +113,22 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mHistoryView.setOnClickListener(this);
         mSettingsView.setOnClickListener(this);
         sectionGroupView.setOnCheckedChangeListener(this);
+        mTvLanguageVersion.setOnClickListener(this);
 
-        spinnerAdapter = new SpinnerAdapter(this, categoriesList);
-        mSpinner.setAdapter(spinnerAdapter);
+//        spinnerAdapter = new SpinnerAdapter(this, categoriesList);
+//        mSpinner.setAdapter(spinnerAdapter);
 
-        getCategories();
+//        getCategories();
 
-        SpinnerModel compareModel = new SpinnerModel();
-        compareModel.setLanguageName(languageName);
-        compareModel.setVersionCode(versionCode);
-        compareModel.setLanguageCode(languageCode);
+        mTvLanguageVersion.setText(languageName + " " + versionCode);
 
-        int spinnerPosition = findIndex(compareModel);
-        mSpinner.setSelection(spinnerPosition);
+//        SpinnerModel compareModel = new SpinnerModel();
+//        compareModel.setLanguageName(languageName);
+//        compareModel.setVersionCode(versionCode);
+//        compareModel.setLanguageCode(languageCode);
+
+//        int spinnerPosition = findIndex(compareModel);
+//        mSpinner.setSelection(spinnerPosition);
 
         getAllBooks();
 
@@ -189,63 +186,63 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public int getSelectedSpinnerPosition() {
-        return mSpinner.getSelectedItemPosition();
+        return 0;//mSpinner.getSelectedItemPosition();
     }
 
-    public int findIndex(SpinnerModel model) {
-        for (int i=0; i<categoriesList.size(); i++) {
-            SpinnerModel spinnerModel = categoriesList.get(i);
-            if (spinnerModel.getVersionCode().equalsIgnoreCase(model.getVersionCode()) &&
-                    spinnerModel.getLanguageName().equalsIgnoreCase(model.getLanguageName()) &&
-                    spinnerModel.getLanguageCode().equalsIgnoreCase(model.getLanguageCode())) {
-                return i;
-            }
-        }
-        return -1;
-    }
+//    public int findIndex(SpinnerModel model) {
+//        for (int i=0; i<categoriesList.size(); i++) {
+//            SpinnerModel spinnerModel = categoriesList.get(i);
+//            if (spinnerModel.getVersionCode().equalsIgnoreCase(model.getVersionCode()) &&
+//                    spinnerModel.getLanguageName().equalsIgnoreCase(model.getLanguageName()) &&
+//                    spinnerModel.getLanguageCode().equalsIgnoreCase(model.getLanguageCode())) {
+//                return i;
+//            }
+//        }
+//        return -1;
+//    }
 
-    private void getCategories() {
-        final Realm realm = Realm.getDefaultInstance();
-        categoriesList.clear();
-        ArrayList<LanguageModel> languageModels = query(realm, new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
-        for (LanguageModel languageModel : languageModels) {
-            for (VersionModel versionModel : languageModel.getVersionModels()) {
-                SpinnerModel spinnerModel = new SpinnerModel();
-                spinnerModel.setLanguageCode(languageModel.getLanguageCode());
-                spinnerModel.setVersionCode(versionModel.getVersionCode());
-                spinnerModel.setLanguageName(languageModel.getLanguageName());
-                categoriesList.add(spinnerModel);
-            }
-        }
-        SpinnerModel spinnerModelULB = new SpinnerModel();
-        spinnerModelULB.setLanguageCode("ENG");
-        spinnerModelULB.setLanguageName("English");
-        spinnerModelULB.setVersionCode(Constants.VersionCodes.ULB);
-        boolean presentULB = categoriesList.remove(spinnerModelULB);
-        if (presentULB) {
-            categoriesList.add(0, spinnerModelULB);
-        }
-        SpinnerModel spinnerModelUDB = new SpinnerModel();
-        spinnerModelUDB.setLanguageCode("ENG");
-        spinnerModelUDB.setLanguageName("English");
-        spinnerModelUDB.setVersionCode(Constants.VersionCodes.UDB);
-        boolean presentUDB = categoriesList.remove(spinnerModelUDB);
-        if (presentUDB) {
-            if (presentULB) {
-                categoriesList.add(1, spinnerModelUDB);
-            } else {
-                categoriesList.add(0, spinnerModelUDB);
-            }
-        }
-        SpinnerModel importModel = new SpinnerModel();
-        importModel.setLanguageName(getResources().getString(R.string.download_more));
-        importModel.setLanguageCode("");
-        importModel.setVersionCode("");
-        categoriesList.add(importModel);
-
-        realm.close();
-        spinnerAdapter.notifyDataSetChanged();
-    }
+//    private void getCategories() {
+//        final Realm realm = Realm.getDefaultInstance();
+//        categoriesList.clear();
+//        ArrayList<LanguageModel> languageModels = query(realm, new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
+//        for (LanguageModel languageModel : languageModels) {
+//            for (VersionModel versionModel : languageModel.getVersionModels()) {
+//                SpinnerModel spinnerModel = new SpinnerModel();
+//                spinnerModel.setLanguageCode(languageModel.getLanguageCode());
+//                spinnerModel.setVersionCode(versionModel.getVersionCode());
+//                spinnerModel.setLanguageName(languageModel.getLanguageName());
+//                categoriesList.add(spinnerModel);
+//            }
+//        }
+//        SpinnerModel spinnerModelULB = new SpinnerModel();
+//        spinnerModelULB.setLanguageCode("ENG");
+//        spinnerModelULB.setLanguageName("English");
+//        spinnerModelULB.setVersionCode(Constants.VersionCodes.ULB);
+//        boolean presentULB = categoriesList.remove(spinnerModelULB);
+//        if (presentULB) {
+//            categoriesList.add(0, spinnerModelULB);
+//        }
+//        SpinnerModel spinnerModelUDB = new SpinnerModel();
+//        spinnerModelUDB.setLanguageCode("ENG");
+//        spinnerModelUDB.setLanguageName("English");
+//        spinnerModelUDB.setVersionCode(Constants.VersionCodes.UDB);
+//        boolean presentUDB = categoriesList.remove(spinnerModelUDB);
+//        if (presentUDB) {
+//            if (presentULB) {
+//                categoriesList.add(1, spinnerModelUDB);
+//            } else {
+//                categoriesList.add(0, spinnerModelUDB);
+//            }
+//        }
+//        SpinnerModel importModel = new SpinnerModel();
+//        importModel.setLanguageName(getResources().getString(R.string.download_more));
+//        importModel.setLanguageCode("");
+//        importModel.setVersionCode("");
+//        categoriesList.add(importModel);
+//
+//        realm.close();
+//        spinnerAdapter.notifyDataSetChanged();
+//    }
 
     public ArrayList<LanguageModel> query(Realm realm, Specification<LanguageModel> specification, Mapper<LanguageModel, LanguageModel> mapper) {
         RealmResults<LanguageModel> realmResults = specification.generateResults(realm);
@@ -256,42 +253,42 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         return resultsToReturn;
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (position == categoriesList.size() - 1) {
-            Intent settingsIntent = new Intent(HomeActivity.this, SettingsActivity.class);
-            settingsIntent.putExtra(Constants.Keys.IMPORT_BIBLE, true);
-            startActivityForResult(settingsIntent, Constants.RequestCodes.SETTINGS);
+//    @Override
+//    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//        if (position == categoriesList.size() - 1) {
+//            Intent settingsIntent = new Intent(HomeActivity.this, SettingsActivity.class);
+//            settingsIntent.putExtra(Constants.Keys.IMPORT_BIBLE, true);
+//            startActivityForResult(settingsIntent, Constants.RequestCodes.SETTINGS);
+//
+//            SpinnerModel compareModel = new SpinnerModel();
+//            compareModel.setLanguageName(languageName);
+//            compareModel.setVersionCode(versionCode);
+//            compareModel.setLanguageCode(languageCode);
+//
+//            int spinnerPosition = findIndex(compareModel);
+//            mSpinner.setSelection(spinnerPosition);
+//        } else {
+//            SpinnerModel spinnerModel = categoriesList.get(position);//(SpinnerModel) parent.getItemAtPosition(position);
+//            if (spinnerModel.getLanguageCode().equalsIgnoreCase(languageCode) && spinnerModel.getLanguageName().equalsIgnoreCase(languageName) && spinnerModel.getVersionCode().equalsIgnoreCase(versionCode)) {
+//                // do nothing, same element selected again
+//            } else {
+//                // save to shared prefs
+//                languageCode = spinnerModel.getLanguageCode();
+//                languageName = spinnerModel.getLanguageName();
+//                versionCode = spinnerModel.getVersionCode();
+//                SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, languageCode);
+//                SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, languageName);
+//                SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
+//                new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
+//                getAllBooks();
+//                mLayoutManager.scrollToPositionWithOffset(0, 0);
+//            }
+//        }
+//    }
 
-            SpinnerModel compareModel = new SpinnerModel();
-            compareModel.setLanguageName(languageName);
-            compareModel.setVersionCode(versionCode);
-            compareModel.setLanguageCode(languageCode);
-
-            int spinnerPosition = findIndex(compareModel);
-            mSpinner.setSelection(spinnerPosition);
-        } else {
-            SpinnerModel spinnerModel = categoriesList.get(position);//(SpinnerModel) parent.getItemAtPosition(position);
-            if (spinnerModel.getLanguageCode().equalsIgnoreCase(languageCode) && spinnerModel.getLanguageName().equalsIgnoreCase(languageName) && spinnerModel.getVersionCode().equalsIgnoreCase(versionCode)) {
-                // do nothing, same element selected again
-            } else {
-                // save to shared prefs
-                languageCode = spinnerModel.getLanguageCode();
-                languageName = spinnerModel.getLanguageName();
-                versionCode = spinnerModel.getVersionCode();
-                SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, languageCode);
-                SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, languageName);
-                SharedPrefs.putString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
-                new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
-                getAllBooks();
-                mLayoutManager.scrollToPositionWithOffset(0, 0);
-            }
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-    }
+//    @Override
+//    public void onNothingSelected(AdapterView<?> parent) {
+//    }
 
     private void getAllBooks() {
         mBookModelArrayList.clear();
@@ -388,6 +385,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(settingIntent, Constants.RequestCodes.SETTINGS);
                 break;
             }
+            case R.id.tv_language_version: {
+                Intent intent = new Intent(this, SelectLanguageAndVersionActivity.class);
+                intent.putExtra(Constants.Keys.SELECT_BOOK, true);
+                startActivityForResult(intent, Constants.RequestCodes.CHANGE_LANGUAGE_VERSION);
+                break;
+            }
         }
     }
 
@@ -409,6 +412,25 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             }
+            case Constants.RequestCodes.CHANGE_LANGUAGE_VERSION: {
+                if (resultCode == RESULT_OK) {
+                    languageCode = data.getStringExtra(Constants.Keys.LANGUAGE_CODE);
+                    versionCode = data.getStringExtra(Constants.Keys.VERSION_CODE);
+                    languageName = data.getStringExtra(Constants.Keys.LANGUAGE_NAME);
+
+                    mTvLanguageVersion.setText(languageName + " " + versionCode);
+
+                    SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, languageName);
+                    SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
+                    SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, languageCode);
+
+                    new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
+
+                    getAllBooks();
+                    mLayoutManager.scrollToPositionWithOffset(0, 0);
+                }
+                break;
+            }
         }
     }
 
@@ -422,16 +444,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
 
-        if (!SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB).equals(versionCode)) {
+        if (!SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB).equals(versionCode) ||
+                !SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG").equals(languageCode)) {
             versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
+            languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+            languageName = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, "English");
 
-            SpinnerModel compareModel = new SpinnerModel();
-            compareModel.setLanguageName(languageName);
-            compareModel.setVersionCode(versionCode);
-            compareModel.setLanguageCode(languageCode);
+            mTvLanguageVersion.setText(languageName + " " + versionCode);
 
-            int spinnerPosition = findIndex(compareModel);
-            mSpinner.setSelection(spinnerPosition);
+            new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
+
+            getAllBooks();
+            mLayoutManager.scrollToPositionWithOffset(0, 0);
+
+//            SpinnerModel compareModel = new SpinnerModel();
+//            compareModel.setLanguageName(languageName);
+//            compareModel.setVersionCode(versionCode);
+//            compareModel.setLanguageCode(languageCode);
+//
+//            int spinnerPosition = findIndex(compareModel);
+//            mSpinner.setSelection(spinnerPosition);
         }
         if (Constants.CONTAINER_BOOKS_LIST.size() == 0) {
             // memory might be cleared, load all data again
@@ -446,7 +478,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private BroadcastReceiver onParsingComplete = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            getCategories();
+//            getCategories();
             String languageNameParsed = intent.getStringExtra(Constants.Keys.LANGUAGE_NAME);
             String versionCodeParsed = intent.getStringExtra(Constants.Keys.VERSION_CODE);
             Toast.makeText(HomeActivity.this, languageNameParsed + " " + versionCodeParsed + " " + context.getResources().getString(R.string.bible_download_finish), Toast.LENGTH_LONG).show();

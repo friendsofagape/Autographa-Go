@@ -26,8 +26,23 @@
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/toolbar_title"
                     android:id="@+id/spinner"
+                    android:visibility="gone"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"/>
+
+                <TextView
+                    android:id="@+id/tv_language_version"
+                    android:layout_toRightOf="@id/toolbar_title"
+                    android:maxLines="1"
+                    android:textColor="@color/white"
+                    android:drawableRight="@drawable/ic_arrow_drop_down"
+                    android:drawableTint="@color/black"
+                    android:drawablePadding="@dimen/default_content_padding"
+                    android:layout_marginRight="@dimen/button_padding"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
                 <TextView
                     android:layout_width="wrap_content"

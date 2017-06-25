@@ -59,13 +59,13 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
         String bookId = intent.getStringExtra(Constants.Keys.BOOK_ID);
 
         if (intent.getBooleanExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, false)) {
-            Tabs.add(Constants.Tabs.BOOK);
+            Tabs.add(Constants.BookTabs.BOOK);
         }
         mSelectVerse = intent.getBooleanExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, false);
         mOpenBook = intent.getBooleanExtra(Constants.Keys.OPEN_BOOK, false);
 
-        Tabs.add(Constants.Tabs.CHAPTER);
-        Tabs.add(Constants.Tabs.VERSE);
+        Tabs.add(Constants.BookTabs.CHAPTER);
+        Tabs.add(Constants.BookTabs.VERSE);
 
         mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -153,11 +153,11 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
             Bundle bundle = new Bundle();
             bundle.putBoolean(Constants.Keys.OPEN_BOOK, mOpenBook);
             bundle.putBoolean(Constants.Keys.SELECT_VERSE_FOR_NOTE, mSelectVerse);
-            if (getPageTitle(position).equals(Constants.Tabs.BOOK)) {
+            if (getPageTitle(position).equals(Constants.BookTabs.BOOK)) {
                 bookFragment = new BookFragment();
                 bookFragment.setArguments(bundle);
                 return bookFragment;
-            } else if (getPageTitle(position).equals(Constants.Tabs.CHAPTER)) {
+            } else if (getPageTitle(position).equals(Constants.BookTabs.CHAPTER)) {
                 chapterFragment = new ChapterFragment();
                 bundle.putString(Constants.Keys.BOOK_ID, mBookId);
                 chapterFragment.setArguments(bundle);

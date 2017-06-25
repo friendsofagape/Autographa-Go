@@ -59,10 +59,15 @@ public class Constants {
         V, P, S5, S4, S3, S2, S1;
     }
 
-    public interface Tabs {
+    public interface BookTabs {
         String BOOK = "BOOK";
         String CHAPTER = "CHAPTER";
         String VERSE = "VERSE";
+    }
+
+    public interface LanguageTabs {
+        String LANGUAGE = "LANGUAGE";
+        String VERSION = "VERSION";
     }
 
     public interface TextEditor {
@@ -116,6 +121,8 @@ public class Constants {
         String SOURCE = "source";
         String LICENSE = "license";
         String YEAR = "year";
+
+        String SELECT_BOOK = "select_book";
     }
 
     public interface RequestCodes {
@@ -127,6 +134,7 @@ public class Constants {
         int PERMISSION_STORAGE_BACKUP = 5;
         int APP_SETTINGS_STORAGE_BACKUP = 6;
         int ADD_TO_NOTE = 7;
+        int CHANGE_LANGUAGE_VERSION = 8;
         int BACKUP_ALARM = 8765;
     }
 
