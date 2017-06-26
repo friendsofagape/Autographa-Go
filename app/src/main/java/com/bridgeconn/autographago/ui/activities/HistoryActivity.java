@@ -178,7 +178,6 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
                 new AutographaRepository<SearchModel>().remove(new AllSpecifications.AllHistory(languageCode, versionCode));
                 mHistoryModels.clear();
                 mAdapter.notifyDataSetChanged();
-                mAdapter = null;
                 break;
             }
         }

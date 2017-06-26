@@ -57,4 +57,12 @@ public class VersionFragment extends Fragment implements SelectLanguageAndVersio
 
         return view;
     }
+
+    public void removeItem(int position) {
+        mAdapter.notifyItemRemoved(position);
+    }
+
+    public void notifyDataChanged() {
+        mAdapter.notifyDataSetChanged();
+    }
 }

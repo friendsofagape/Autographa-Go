@@ -1,6 +1,9 @@
 package com.bridgeconn.autographago.ui.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -10,6 +13,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.LanguageModel;
@@ -30,7 +35,7 @@ import java.util.ArrayList;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class SelectLanguageAndVersionActivity extends AppCompatActivity {
+public class SelectLanguageAndVersionActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ArrayList<String> Tabs = new ArrayList<>();
     private ViewPagerAdapter mAdapter;
@@ -40,6 +45,7 @@ public class SelectLanguageAndVersionActivity extends AppCompatActivity {
     private boolean mSelectBook;
     private ArrayList<LanguageModel> languageModelArrayList = new ArrayList<>();
     private ArrayList<VersionModel> versionModelArrayList = new ArrayList<>();
+    private TextView downloadMore;
 
     public interface OnItemClickListener {
         void onItemClick(String languageCode);
@@ -71,6 +77,8 @@ public class SelectLanguageAndVersionActivity extends AppCompatActivity {
 
         mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
+        downloadMore = (TextView) findViewById(R.id.download_more);
+        downloadMore.setOnClickListener(this);
 
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), Tabs, mSelectBook);
         mViewPager.setAdapter(mAdapter);
@@ -79,6 +87,8 @@ public class SelectLanguageAndVersionActivity extends AppCompatActivity {
         mTabLayoutHelper.setAutoAdjustTabModeEnabled(true);
 
         getLanguagesFromDB();
+
+        registerReceiver(onParsingComplete, new IntentFilter(Constants.ACTION.PARSE_COMPLETE));
     }
 
     @Override
@@ -126,6 +136,7 @@ public class SelectLanguageAndVersionActivity extends AppCompatActivity {
             mTabLayoutHelper.release();
             mTabLayoutHelper = null;
         }
+        unregisterReceiver(onParsingComplete);
     }
 
     static LanguageFragment languageFragment;
@@ -186,7 +197,34 @@ public class SelectLanguageAndVersionActivity extends AppCompatActivity {
         return languageFragment.getSelectedLanguageName();
     }
 
+    public void removeLanguage(int position) {
+        languageFragment.removeItem(position);
+        setSelectedLanguage();
+        setVersionModelArrayList(getSelectedLanguageCode());
+        versionFragment.notifyDataChanged();
+    }
+
+    public void removeVersion(int position) {
+        versionFragment.removeItem(position);
+    }
+
+    public void setSelectedLanguage() {
+        languageFragment.setSelected(0);
+    }
+
+    public void removeLanguageWithVersion() {
+        for (int i=0; i<languageModelArrayList.size(); i++) {
+            if (languageModelArrayList.get(i).getLanguageCode().equalsIgnoreCase(getSelectedLanguageCode())) {
+                languageModelArrayList.remove(i);
+                removeLanguage(i);
+                break;
+            }
+        }
+        finish();
+    }
+
     private void getLanguagesFromDB() {
+        languageModelArrayList.clear();
         final Realm realm = Realm.getDefaultInstance();
         ArrayList<LanguageModel> resultList = queryLanguages(realm, new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
         for (LanguageModel languageModel : resultList) {
@@ -239,4 +277,24 @@ public class SelectLanguageAndVersionActivity extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.download_more: {
+                Intent settingsIntent = new Intent(SelectLanguageAndVersionActivity.this, SettingsActivity.class);
+                settingsIntent.putExtra(Constants.Keys.IMPORT_BIBLE, true);
+                startActivity(settingsIntent);
+                break;
+            }
+        }
+    }
+
+    private BroadcastReceiver onParsingComplete = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            getLanguagesFromDB();
+            languageFragment.notifyNewLanguageAdded();
+        }
+    };
 }

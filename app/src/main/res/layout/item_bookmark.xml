@@ -8,22 +8,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 
-    <TextView
-        android:id="@+id/tv_book_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:layout_centerVertical="true"
-        android:textSize="?attr/title_text"
-        android:ellipsize="end" />
-
     <ImageView
         android:id="@+id/delete"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:src="@drawable/ic_delete_forever_white"
+        android:padding="@dimen/button_padding"
         android:tint="@color/colorPrimaryDark"
-        android:layout_width="?attr/button_dimen"
-        android:layout_height="?attr/button_dimen" />
+        android:layout_width="@dimen/button_l"
+        android:layout_height="@dimen/button_l" />
+
+    <TextView
+        android:id="@+id/tv_book_name"
+        android:layout_width="match_parent"
+        android:layout_toLeftOf="@id/delete"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:layout_centerVertical="true"
+        android:textSize="?attr/title_text"
+        android:ellipsize="end" />
 
 </RelativeLayout>

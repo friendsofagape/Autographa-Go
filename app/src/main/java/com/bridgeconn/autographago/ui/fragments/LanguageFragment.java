@@ -81,4 +81,12 @@ public class LanguageFragment extends Fragment implements SelectLanguageAndVersi
         }
         return null;
     }
+
+    public void removeItem(int position) {
+        mAdapter.notifyItemRemoved(position);
+    }
+
+    public void notifyNewLanguageAdded() {
+        mAdapter.notifyDataSetChanged();
+    }
 }

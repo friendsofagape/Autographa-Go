@@ -47,10 +47,10 @@ public class LanguageVersionAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         RecyclerView.ViewHolder viewHolder = null;
         if (viewType == ViewTypes.LANGUAGE) {
             viewHolder = new LanguageViewHolder(mLayoutInflater.inflate(
-                    R.layout.item_book_fragment, parent, false), mFragment, mLanguageModels);
+                    R.layout.item_bookmark, parent, false), mFragment, mLanguageModels);
         } else if (viewType == ViewTypes.VERSION) {
             viewHolder = new VersionViewHolder(mLayoutInflater.inflate(
-                    R.layout.item_book_fragment, parent, false), mFragment, mVersionModels, mSelectBook);
+                    R.layout.item_bookmark, parent, false), mFragment, mVersionModels, mSelectBook);
         }
         return viewHolder;
     }

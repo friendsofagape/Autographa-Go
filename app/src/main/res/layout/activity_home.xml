@@ -32,7 +32,6 @@
 
                 <TextView
                     android:id="@+id/tv_language_version"
-                    android:layout_toRightOf="@id/toolbar_title"
                     android:maxLines="1"
                     android:textColor="@color/white"
                     android:drawableRight="@drawable/ic_arrow_drop_down"
@@ -41,7 +40,7 @@
                     android:layout_marginRight="@dimen/button_padding"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
                 <TextView
@@ -52,10 +51,11 @@
                     android:textColor="@color/white"
                     android:text="@string/app_name"
                     android:layout_centerVertical="true"
-                    android:gravity="center"
+                    android:gravity="left|center_vertical"
                     android:textSize="?attr/title_text"
                     android:layout_marginRight="@dimen/activity_horizontal_margin"
                     android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@id/tv_language_version"
                     android:id="@+id/toolbar_title" />
 
             </RelativeLayout>

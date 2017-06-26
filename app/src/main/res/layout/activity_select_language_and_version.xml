@@ -63,11 +63,28 @@
             android:layout_below="@id/tab_layout"
             android:background="@drawable/gradient_bottom"/>
 
+        <TextView
+            android:id="@+id/download_more"
+            android:elevation="2dp"
+            android:padding="@dimen/default_content_padding"
+            android:drawableRight="@drawable/ic_file_download_white"
+            android:background="@color/colorPrimary"
+            android:drawablePadding="@dimen/default_content_padding"
+            android:layout_alignParentBottom="true"
+            android:text="@string/import_bible"
+            android:textColor="@color/white"
+            android:textSize="@dimen/title_text"
+            android:layout_centerInParent="true"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
         <com.bridgeconn.autographago.ui.customviews.NonSwipeableViewPager
             android:id="@+id/viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:swipeable="false"
+            android:layout_above="@id/download_more"
             android:layout_below="@id/tab_layout" />
 
     </RelativeLayout>
