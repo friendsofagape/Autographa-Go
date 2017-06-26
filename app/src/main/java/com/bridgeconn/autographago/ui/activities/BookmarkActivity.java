@@ -64,6 +64,11 @@ public class BookmarkActivity extends AppCompatActivity {
         mRecyclerViewBookmarks.setLayoutManager(new LinearLayoutManager(this));
         mBookmarkAdapter = new BookmarkAdapter(this, mBookmarkModels);
         mRecyclerViewBookmarks.setAdapter(mBookmarkAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         getBookmarks();
     }

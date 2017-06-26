@@ -69,7 +69,7 @@
                         android:textColor="@color/white"
                         android:textSize="@dimen/button_text"
                         android:textAllCaps="true"
-                        android:background="@drawable/border_all"
+                        android:background="@drawable/border_noleft"
                         android:id="@+id/book_version" />
 
                 </LinearLayout>
