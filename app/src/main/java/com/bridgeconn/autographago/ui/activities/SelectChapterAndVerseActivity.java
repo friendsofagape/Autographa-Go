@@ -153,18 +153,17 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
             Bundle bundle = new Bundle();
             bundle.putBoolean(Constants.Keys.OPEN_BOOK, mOpenBook);
             bundle.putBoolean(Constants.Keys.SELECT_VERSE_FOR_NOTE, mSelectVerse);
+            bundle.putString(Constants.Keys.BOOK_ID, mBookId);
             if (getPageTitle(position).equals(Constants.BookTabs.BOOK)) {
                 bookFragment = new BookFragment();
                 bookFragment.setArguments(bundle);
                 return bookFragment;
             } else if (getPageTitle(position).equals(Constants.BookTabs.CHAPTER)) {
                 chapterFragment = new ChapterFragment();
-                bundle.putString(Constants.Keys.BOOK_ID, mBookId);
                 chapterFragment.setArguments(bundle);
                 return chapterFragment;
             } else {
                 verseFragment = new VerseFragment();
-                bundle.putString(Constants.Keys.BOOK_ID, mBookId);
                 bundle.putInt(Constants.Keys.CHAPTER_NO, 1);
                 verseFragment.setArguments(bundle);
                 return verseFragment;

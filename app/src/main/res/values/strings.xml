@@ -107,7 +107,8 @@
     <string name="bullet_3">Bookmark and highlight your favourite verses \n</string>
     <string name="bullet_4">Note taking feature with clickable references \n</string>
     <string name="bullet_5">Search option \n\n</string>
-    <string name="publishing">Published by Friends of Agape 2017 (MIT License) \nwww.friendsofagape.org \n</string>
+    <string name="publishing">Published by Friends of Agape 2017 (MIT License) \nwww.friendsofagape.org \n\n</string>
+    <string name="repo_link">Link to the Github repository for this project: https://github.com/friendsofagape/Autographa-Go \n\n</string>
 
     <string name="download_more">More Languages</string>
 

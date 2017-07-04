@@ -399,6 +399,13 @@ public class EditNoteActivity extends AppCompatActivity implements View.OnClickL
             new AutographaRepository<NotesModel>().add(notesModel);
         }
         Toast.makeText(EditNoteActivity.this, getString(R.string.note_saved), Toast.LENGTH_SHORT).show();
+
+        String verse = getIntent().getStringExtra(Constants.Keys.VERSE_NO);
+        int chapter = getIntent().getIntExtra(Constants.Keys.CHAPTER_NO, 1);
+        Intent output = new Intent();
+        output.putExtra(Constants.Keys.VERSE_NO, verse);
+        output.putExtra(Constants.Keys.CHAPTER_NO, chapter);
+        setResult(RESULT_OK, output);
         finish();
     }
 

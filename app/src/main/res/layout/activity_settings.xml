@@ -243,7 +243,7 @@
                         android:drawablePadding="@dimen/default_content_padding"
                         android:text="@string/about_us"
                         android:textSize="?attr/title_text"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
                 </RelativeLayout>

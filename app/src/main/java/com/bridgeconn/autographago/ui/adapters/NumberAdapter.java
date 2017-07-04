@@ -62,10 +62,10 @@ public class NumberAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         RecyclerView.ViewHolder viewHolder = null;
         if (viewType == ViewTypes.BOOK) {
             viewHolder = new BookNameViewHolder(mLayoutInflater.inflate(
-                    R.layout.item_book_fragment, parent, false), mFragment, mBookModelArrayList);
+                    R.layout.item_book_fragment, parent, false), mFragment, mBookModelArrayList, mOpenBook, mSelectVerse);
         } else if (viewType == ViewTypes.CHAPTER) {
             viewHolder = new ChapterNumberViewHolder(mLayoutInflater.inflate(
-                    R.layout.item_grid_chapter_verse, parent, false), mFragment, mChapterModels, mBookId);
+                    R.layout.item_grid_chapter_verse, parent, false), mFragment, mChapterModels, mBookId, mOpenBook, mSelectVerse);
         } else if (viewType == ViewTypes.VERSE) {
             viewHolder = new VerseNumberViewHolder(mLayoutInflater.inflate(
                     R.layout.item_grid_chapter_verse, parent, false), mFragment, mVerseComponentsModels, mChapterNumber, mBookId, mOpenBook, mSelectVerse);

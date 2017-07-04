@@ -513,8 +513,16 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         }
         mAdapter.notifyDataSetChanged();
 
-//        Intent intent = new Intent(this, EditNoteActivity.class);
-        Intent intent = new Intent(this, NotesActivity.class);
+        String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+        String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
+        int count  = new AutographaRepository<NotesModel>().count(new AllSpecifications.AllNotes(languageCode, versionCode));
+
+        Intent intent;
+        if (count > 0) {
+            intent = new Intent(this, NotesActivity.class);
+        } else {
+            intent = new Intent(this, EditNoteActivity.class);
+        }
         int position = mLayoutManager.findFirstVisibleItemPosition();
         int chapterNumber = findChapterNumber(position);
         String verseNo = findVerseNumber(position);
@@ -667,7 +675,7 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent(this, SelectChapterAndVerseActivity.class);
                 intent.putExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, true);
                 intent.putExtra(Constants.Keys.OPEN_BOOK, true);
-                intent.putExtra(Constants.Keys.BOOK_ID, Constants.CONTAINER_BOOKS_LIST.get(0).getBookId());
+                intent.putExtra(Constants.Keys.BOOK_ID, mBookId);
                 startActivityForResult(intent, Constants.RequestCodes.CHANGE_BOOK);
                 break;
             }

@@ -59,7 +59,7 @@ import io.realm.RealmResults;
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener,
         SeekBar.OnSeekBarChangeListener {
 
-    private TextView mTvDownload, mOpenHints;
+    private TextView mTvDownload;
     private ImageView mDayMode, mNightMode;
     private LinearLayout mInflateLayout;
     private AppCompatSeekBar mSeekBarTextSize;
@@ -102,14 +102,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         mTvDownload = (TextView) findViewById(R.id.download_bible);
-        mOpenHints = (TextView) findViewById(R.id.open_hints);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mDayMode = (ImageView) findViewById(R.id.iv_day_mode);
         mNightMode = (ImageView) findViewById(R.id.iv_night_mode);
         mInflateLayout = (LinearLayout) findViewById(R.id.inflate_layout);
         mSeekBarTextSize = (AppCompatSeekBar) findViewById(R.id.seekbar_text_size);
 
-        mOpenHints.setOnClickListener(this);
+        findViewById(R.id.open_hints).setOnClickListener(this);
         mTvDownload.setOnClickListener(this);
         mDayMode.setOnClickListener(this);
         mNightMode.setOnClickListener(this);

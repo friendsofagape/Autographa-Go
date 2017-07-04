@@ -54,6 +54,7 @@ public class AboutPageActivity extends AppCompatActivity {
         Spannable spannable9 = new SpannableString(getResources().getString(R.string.bullet_4));
         Spannable spannable10 = new SpannableString(getResources().getString(R.string.bullet_5));
         Spannable spannable11 = new SpannableString(getResources().getString(R.string.publishing));
+        Spannable spannable12 = new SpannableString(getResources().getString(R.string.repo_link));
 
         spannable1.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), 0, spannable1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannable3.setSpan(new StyleSpan(Typeface.BOLD), 0, spannable3.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -82,6 +83,7 @@ public class AboutPageActivity extends AppCompatActivity {
         spannableStringBuilder.append(spannable9);
         spannableStringBuilder.append(spannable10);
         spannableStringBuilder.append(spannable11);
+        spannableStringBuilder.append(spannable12);
 
         tvAboutUs.setText(spannableStringBuilder);
     }

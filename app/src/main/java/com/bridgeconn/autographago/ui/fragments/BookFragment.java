@@ -23,6 +23,7 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
     private String mBookId;
     private ArrayList<BookIdModel> mBookModelArrayList = new ArrayList<>();
     private boolean mOpenBook, mSelectVerse;
+    private int scrollPosition = 0;
 
     @Override
     public void onItemClick(int number, String bookId) {
@@ -36,6 +37,7 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
         super.onCreate(savedInstanceState);
 
         mOpenBook = getArguments().getBoolean(Constants.Keys.OPEN_BOOK);
+        mBookId = getArguments().getString(Constants.Keys.BOOK_ID);
         mSelectVerse = getArguments().getBoolean(Constants.Keys.SELECT_VERSE_FOR_NOTE);
 
         for (BookIdModel bookModel : Constants.CONTAINER_BOOKS_LIST) {
@@ -43,6 +45,15 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
         }
         if (mBookModelArrayList.size() > 0) {
             setSelected(0);
+            if (mBookId != null) {
+                for (int i=0; i<mBookModelArrayList.size(); i++) {
+                    if (mBookModelArrayList.get(i).getBookId().equals(mBookId)) {
+                        setSelected(i);
+                        scrollPosition = i;
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -56,6 +67,7 @@ public class BookFragment extends Fragment implements SelectChapterAndVerseActiv
 
         mAdapter = new NumberAdapter(this, null, mBookModelArrayList, null, 0, mBookId, mOpenBook, mSelectVerse);
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.getLayoutManager().scrollToPosition(scrollPosition);
 
         return view;
     }
