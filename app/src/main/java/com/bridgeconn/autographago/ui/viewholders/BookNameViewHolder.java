@@ -1,6 +1,7 @@
 package com.bridgeconn.autographago.ui.viewholders;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -48,13 +49,14 @@ public class BookNameViewHolder extends RecyclerView.ViewHolder implements View.
 
     public void onBind(final int position) {
         BookIdModel bookModel = mBookModelArrayList.get(position);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (bookModel.isSelected()) {
-                mTvChapterNumber.setBackgroundColor(mFragment.getResources().getColor(R.color.black_40, null));
+//                mTvChapterNumber.setBackgroundColor(mFragment.getResources().getColor(R.color.black_40, null));
+                mTvChapterNumber.setBackgroundColor(Color.LTGRAY);
             } else {
-                mTvChapterNumber.setBackgroundColor(0);
+                mTvChapterNumber.setBackgroundColor(Color.WHITE);
             }
-        }
+//        }
         mTvChapterNumber.setText(bookModel.getBookName());
         mTvChapterNumber.setTag(position);
         mTvChapterNumber.setOnClickListener(this);

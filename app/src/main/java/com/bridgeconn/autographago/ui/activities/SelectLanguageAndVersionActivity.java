@@ -43,6 +43,8 @@ public class SelectLanguageAndVersionActivity extends AppCompatActivity implemen
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
     private boolean mSelectBook;
+    private String languageCode, versionCode, bookId, verseNumber;
+    private int chapterNumber;
     private ArrayList<LanguageModel> languageModelArrayList = new ArrayList<>();
     private ArrayList<VersionModel> versionModelArrayList = new ArrayList<>();
     private TextView downloadMore;
@@ -70,7 +72,13 @@ public class SelectLanguageAndVersionActivity extends AppCompatActivity implemen
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         Intent intent = getIntent();
+
         mSelectBook = intent.getBooleanExtra(Constants.Keys.SELECT_BOOK, false);
+        languageCode = intent.getStringExtra(Constants.Keys.LANGUAGE_CODE);
+        versionCode = intent.getStringExtra(Constants.Keys.VERSION_CODE);
+        bookId = intent.getStringExtra(Constants.Keys.BOOK_ID);
+        chapterNumber = intent.getIntExtra(Constants.Keys.CHAPTER_NO, 1);
+        verseNumber = intent.getStringExtra(Constants.Keys.VERSE_NO);
 
         Tabs.add(Constants.LanguageTabs.LANGUAGE);
         Tabs.add(Constants.LanguageTabs.VERSION);
@@ -80,7 +88,7 @@ public class SelectLanguageAndVersionActivity extends AppCompatActivity implemen
         downloadMore = (TextView) findViewById(R.id.download_more);
         downloadMore.setOnClickListener(this);
 
-        mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), Tabs, mSelectBook);
+        mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), Tabs, mSelectBook, languageCode, versionCode);
         mViewPager.setAdapter(mAdapter);
 
         mTabLayoutHelper = new TabLayoutHelper(mTabLayout, mViewPager);
@@ -146,17 +154,22 @@ public class SelectLanguageAndVersionActivity extends AppCompatActivity implemen
 
         private ArrayList<String> TabsList;
         private boolean mSelectBook;
+        private String mLanguageCode, mVersionCode;
 
-        public ViewPagerAdapter(FragmentManager fragmentManager, ArrayList<String> tabs, boolean selectBook) {
+        public ViewPagerAdapter(FragmentManager fragmentManager, ArrayList<String> tabs, boolean selectBook, String languageCode, String versionCode) {
             super(fragmentManager);
             TabsList = tabs;
             mSelectBook = selectBook;
+            mLanguageCode = languageCode;
+            mVersionCode = versionCode;
         }
 
         @Override
         public Fragment getItem(int position) {
             Bundle bundle = new Bundle();
             bundle.putBoolean(Constants.Keys.SELECT_BOOK, mSelectBook);
+            bundle.putString(Constants.Keys.LANGUAGE_CODE, mLanguageCode);
+            bundle.putString(Constants.Keys.VERSION_CODE, mVersionCode);
             if (getPageTitle(position).equals(Constants.LanguageTabs.LANGUAGE)) {
                 languageFragment = new LanguageFragment();
                 languageFragment.setArguments(bundle);
@@ -276,6 +289,18 @@ public class SelectLanguageAndVersionActivity extends AppCompatActivity implemen
                 break;
             }
         }
+    }
+
+    public String getBookId() {
+        return bookId;
+    }
+
+    public String getVerseNumber() {
+        return verseNumber;
+    }
+
+    public int getChapterNumber() {
+        return chapterNumber;
     }
 
     @Override

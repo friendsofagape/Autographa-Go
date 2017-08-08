@@ -29,19 +29,36 @@ public class VersionFragment extends Fragment implements SelectLanguageAndVersio
         mLanguageCode = languageCode;
         ((SelectLanguageAndVersionActivity) getActivity()).setVersionModelArrayList(mLanguageCode);
         mVersionModels = ((SelectLanguageAndVersionActivity) getActivity()).getVersionModelArrayList();
-        mAdapter.notifyDataSetChanged();
+        setSelected(0);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mLanguageCode = ((SelectLanguageAndVersionActivity) getActivity()).getLanguageModelArrayList().get(0).getLanguageCode();
+        mLanguageCode = ((SelectLanguageAndVersionActivity) getActivity()).getSelectedLanguageCode();
+        if (mLanguageCode == null) {
+            getActivity().finish();
+            return;
+        }
         ((SelectLanguageAndVersionActivity) getActivity()).setVersionModelArrayList(mLanguageCode);
 
         mSelectBook = getArguments().getBoolean(Constants.Keys.SELECT_BOOK);
+        String versionCode = getArguments().getString(Constants.Keys.VERSION_CODE);
 
         mVersionModels = ((SelectLanguageAndVersionActivity) getActivity()).getVersionModelArrayList();
+
+        if (mVersionModels.size() > 0) {
+            setSelected(0);
+            if (versionCode != null) {
+                for (int i=0; i<mVersionModels.size(); i++) {
+                    if (mVersionModels.get(i).getVersionCode().equals(versionCode)) {
+                        setSelected(i);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -60,6 +77,24 @@ public class VersionFragment extends Fragment implements SelectLanguageAndVersio
 
     public void removeItem(int position) {
         mAdapter.notifyItemRemoved(position);
+    }
+
+    public void setSelected(int position) {
+        if (mVersionModels.size() == 0) {
+            if (mAdapter != null) {
+                mAdapter.notifyDataSetChanged();
+            }
+            return;
+        }
+        for (int i = 0; i< mVersionModels.size(); i++) {
+            mVersionModels.get(i).setSelected(false);
+        }
+        if (position >= 0) {
+            mVersionModels.get(position).setSelected(true);
+        }
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     public void notifyDataChanged() {

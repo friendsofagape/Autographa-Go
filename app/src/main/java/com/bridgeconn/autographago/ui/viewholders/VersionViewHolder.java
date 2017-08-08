@@ -2,6 +2,7 @@ package com.bridgeconn.autographago.ui.viewholders;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +25,7 @@ import static android.app.Activity.RESULT_OK;
 public class VersionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private TextView mTvChapterNumber;
+    private View mView;
     private ImageView mDelete;
     private Fragment mFragment;
     private ArrayList<VersionModel> mVersionModelArrayList;
@@ -31,6 +33,7 @@ public class VersionViewHolder extends RecyclerView.ViewHolder implements View.O
 
     public VersionViewHolder(View itemView, Fragment fragment, ArrayList<VersionModel> versionModelArrayList, boolean selectBook) {
         super(itemView);
+        mView = itemView;
         mTvChapterNumber = (TextView) itemView.findViewById(R.id.tv_book_name);
         mDelete = (ImageView) itemView.findViewById(R.id.delete);
 
@@ -42,11 +45,12 @@ public class VersionViewHolder extends RecyclerView.ViewHolder implements View.O
     public void onBind(final int position) {
         VersionModel versionModel = mVersionModelArrayList.get(position);
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            if (versionModel.isSelected()) {
+            if (versionModel.isSelected()) {
 //                mTvChapterNumber.setBackgroundColor(mFragment.getResources().getColor(R.color.black_40, null));
-//            } else {
-//                mTvChapterNumber.setBackgroundColor(0);
-//            }
+                mView.setBackgroundColor(Color.LTGRAY);
+            } else {
+                mView.setBackgroundColor(Color.WHITE);
+            }
 //        }
         mTvChapterNumber.setText(versionModel.getVersionCode() + "  " + versionModel.getVersionName());
         mTvChapterNumber.setTag(position);
@@ -71,6 +75,9 @@ public class VersionViewHolder extends RecyclerView.ViewHolder implements View.O
                 output.putExtra(Constants.Keys.LANGUAGE_CODE, ((SelectLanguageAndVersionActivity) mFragment.getActivity()).getSelectedLanguageCode());
                 output.putExtra(Constants.Keys.VERSION_CODE, mVersionModelArrayList.get(position).getVersionCode());
                 output.putExtra(Constants.Keys.LANGUAGE_NAME, ((SelectLanguageAndVersionActivity) mFragment.getActivity()).getSelectedLanguageName());
+                output.putExtra(Constants.Keys.BOOK_ID, ((SelectLanguageAndVersionActivity) mFragment.getActivity()).getBookId());
+                output.putExtra(Constants.Keys.CHAPTER_NO, ((SelectLanguageAndVersionActivity) mFragment.getActivity()).getChapterNumber());
+                output.putExtra(Constants.Keys.VERSE_NO, ((SelectLanguageAndVersionActivity) mFragment.getActivity()).getVerseNumber());
 
                 mFragment.getActivity().setResult(RESULT_OK, output);
                 mFragment.getActivity().finish();
@@ -102,6 +109,7 @@ public class VersionViewHolder extends RecyclerView.ViewHolder implements View.O
             ((SelectLanguageAndVersionActivity) mFragment.getActivity()).setSelectedLanguage();
         }
     }
+
 
     private void showDiscardDialog(final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mFragment.getActivity());

@@ -177,7 +177,8 @@ public class HistoryActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.clear_history: {
                 new AutographaRepository<SearchModel>().remove(new AllSpecifications.AllHistory(languageCode, versionCode));
                 mHistoryModels.clear();
-                mAdapter.notifyDataSetChanged();
+                if (mAdapter != null)
+                    mAdapter.notifyDataSetChanged();
                 break;
             }
         }

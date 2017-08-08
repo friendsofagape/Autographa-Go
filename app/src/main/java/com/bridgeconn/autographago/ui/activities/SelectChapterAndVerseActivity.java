@@ -30,6 +30,8 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
     private boolean mOpenBook, mSelectVerse;
+    private String bookId, verseNumber;
+    private int chapterNumber;
 
     public interface OnItemClickListener {
         void onItemClick(int position, String bookId);
@@ -56,7 +58,9 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        String bookId = intent.getStringExtra(Constants.Keys.BOOK_ID);
+        bookId = intent.getStringExtra(Constants.Keys.BOOK_ID);
+        chapterNumber = intent.getIntExtra(Constants.Keys.CHAPTER_NO, 1);
+        verseNumber = intent.getStringExtra(Constants.Keys.VERSE_NO);
 
         if (intent.getBooleanExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, false)) {
             Tabs.add(Constants.BookTabs.BOOK);
@@ -74,7 +78,7 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
 
             getSupportActionBar().setTitle(getString(R.string.title_books));
 
-            mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), Tabs, bookId, mOpenBook, mSelectVerse);
+            mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), Tabs, bookId, mOpenBook, mSelectVerse, chapterNumber);
             mViewPager.setAdapter(mAdapter);
 
             mTabLayoutHelper = new TabLayoutHelper(mTabLayout, mViewPager);
@@ -139,13 +143,15 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
         private String mBookId;
         private boolean mOpenBook;
         private boolean mSelectVerse;
+        private int mChapterNum;
 
-        public ViewPagerAdapter(FragmentManager fragmentManager, ArrayList<String> tabs, String bookId, boolean openBook, boolean selectVerse) {
+        public ViewPagerAdapter(FragmentManager fragmentManager, ArrayList<String> tabs, String bookId, boolean openBook, boolean selectVerse, int chapterNum) {
             super(fragmentManager);
             TabsList = tabs;
             mBookId = bookId;
             mOpenBook = openBook;
             mSelectVerse = selectVerse;
+            mChapterNum = chapterNum;
         }
 
         @Override
@@ -160,11 +166,12 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
                 return bookFragment;
             } else if (getPageTitle(position).equals(Constants.BookTabs.CHAPTER)) {
                 chapterFragment = new ChapterFragment();
+                bundle.putInt(Constants.Keys.CHAPTER_NO, mChapterNum);
                 chapterFragment.setArguments(bundle);
                 return chapterFragment;
             } else {
                 verseFragment = new VerseFragment();
-                bundle.putInt(Constants.Keys.CHAPTER_NO, 1);
+                bundle.putInt(Constants.Keys.CHAPTER_NO, mChapterNum);
                 verseFragment.setArguments(bundle);
                 return verseFragment;
             }
@@ -183,11 +190,17 @@ public class SelectChapterAndVerseActivity extends AppCompatActivity {
     }
 
     public void openVersePage(int chapterNumber, String bookId) {
+        if (mTabLayout == null) {
+            return;
+        }
         mTabLayout.getTabAt(mTabLayout.getSelectedTabPosition() + 1).select();
         verseFragment.onItemClick(chapterNumber, bookId);
     }
 
     public void openChapterPage(int bookPosition, String bookId) {
+        if (mTabLayout == null) {
+            return;
+        }
         mTabLayout.getTabAt(mTabLayout.getSelectedTabPosition() + 1).select();
         chapterFragment.onItemClick(bookPosition, bookId);
     }

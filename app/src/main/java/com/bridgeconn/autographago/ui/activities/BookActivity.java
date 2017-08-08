@@ -10,19 +10,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookIdModel;
@@ -40,7 +36,6 @@ import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ormutils.Mapper;
 import com.bridgeconn.autographago.ormutils.Specification;
 import com.bridgeconn.autographago.ui.adapters.ChapterAdapter;
-import com.bridgeconn.autographago.ui.adapters.DownloadDialogAdapter;
 import com.bridgeconn.autographago.utils.Constants;
 import com.bridgeconn.autographago.utils.SharedPrefs;
 import com.bridgeconn.autographago.utils.UtilFunctions;
@@ -50,7 +45,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -122,7 +116,9 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         );
         mToolbarBookVersion.setText(SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB));
 
-        findCopyrightData();
+        String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+        String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
+        findCopyrightData(languageCode, versionCode);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list_chapters);
 
@@ -207,11 +203,9 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         addGesture();
     }
 
-    private void findCopyrightData() {
+    private void findCopyrightData(String languageCode, String versionCode) {
         final Realm realm = Realm.getDefaultInstance();
 
-        String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
-        String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.ULB);
         ArrayList<VersionModel> results = queryVersion(realm, new AllSpecifications.VersionModelByCode(languageCode, versionCode), new AllMappers.VersionMapper());
 
         if (results.size() > 0) {
@@ -676,15 +670,28 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                 intent.putExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, true);
                 intent.putExtra(Constants.Keys.OPEN_BOOK, true);
                 intent.putExtra(Constants.Keys.BOOK_ID, mBookId);
+                int position = mLayoutManager.findFirstVisibleItemPosition();
+                int chapterNumber = findChapterNumber(position);
+                String verseNumber = findVerseNumber(position);
+                intent.putExtra(Constants.Keys.CHAPTER_NO, chapterNumber);
+                intent.putExtra(Constants.Keys.VERSE_NO, verseNumber);
                 startActivityForResult(intent, Constants.RequestCodes.CHANGE_BOOK);
                 break;
             }
             case R.id.book_version: {
                 Intent intent = new Intent(this, SelectLanguageAndVersionActivity.class);
+                String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+                String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.UDB);
                 intent.putExtra(Constants.Keys.SELECT_BOOK, false);
+                intent.putExtra(Constants.Keys.LANGUAGE_CODE, languageCode);
+                intent.putExtra(Constants.Keys.VERSION_CODE, versionCode);
+                intent.putExtra(Constants.Keys.BOOK_ID, mBookId);
+                int position = mLayoutManager.findFirstVisibleItemPosition();
+                int chapterNumber = findChapterNumber(position);
+                String verseNumber = findVerseNumber(position);
+                intent.putExtra(Constants.Keys.CHAPTER_NO, chapterNumber);
+                intent.putExtra(Constants.Keys.VERSE_NO, verseNumber);
                 startActivityForResult(intent, Constants.RequestCodes.CHANGE_LANGUAGE_VERSION);
-//                String languageName = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, "English");
-//                String versionCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, Constants.VersionCodes.UDB);
 //                showAvailableVersionsDialog(languageName, versionCode);
                 break;
             }
@@ -700,85 +707,20 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
         return resultsToReturn;
     }
 
-    private void showAvailableVersionsDialog(String language, String currentVersionCode) {
-        List<String> versions = new ArrayList<>();
-        Realm realm = Realm.getDefaultInstance();
-        ArrayList<LanguageModel> languageModels = queryVersions(realm, new AllSpecifications.AllLanguages(), new AllMappers.LanguageMapper());
-        for (LanguageModel languageModel : languageModels) {
-            if (languageModel.getLanguageName().equalsIgnoreCase(language)) {
-                for (VersionModel versionModel : languageModel.getVersionModels()) {
-                    if (currentVersionCode.equals(versionModel.getVersionCode())) {
-                        continue;
-                    } else {
-                        versions.add(versionModel.getVersionCode());
-                    }
-                }
-            }
-        }
-        realm.close();
-        if (isFinishing()) {
-            return;
-        }
-
-        if (versions.size() == 0) {
-            Toast.makeText(this, getResources().getString(R.string.no_new_versions_available), Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        AlertDialog.Builder builder = null;
-        switch (SharedPrefs.getReadingMode()) {
-            case Day: {
-                builder = new AlertDialog.Builder(this, R.style.DialogThemeLight);
-                break;
-            }
-            case Night: {
-                builder = new AlertDialog.Builder(this, R.style.DialogThemeDark);
-                break;
-            }
-        }
-
-        final View view = LayoutInflater.from(this).inflate(R.layout.dialog_languages, (ViewGroup) findViewById(android.R.id.content), false);
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list_items);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
-        builder.setView(view);
-
-        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            int maxHeight = UtilFunctions.dpToPx(BookActivity.this, 300);
-
-            @Override
-            public void onGlobalLayout() {
-                if (view.getHeight() > maxHeight)
-                    view.getLayoutParams().height = maxHeight;
-            }
-        });
-
-        builder.setNegativeButton(getString(R.string.cancel).toUpperCase(), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        builder.setTitle(getString(R.string.select_version));
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        DownloadDialogAdapter dialogAdapter = new DownloadDialogAdapter(this, dialog, null, versions, language);
-        recyclerView.setAdapter(dialogAdapter);
-    }
-
+    /**
+     * IGNORE ** NOT GETTING CALLED FRO ANYWHERE CURRENTLY
+     * @param versionCode
+     */
     public void changeLanguageVersionOfBook(String versionCode) {
-        SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
-        String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
-        new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
-
-        Intent intent = new Intent(this, SelectChapterAndVerseActivity.class);
-        intent.putExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, true);
-        intent.putExtra(Constants.Keys.OPEN_BOOK, true);
-        intent.putExtra(Constants.Keys.BOOK_ID, Constants.CONTAINER_BOOKS_LIST.get(0).getBookId());
-        startActivityForResult(intent, Constants.RequestCodes.CHANGE_BOOK);
+//        SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
+//        String languageCode = SharedPrefs.getString(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, "ENG");
+//        new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
+//
+//        Intent intent = new Intent(this, SelectChapterAndVerseActivity.class);
+//        intent.putExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, true);
+//        intent.putExtra(Constants.Keys.OPEN_BOOK, true);
+//        intent.putExtra(Constants.Keys.BOOK_ID, Constants.CONTAINER_BOOKS_LIST.get(0).getBookId());
+//        startActivityForResult(intent, Constants.RequestCodes.CHANGE_BOOK);
     }
 
     public void showBottomBar() {
@@ -910,22 +852,101 @@ public class BookActivity extends AppCompatActivity implements View.OnClickListe
                     String languageCode = data.getStringExtra(Constants.Keys.LANGUAGE_CODE);
                     String versionCode = data.getStringExtra(Constants.Keys.VERSION_CODE);
                     String languageName = data.getStringExtra(Constants.Keys.LANGUAGE_NAME);
+                    String bookId = data.getStringExtra(Constants.Keys.BOOK_ID);
+                    int chapterNum = data.getIntExtra(Constants.Keys.CHAPTER_NO, 1);
+                    String verseNum = data.getStringExtra(Constants.Keys.VERSE_NO);
 
-                    SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
-                    SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, languageCode);
-                    SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, languageName);
+                    int verNumberOne = Integer.parseInt(verseNum.split("-")[0]);
 
-                    new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
+                    if (findInDB(languageCode, versionCode, bookId, chapterNum, verNumberOne) != null) {
+                        SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_VERSION_CODE, versionCode);
+                        SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_LANGUAGE_CODE, languageCode);
+                        SharedPrefs.putStringInstant(Constants.PrefKeys.LAST_OPEN_LANGUAGE_NAME, languageName);
+                        new AutographaRepository<LanguageModel>().addToNewContainer(languageCode, versionCode);
 
-                    Intent intent = new Intent(this, SelectChapterAndVerseActivity.class);
-                    intent.putExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, true);
-                    intent.putExtra(Constants.Keys.OPEN_BOOK, true);
-                    intent.putExtra(Constants.Keys.BOOK_ID, Constants.CONTAINER_BOOKS_LIST.get(0).getBookId());
-                    startActivityForResult(intent, Constants.RequestCodes.CHANGE_BOOK);
+                        addAndOpenBook(languageCode, versionCode, bookId, chapterNum, verseNum);
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setTitle(getString(R.string.reference_not_found, languageName, versionCode));
+
+                        String positiveText = getString(R.string.ok);
+                        builder.setPositiveButton(positiveText,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                });
+
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+
+//                    Intent intent = new Intent(this, SelectChapterAndVerseActivity.class);
+//                    intent.putExtra(Constants.Keys.SELECT_VERSE_FOR_NOTE, true);
+//                    intent.putExtra(Constants.Keys.OPEN_BOOK, true);
+//                    intent.putExtra(Constants.Keys.BOOK_ID, Constants.CONTAINER_BOOKS_LIST.get(0).getBookId());
+//                    startActivityForResult(intent, Constants.RequestCodes.CHANGE_BOOK);
                 }
                 break;
             }
         }
+    }
+
+    private String findInDB(String language, String version, String bookId, int chapterNum, int verseNum) {
+        final Realm realm = Realm.getDefaultInstance();
+        final RealmResults<LanguageModel> realmResults = new AllSpecifications.AllLanguages().generateResults(realm);
+
+        for (int i=0; i<realmResults.size(); i++) {
+            if (realmResults.get(i).getLanguageCode().equalsIgnoreCase(language)) {
+                for (int j = 0; j < realmResults.get(i).getVersionModels().size(); j++) {
+                    if (realmResults.get(i).getVersionModels().get(j).getVersionCode().equalsIgnoreCase(version)) {
+                        for (int k = 0; k < realmResults.get(i).getVersionModels().get(j).getBookModels().size(); k++) {
+                            if (realmResults.get(i).getVersionModels().get(j).getBookModels().get(k).getBookId().equals(bookId)) {
+                                for (int l = 0; l < realmResults.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().size(); l++) {
+                                    if (realmResults.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getChapterNumber() == chapterNum) {
+                                        for (int m = 0; m < realmResults.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getVerseComponentsModels().size(); m++) {
+                                            String verseNumber = realmResults.get(i).getVersionModels().get(j).getBookModels().get(k).getChapterModels().get(l).getVerseComponentsModels().get(m).getVerseNumber();
+                                            int verNumberOne = Integer.parseInt(verseNumber.split("-")[0]);
+                                            if (verNumberOne == verseNum) {
+                                                return verseNumber;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private void addAndOpenBook(String languageCode, String versionCode, String bookId, int chapterNum, String verseNum) {
+        mBookId = bookId;
+        findCopyrightData(languageCode, versionCode);
+        getNotesFromDB();
+        mBookModel = getBookModel(mBookId);
+
+        if (mBookModel != null) {
+            mToolBarTitle.setText(mBookModel.getBookName() + " " + chapterNum);
+            mToolbarBookVersion.setText(versionCode);
+
+            mChapterModels.clear();
+            for (ChapterModel chapterModel : mBookModel.getChapterModels()) {
+                mChapterModels.add(chapterModel);
+            }
+            mBookMarkList.clear();
+            for (RealmInteger realmInteger : mBookModel.getBookmarksList()) {
+                mBookMarkList.add(realmInteger.getValue());
+            }
+            mAdapter.notifyDataSetChanged();
+        }
+        if (mBookMarkList.contains(1)) {
+            mIvBookMark.setColorFilter(ContextCompat.getColor(BookActivity.this, R.color.colorAccent));
+        }
+        mLayoutManager.scrollToPositionWithOffset(findPositionToScroll(chapterNum-1, verseNum), 0);
+
     }
 
     @Override

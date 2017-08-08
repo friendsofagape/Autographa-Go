@@ -148,6 +148,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 super.onScrolled(recyclerView, dx, dy);
                 sectionGroupView.setOnCheckedChangeListener(null);
                 int firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+                if (firstVisibleItem == -1) {
+                    sectionGroupView.setOnCheckedChangeListener(HomeActivity.this);
+                    return;
+                }
                 if (mBookModelArrayList.get(firstVisibleItem).getBookNumber() > 40) {
                     newSection.setChecked(true);
                 } else {
@@ -388,6 +392,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.tv_language_version: {
                 Intent intent = new Intent(this, SelectLanguageAndVersionActivity.class);
                 intent.putExtra(Constants.Keys.SELECT_BOOK, true);
+                intent.putExtra(Constants.Keys.LANGUAGE_CODE, languageCode);
+                intent.putExtra(Constants.Keys.VERSION_CODE, versionCode);
                 startActivityForResult(intent, Constants.RequestCodes.CHANGE_LANGUAGE_VERSION);
                 break;
             }

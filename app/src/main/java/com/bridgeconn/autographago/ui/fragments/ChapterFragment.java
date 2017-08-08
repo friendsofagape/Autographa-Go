@@ -55,14 +55,22 @@ public class ChapterFragment extends Fragment implements SelectChapterAndVerseAc
         mBookId = getArguments().getString(Constants.Keys.BOOK_ID);
         mOpenBook = getArguments().getBoolean(Constants.Keys.OPEN_BOOK);
         mSelectVerse = getArguments().getBoolean(Constants.Keys.SELECT_VERSE_FOR_NOTE);
+        int chapterNum = getArguments().getInt(Constants.Keys.CHAPTER_NO);
 
         mBookModel = getBookModel(mBookId);
         if (mBookModel != null) {
-            for (int i=0; i<mBookModel.getChapterModels().size(); i++) {
+            for (int i = 0; i < mBookModel.getChapterModels().size(); i++) {
                 mChapterModels.add(mBookModel.getChapterModels().get(i));
             }
-            if (mBookModel.getChapterModels().size() > 0) {
+
+            if (mChapterModels.size() > 0) {
                 setSelected(0);
+                    for (int i = 0; i < mChapterModels.size(); i++) {
+                        if (mChapterModels.get(i).getChapterNumber() == chapterNum) {
+                            setSelected(i);
+                            break;
+                        }
+                    }
             }
         }
     }

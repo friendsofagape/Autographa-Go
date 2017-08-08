@@ -241,6 +241,7 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
             if (verseComponentsModel.getText() != null) {
                 if (!verseComponentsModel.getText().trim().equals("")) {
                     String[] splitString = verseComponentsModel.getText().split(Constants.Styling.SPLIT_SPACE);
+                    boolean footNote = false;
                     for (int n = 0; n < splitString.length; n++) {
                         switch (splitString[n]) {
                             case Constants.Markers.MARKER_NEW_PARAGRAPH: {
@@ -267,6 +268,9 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                     }
                                 } else if (splitString[n].startsWith(Constants.Styling.REGEX_ESCAPE)) {
                                     break;
+                                } else if (splitString[n].startsWith(Constants.Styling.FOOT_NOTE)) {
+                                    footNote = true;
+                                    spannableStringBuilder.append(Constants.Styling.OPEN_FOOT_NOTE);
                                 } else {
                                     if (appendNumber) {
                                         String [] verseNumberSplit = verseComponentsModel.getVerseNumber().split("-");
@@ -289,6 +293,9 @@ public class VerseViewHolder extends RecyclerView.ViewHolder implements View.OnC
                                 break;
                             }
                         }
+                    }
+                    if (footNote) {
+                        spannableStringBuilder.append(Constants.Styling.CLOSE_FOOT_NOTE);
                     }
                 }
             }

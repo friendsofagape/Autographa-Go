@@ -1,6 +1,7 @@
 package com.bridgeconn.autographago.ui.viewholders;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -20,12 +21,14 @@ import java.util.ArrayList;
 public class LanguageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private TextView mTvChapterNumber;
+    private View mView;
     private ImageView mDelete;
     private Fragment mFragment;
     private ArrayList<LanguageModel> mLanguageModelArrayList;
 
     public LanguageViewHolder(View itemView, Fragment fragment, ArrayList<LanguageModel> languageModelArrayList) {
         super(itemView);
+        mView = itemView;
         mTvChapterNumber = (TextView) itemView.findViewById(R.id.tv_book_name);
         mDelete = (ImageView) itemView.findViewById(R.id.delete);
 
@@ -36,11 +39,12 @@ public class LanguageViewHolder extends RecyclerView.ViewHolder implements View.
     public void onBind(final int position) {
         LanguageModel languageModel = mLanguageModelArrayList.get(position);
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            if (languageModel.isSelected()) {
+            if (languageModel.isSelected()) {
 //                mTvChapterNumber.setBackgroundColor(mFragment.getResources().getColor(R.color.black_40, null));
-//            } else {
-//                mTvChapterNumber.setBackgroundColor(0);
-//            }
+                mView.setBackgroundColor(Color.LTGRAY);
+            } else {
+                mView.setBackgroundColor(Color.WHITE);
+            }
 //        }
         mTvChapterNumber.setText(languageModel.getLanguageName());
         mTvChapterNumber.setTag(position);

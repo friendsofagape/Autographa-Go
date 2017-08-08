@@ -49,6 +49,9 @@ public class Constants {
         String TAB_SPACE = "    ";
         String REGEX_ESCAPE = "\\";
         String CHAR_COLON = ":";
+        String FOOT_NOTE = "+";
+        String OPEN_FOOT_NOTE = "(";
+        String CLOSE_FOOT_NOTE = ")";
     }
 
     public static final String SHARE_TEXT_TYPE = "text/plain";

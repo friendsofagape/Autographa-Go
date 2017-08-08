@@ -22,6 +22,7 @@ public class LanguageFragment extends Fragment implements SelectLanguageAndVersi
     private ArrayList<LanguageModel> languageModelArrayList = new ArrayList<>();
     private LanguageVersionAdapter mAdapter;
     private boolean mSelectBook;
+    private int scrollPosition = 0;
 
     @Override
     public void onItemClick(String languageCode) {
@@ -32,9 +33,21 @@ public class LanguageFragment extends Fragment implements SelectLanguageAndVersi
         super.onCreate(savedInstanceState);
 
         mSelectBook = getArguments().getBoolean(Constants.Keys.SELECT_BOOK);
+        String languageCode = getArguments().getString(Constants.Keys.LANGUAGE_CODE);
+
         languageModelArrayList = ((SelectLanguageAndVersionActivity) getActivity()).getLanguageModelArrayList();
+
         if (languageModelArrayList.size() > 0) {
             setSelected(0);
+            if (languageCode != null) {
+                for (int i=0; i<languageModelArrayList.size(); i++) {
+                    if (languageModelArrayList.get(i).getLanguageCode().equals(languageCode)) {
+                        setSelected(i);
+                        scrollPosition = i;
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -48,6 +61,7 @@ public class LanguageFragment extends Fragment implements SelectLanguageAndVersi
 
         mAdapter = new LanguageVersionAdapter(this, languageModelArrayList, null, mSelectBook);
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.getLayoutManager().scrollToPosition(scrollPosition);
 
         return view;
     }

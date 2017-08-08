@@ -2,7 +2,6 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root_item"
-    android:layout_margin="@dimen/menu_item_margin"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:layout_width="match_parent"
@@ -14,6 +13,7 @@
         android:layout_centerVertical="true"
         android:src="@drawable/ic_delete_forever_white"
         android:padding="@dimen/button_padding"
+        android:layout_margin="@dimen/activity_horizontal_margin"
         android:tint="@color/colorPrimaryDark"
         android:layout_width="@dimen/button_l"
         android:layout_height="@dimen/button_l" />
@@ -24,7 +24,9 @@
         android:layout_toLeftOf="@id/delete"
         android:layout_height="wrap_content"
         android:maxLines="1"
+        android:padding="@dimen/menu_item_margin"
         android:layout_centerVertical="true"
+        android:textColor="@color/black"
         android:textSize="?attr/title_text"
         android:ellipsize="end" />
 

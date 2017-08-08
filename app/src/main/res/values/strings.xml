@@ -146,4 +146,7 @@
     <string name="yes">YES</string>
     <string name="delete_message_language">Are you sure you want to proceed? This will delete all your saved data for this language.</string>
     <string name="delete_message_version">Are you sure you want to proceed? This will delete all your saved data for this version.</string>
+
+    <string name="reference_not_found">The reference is not available for %1$s %2$s</string>
+    <string name="ok">OK</string>
 </resources>
