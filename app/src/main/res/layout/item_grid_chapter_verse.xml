@@ -5,13 +5,21 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/tv_number"
-        app:layout_aspectRatio="100%"
-        app:layout_widthPercent="100%"
-        android:gravity="center"
-        android:textSize="?attr/title_text"
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="2dp"
         android:background="@drawable/border_right_bottom"
-        android:textColor="@color/black" />
+        app:layout_aspectRatio="100%"
+        app:layout_widthPercent="100%">
+
+        <TextView
+            android:id="@+id/tv_number"
+           android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="?attr/title_text"
+            android:textColor="@color/black" />
+
+    </LinearLayout>
 
 </android.support.percent.PercentRelativeLayout>

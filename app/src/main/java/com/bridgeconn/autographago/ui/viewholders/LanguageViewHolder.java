@@ -15,6 +15,7 @@ import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.activities.SelectLanguageAndVersionActivity;
 import com.bridgeconn.autographago.ui.fragments.LanguageFragment;
+import com.bridgeconn.autographago.utils.SharedPrefs;
 
 import java.util.ArrayList;
 
@@ -38,14 +39,26 @@ public class LanguageViewHolder extends RecyclerView.ViewHolder implements View.
 
     public void onBind(final int position) {
         LanguageModel languageModel = mLanguageModelArrayList.get(position);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (languageModel.isSelected()) {
-//                mTvChapterNumber.setBackgroundColor(mFragment.getResources().getColor(R.color.black_40, null));
-                mView.setBackgroundColor(Color.LTGRAY);
-            } else {
-                mView.setBackgroundColor(Color.WHITE);
+
+        switch (SharedPrefs.getReadingMode()) {
+            case Day: {
+                if (languageModel.isSelected()) {
+                    mView.setBackgroundColor(Color.LTGRAY);
+                } else {
+                    mView.setBackgroundColor(Color.WHITE);
+                }
+                break;
             }
-//        }
+            case Night: {
+                if (languageModel.isSelected()) {
+                    mView.setBackgroundColor(Color.DKGRAY);
+                } else {
+                    mView.setBackgroundColor(Color.BLACK);
+                }
+                break;
+            }
+        }
+
         mTvChapterNumber.setText(languageModel.getLanguageName());
         mTvChapterNumber.setTag(position);
         mTvChapterNumber.setOnClickListener(this);

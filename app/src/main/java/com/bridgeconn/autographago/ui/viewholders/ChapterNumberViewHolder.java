@@ -2,8 +2,6 @@ package com.bridgeconn.autographago.ui.viewholders;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -13,9 +11,7 @@ import com.bridgeconn.autographago.R;
 import com.bridgeconn.autographago.models.BookModel;
 import com.bridgeconn.autographago.models.ChapterModel;
 import com.bridgeconn.autographago.models.VerseIdModel;
-import com.bridgeconn.autographago.ormutils.AllMappers;
 import com.bridgeconn.autographago.ormutils.AllSpecifications;
-import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.services.BackgroundService;
 import com.bridgeconn.autographago.ui.activities.BookActivity;
 import com.bridgeconn.autographago.ui.activities.SelectChapterAndVerseActivity;
@@ -53,15 +49,26 @@ public class ChapterNumberViewHolder extends RecyclerView.ViewHolder implements 
 
     public void onBind(final int position) {
         ChapterModel chapterModel = mChapterModels.get(position);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (chapterModel.isSelected()) {
-//                mTvChapterNumber.setBackgroundColor(mFragment.getResources().getColor(R.color.black_40, null));
-                mTvChapterNumber.setBackgroundColor(Color.LTGRAY);
-            } else {
-                mTvChapterNumber.setBackgroundColor(Color.WHITE);
-//                mTvChapterNumber.setBackground(mFragment.getResources().getDrawable(R.drawable.border_right_bottom, null));
+
+        switch (SharedPrefs.getReadingMode()) {
+            case Day: {
+                if (chapterModel.isSelected()) {
+                    mTvChapterNumber.setBackgroundColor(Color.LTGRAY);
+                } else {
+                    mTvChapterNumber.setBackgroundColor(Color.WHITE);
+                }
+                break;
             }
-//        }
+            case Night: {
+                if (chapterModel.isSelected()) {
+                    mTvChapterNumber.setBackgroundColor(Color.DKGRAY);
+                } else {
+                    mTvChapterNumber.setBackgroundColor(Color.BLACK);
+                }
+                break;
+            }
+        }
+
         mTvChapterNumber.setText(chapterModel.getChapterNumber() + "");
         mTvChapterNumber.setTag(position);
         mTvChapterNumber.setOnClickListener(this);

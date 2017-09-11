@@ -17,6 +17,7 @@ import com.bridgeconn.autographago.ormutils.AllSpecifications;
 import com.bridgeconn.autographago.ormutils.AutographaRepository;
 import com.bridgeconn.autographago.ui.activities.SelectLanguageAndVersionActivity;
 import com.bridgeconn.autographago.utils.Constants;
+import com.bridgeconn.autographago.utils.SharedPrefs;
 
 import java.util.ArrayList;
 
@@ -44,14 +45,26 @@ public class VersionViewHolder extends RecyclerView.ViewHolder implements View.O
 
     public void onBind(final int position) {
         VersionModel versionModel = mVersionModelArrayList.get(position);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (versionModel.isSelected()) {
-//                mTvChapterNumber.setBackgroundColor(mFragment.getResources().getColor(R.color.black_40, null));
-                mView.setBackgroundColor(Color.LTGRAY);
-            } else {
-                mView.setBackgroundColor(Color.WHITE);
+
+        switch (SharedPrefs.getReadingMode()) {
+            case Day: {
+                if (versionModel.isSelected()) {
+                    mView.setBackgroundColor(Color.LTGRAY);
+                } else {
+                    mView.setBackgroundColor(Color.WHITE);
+                }
+                break;
             }
-//        }
+            case Night: {
+                if (versionModel.isSelected()) {
+                    mView.setBackgroundColor(Color.DKGRAY);
+                } else {
+                    mView.setBackgroundColor(Color.BLACK);
+                }
+                break;
+            }
+        }
+
         mTvChapterNumber.setText(versionModel.getVersionCode() + "  " + versionModel.getVersionName());
         mTvChapterNumber.setTag(position);
         mTvChapterNumber.setOnClickListener(this);
